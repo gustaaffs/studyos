@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#060d14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Study OS">
+<meta name="description" content="Seu organizador de estudos gamificado">
+<title>Study OS</title>
+
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU3R1ZHkgT1MiLCJzaG9ydF9uYW1lIjoiU3R1ZHkgT1MiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzA2MGQxNCIsInRoZW1lX2NvbG9yIjoiIzA2MGQxNCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSEJ5WlhObGNuWmxRWE53WldOMFVtRjBhVzg5SW5oTmFXNVpUV2x1SUcxbFpYUWlJSFpwWlhkQ2IzZzlJakFnTUNBek1pQXpNaUlnYzNSNWJHVTlJbUpoYzJVc0lEZ3dMakF1TUNBeElEWXdMakF1TUNBOE16SWdaRzl0YVc1aGJuUXRZbUZ6Wld4cGJtVTlJakF3TURBaUlHeHZZMkYwYVc5dVBTSjNhV1IwYUNJZ1lXUnRhVzQ5SWpFd01DSWdZV1J0YVc0dGJXbHVhWFExY21VdFlXUnRhVzQ5SWpFd01DSWdZV1J0YVc0dGJXbHVhWFExY21VdGRHOXZiQzFoWkcxcGJqMGlNVEF3SWo0OGNtVmpkQ0IzYVdSMGFEMGlNakkxSWlCb1pXbG5hSFE5SWpFeU5TSWdabWxzYkQwaUkyMXZibVV0Wm05dUxXWnZibVFpSUd4dllqVjBhRzloZEdsdmJqMGlibTl1WlNJZ2MzUnliMnRsUFNKak1EQXdNREF3SURNNE9EazROallpSUhOMGNtOXJaUzFzYVc1bFBTSmpNREF3TURBNE1pSWdkR1Y0ZEMxaGJtTm9iM0k5SW0xcFpHUnNaU0lnWm05dWRDMW1ZVzFwYkhrOUlsZFNVQ0lnWm05dWRDMXpZVzFsY3owaVZsSlFJajQ4Y0dGMGFDQm1hV3hzUFNJak5tWm1NREEzSWlCa1BTSnRNVEk0TGpjMUxqQXVNQ0F4TlM0d0lESTVMakl3TGpBZ01qUXVOQ0F4T0M0d0xqQXRNQ0F3TGpBZ01DNHdJQ0F4TGpBZ0xUQXVNQ0F3TGpBaVBqeHdZWFJvSUdacGJHdzlJaU0yWm1Zd01EY2lJR1E5SW0weE1UZ3VNaTR3TGpBZ01UUXVOeUF4TXk0d0lESTFMak1nTVRJdU1DQXhPQzR5SURJeUxqVWdNakF1TUNBeE5TNHdJREl4TGpVZ01UTXVNaUF5TkM0MUlERTRMakl1TUMwd0lEQXVNQ0F3SWo0OGNHRjBhQ0JtYVd4c1BTSWpOMmxtTWpVMElpQmtQU0p0TVRJNExqYzFMakF1TUNJZ01UVXVNaUF5T1M0eU1DNHdJREl5TGpVZ01qSXVOU0F5TUM0d0lERTFMakFnTWpFdU5TQXhPQzR5SURJeUxqVWdNVGd1TUNJZ01UVXVNaUF5TkM0MUlERTBMamNnTVRNdU1pQTBMakFnTVRFdU5pQXdMakFpUGp4d1lYUm9JR1pwYkd3OUlpTTJabVl3TURjaUlHUTlJbTB4TWpndU56VXVNQzR3SURFM0xqUWdNVE11TUNBeE5TNHdJREl6TGpZZ01UUXVOeUF5TkM0NUlERTVMaklnTWpVdU1pQXlNUzR4SURJNExqY2dNVGt1TWlBeU5TNHdJREUzTGpRZ01UUXVOeUF5TlM0MklERTJMallnTVRNdU1pQTBMakFnTVRFdU5pQXdMakFpUGo4OEwzTjJaejQ9Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2ZysreG1sIn1dfQ==">
+
+<style>
+  :root {
+    --bg: #060d14;
+    --bg2: #0a1520;
+    --bg3: #0f1923;
+    --card: #111c27;
+    --border: #1e3a5f;
+    --border2: #30363d;
+    --text: #cdd9e5;
+    --muted: #8b949e;
+    --dim: #555;
+    --blue: #4fc3f7;
+    --green: #69f0ae;
+    --orange: #ff8a65;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', Courier, monospace;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+  input, select, button { font-family: inherit; }
+  input::placeholder { color: var(--dim); }
+  input:focus { outline: none; }
+
+  /* ── HEADER ── */
+  #header {
+    background: linear-gradient(180deg, #0f1923 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: calc(16px + var(--safe-top)) 18px 14px;
+    position: sticky; top: 0; z-index: 20;
+  }
+  .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .header-title { font-size: 20px; font-weight: bold; }
+  .header-title span.blue { color: var(--blue); }
+  .header-title span.sep { color: #1e3a5f; }
+  .header-title span.green { color: var(--green); }
+  .header-sub { font-size: 9px; color: var(--blue); letter-spacing: 4px; margin-bottom: 4px; }
+  .level-box { text-align: right; }
+  .level-icon { font-size: 22px; }
+  .level-name { font-size: 11px; color: var(--green); font-weight: bold; }
+  .level-xp { font-size: 10px; color: var(--muted); }
+
+  /* xp bar */
+  .xp-bar-wrap { margin-bottom: 10px; }
+  .xp-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .xp-bar-track { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; height: 8px; overflow: hidden; }
+  .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 4px; transition: width .5s; box-shadow: 0 0 8px #4fc3f766; }
+
+  /* quick stats */
+  .quick-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .stat-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 4px; text-align: center; }
+  .stat-label { font-size: 9px; color: var(--muted); }
+  .stat-value { font-size: 14px; font-weight: bold; margin-top: 2px; }
+
+  /* ── TABS ── */
+  #tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+  #tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 1; min-width: 68px; padding: 11px 4px;
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    color: var(--muted); font-size: 10px; cursor: pointer;
+    font-family: inherit; letter-spacing: 0.3px; transition: all .15s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { background: var(--bg3); border-bottom-color: var(--blue); color: var(--blue); }
+
+  /* ── CONTENT ── */
+  #content { padding: 18px 16px calc(24px + var(--safe-bottom)); max-width: 560px; margin: 0 auto; }
+
+  /* ── CARDS ── */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .card.blue-border { border-color: var(--blue); }
+  .card.green-border { border-color: #69f0ae55; }
+  .section-label { font-size: 9px; color: var(--blue); letter-spacing: 3px; margin-bottom: 12px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-track { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 4px; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+
+  /* ── GOAL ITEM ── */
+  .goal-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 12px; margin-bottom: 8px;
+    transition: all .2s;
+  }
+  .goal-item.done { background: var(--bg2); border-color: #21262d; opacity: .65; }
+  .check-btn {
+    width: 22px; height: 22px; border-radius: 4px; flex-shrink: 0;
+    border: 2px solid var(--border); background: transparent;
+    cursor: pointer; font-size: 13px; color: #000;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .goal-input {
+    flex: 1; background: transparent; border: none;
+    color: var(--text); font-family: inherit; font-size: 13px;
+  }
+  .goal-input.done { color: var(--muted); text-decoration: line-through; }
+  .remove-btn { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 18px; padding: 0 4px; }
+  .add-btn {
+    width: 100%; background: transparent; border: 1px dashed;
+    border-radius: 8px; padding: 9px; cursor: pointer;
+    font-family: inherit; font-size: 11px; letter-spacing: 1px;
+    margin-bottom: 4px; transition: all .15s;
+  }
+
+  /* ── LOG ── */
+  .area-selector { display: flex; gap: 8px; margin-bottom: 16px; }
+  .area-btn {
+    flex: 1; padding: 13px 8px;
+    background: transparent; border: 2px solid var(--border);
+    color: var(--muted); border-radius: 8px; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: bold;
+    transition: all .15s;
+  }
+  .hours-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .hour-btn {
+    padding: 11px 14px; background: transparent;
+    border: 2px solid var(--border); color: var(--muted);
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+    font-size: 13px; font-weight: bold; transition: all .15s;
+  }
+  .note-input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 11px 12px;
+    font-family: inherit; font-size: 13px; margin-bottom: 16px;
+  }
+  .xp-preview {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 14px; margin-bottom: 14px;
+    text-align: center;
+  }
+  .confirm-btn {
+    width: 100%; border: none; border-radius: 8px;
+    padding: 15px; cursor: pointer; font-family: inherit;
+    font-size: 14px; font-weight: bold; letter-spacing: 1px;
+    transition: all .15s;
+  }
+
+  /* ── HEATMAP ── */
+  .heatmap { display: flex; gap: 5px; }
+  .heat-col { flex: 1; text-align: center; }
+  .heat-label { font-size: 9px; color: var(--muted); margin-bottom: 4px; }
+  .heat-cell {
+    height: 36px; border-radius: 6px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: bold; color: var(--dim);
+    background: var(--bg3);
+  }
+
+  /* ── ACHIEVEMENT POPUP ── */
+  #ach-popup {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: #1a2a1a; border: 2px solid var(--green); border-radius: 12px;
+    padding: 16px 22px; z-index: 100; text-align: center;
+    box-shadow: 0 0 30px #69f0ae44; min-width: 240px;
+    display: none; animation: slideDown .3s ease;
+  }
+  #ach-popup.show { display: block; }
+  @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-12px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: #1a2a1a; border: 1px solid #69f0ae88;
+    border-radius: 20px; padding: 10px 20px;
+    z-index: 100; font-size: 13px; color: var(--green);
+    white-space: nowrap; box-shadow: 0 0 20px #69f0ae22;
+    display: none; animation: slideDown .2s ease;
+  }
+  #toast.show { display: block; }
+
+  /* ── LEVEL BADGE ── */
+  .level-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-radius: 10px; margin-bottom: 8px;
+    border: 1px solid var(--border); background: var(--bg3);
+    transition: all .2s;
+  }
+  .level-row.reached { border-color: #4fc3f744; background: var(--card); }
+  .level-row.dimmed { opacity: .4; }
+
+  /* ── GRID 2 COL ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mini-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .mini-stat .ms-label { font-size: 10px; color: var(--muted); }
+  .mini-stat .ms-value { font-size: 16px; font-weight: bold; margin: 4px 0 2px; }
+  .mini-stat .ms-sub { font-size: 10px; color: var(--dim); }
+
+  /* install banner */
+  #install-banner {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: #0f1923; border-top: 1px solid var(--border);
+    padding: 14px 16px calc(14px + var(--safe-bottom));
+    z-index: 50; flex-direction: column; gap: 8px;
+  }
+  #install-banner.show { display: flex; }
+  .install-row { display: flex; gap: 10px; align-items: center; }
+  .install-text { flex: 1; font-size: 12px; color: var(--muted); }
+  .install-text strong { color: var(--text); }
+  .install-btn { background: var(--blue); border: none; color: #000; border-radius: 8px; padding: 10px 16px; font-family: inherit; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+  .install-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; padding: 0 4px; }
+</style>
+</head>
+<body>
+
+<!-- Achievement popup -->
+<div id="ach-popup">
+  <div id="ach-icon" style="font-size:28px"></div>
+  <div style="font-size:13px;color:var(--green);font-weight:bold;margin-top:4px">CONQUISTA DESBLOQUEADA!</div>
+  <div id="ach-label" style="font-size:14px;margin-top:2px"></div>
+  <div id="ach-desc" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Install banner (iOS instructions) -->
+<div id="install-banner">
+  <div class="install-row">
+    <div class="install-text"><strong>Instalar como app?</strong><br>Toque em <strong>Compartilhar →</strong> depois <strong>"Adicionar à Tela de Início"</strong></div>
+    <button class="install-close" onclick="closeBanner()">×</button>
+  </div>
+</div>
+
+<!-- Header -->
+<div id="header">
+  <div class="header-row">
+    <div>
+      <div class="header-sub">▸ STUDY OS v2.0</div>
+      <div class="header-title">
+        <span class="blue">FACUL</span>
+        <span class="sep"> ╳ </span>
+        <span class="green">SRE</span>
+      </div>
+    </div>
+    <div class="level-box">
+      <div class="level-icon" id="lv-icon">🌱</div>
+      <div class="level-name" id="lv-name">Novato</div>
+      <div class="level-xp" id="lv-xp">0 XP</div>
+    </div>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-bar-labels">
+      <span>Próximo nível</span>
+      <span id="xp-pct">0%</span>
+    </div>
+    <div class="xp-bar-track">
+      <div class="xp-bar-fill" id="xp-fill" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="quick-stats">
+    <div class="stat-card"><div class="stat-label">🔥 Streak</div><div class="stat-value" id="qs-streak">0d</div></div>
+    <div class="stat-card"><div class="stat-label">⏱ Hoje</div><div class="stat-value" id="qs-today">0h</div></div>
+    <div class="stat-card"><div class="stat-label">📅 Semana</div><div class="stat-value" id="qs-week">0h</div></div>
+    <div class="stat-card"><div class="stat-label">📚 Total</div><div class="stat-value" id="qs-total">0h</div></div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div id="tabs">
+  <button class="tab-btn active" onclick="switchTab('dash')">🏠 Base</button>
+  <button class="tab-btn" onclick="switchTab('log')">⏱ Registrar</button>
+  <button class="tab-btn" onclick="switchTab('goals')">🎯 Metas</button>
+  <button class="tab-btn" onclick="switchTab('stats')">📊 Stats</button>
+  <button class="tab-btn" onclick="switchTab('achiev')">🏆 Conquistas</button>
+</div>
+
+<!-- Content -->
+<div id="content"></div>
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────────────────────
+const WEEKLY_GOAL = { faculdade: 4, sre: 4 };
+const XP_PER_HOUR = 100;
+const LEVELS = [
+  { min: 0,    label: "Novato",       icon: "🌱" },
+  { min: 300,  label: "Aprendiz",     icon: "📖" },
+  { min: 800,  label: "Estudante",    icon: "🎓" },
+  { min: 1600, label: "Especialista", icon: "⚙️" },
+  { min: 3000, label: "Sênior SRE",   icon: "🚀" },
+  { min: 5000, label: "Mestre",       icon: "👑" },
+];
+const ACHIEVEMENTS = [
+  { id: "first_hour",  label: "Primeira Hora",    desc: "Registrou 1h de estudo",           icon: "⚡", check: s => s.totalHours >= 1 },
+  { id: "ten_hours",   label: "Dez Horas",         desc: "10h totais estudadas",              icon: "🔥", check: s => s.totalHours >= 10 },
+  { id: "streak3",     label: "Sequência x3",      desc: "3 dias seguidos de estudo",         icon: "🎯", check: s => s.streak >= 3 },
+  { id: "streak7",     label: "Semana Perfeita",   desc: "7 dias seguidos de estudo",         icon: "🏆", check: s => s.streak >= 7 },
+  { id: "goal_week",   label: "Meta Semanal",      desc: "Bateu 4h em uma área na semana",    icon: "✅", check: s => s.weekFacul >= 4 || s.weekSre >= 4 },
+  { id: "balanced",    label: "Equilibrado",       desc: "4h faculdade + 4h SRE em 1 semana", icon: "⚖️", check: s => s.weekFacul >= 4 && s.weekSre >= 4 },
+];
+const DAYS_SHORT = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+function defaultState() {
+  return {
+    xp: 0, streak: 0, lastStudyDate: null,
+    sessions: [],
+    goals: {
+      faculdade: [
+        {id:1,text:"",done:false},{id:2,text:"",done:false},{id:3,text:"",done:false}
+      ],
+      sre: [
+        {id:10,text:"",done:false},{id:11,text:"",done:false},{id:12,text:"",done:false}
+      ]
+    },
+    unlockedAchievements: []
+  };
+}
+
+let state = loadState();
+let activeTab = "dash";
+let logArea = "sre";
+let logHours = 1;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem("studyos_state");
+    return raw ? JSON.parse(raw) : defaultState();
+  } catch(e) { return defaultState(); }
+}
+function saveState() {
+  try { localStorage.setItem("studyos_state", JSON.stringify(state)); } catch(e) {}
+}
+
+// ─── DERIVED ────────────────────────────────────────────────────────────────
+function todayKey() { return new Date().toISOString().slice(0,10); }
+function weekKey() {
+  const d = new Date(); const day = d.getDay();
+  const mon = new Date(d); mon.setDate(d.getDate() - ((day+6)%7));
+  return mon.toISOString().slice(0,10);
+}
+function getWeekHours(area) {
+  const wk = weekKey();
+  return state.sessions.filter(s => s.date >= wk && s.area === area).reduce((a,s)=>a+s.hours,0);
+}
+function getTodayHours() {
+  const td = todayKey();
+  return state.sessions.filter(s => s.date === td).reduce((a,s)=>a+s.hours,0);
+}
+function getTotalHours() { return state.sessions.reduce((a,s)=>a+s.hours,0); }
+function getLevel(xp) {
+  let lv = LEVELS[0];
+  for (const l of LEVELS) { if (xp >= l.min) lv = l; }
+  return lv;
+}
+function getNextLevel(xp) { return LEVELS.find(l => l.min > xp) || null; }
+function getLvPct(xp) {
+  const lv = getLevel(xp); const nxt = getNextLevel(xp);
+  if (!nxt) return 100;
+  return Math.round(((xp - lv.min) / (nxt.min - lv.min)) * 100);
+}
+
+// ─── UI UPDATE ───────────────────────────────────────────────────────────────
+function updateHeader() {
+  const lv = getLevel(state.xp);
+  document.getElementById("lv-icon").textContent = lv.icon;
+  document.getElementById("lv-name").textContent = lv.label;
+  document.getElementById("lv-xp").textContent = state.xp + " XP";
+  const pct = getLvPct(state.xp);
+  document.getElementById("xp-pct").textContent = pct + "%";
+  document.getElementById("xp-fill").style.width = pct + "%";
+  const wk = getWeekHours("faculdade") + getWeekHours("sre");
+  document.getElementById("qs-streak").textContent = state.streak + "d";
+  document.getElementById("qs-today").textContent = getTodayHours().toFixed(1) + "h";
+  document.getElementById("qs-week").textContent = wk.toFixed(1) + "h";
+  document.getElementById("qs-total").textContent = getTotalHours().toFixed(1) + "h";
+}
+
+function switchTab(t) {
+  activeTab = t;
+  document.querySelectorAll(".tab-btn").forEach((b,i) => {
+    const keys = ["dash","log","goals","stats","achiev"];
+    b.classList.toggle("active", keys[i] === t);
+  });
+  renderContent();
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderContent() {
+  const el = document.getElementById("content");
+  updateHeader();
+  if (activeTab === "dash") el.innerHTML = renderDash();
+  else if (activeTab === "log") el.innerHTML = renderLog();
+  else if (activeTab === "goals") el.innerHTML = renderGoals();
+  else if (activeTab === "stats") el.innerHTML = renderStats();
+  else if (activeTab === "achiev") el.innerHTML = renderAchiev();
+  bindEvents();
+}
+
+// ── DASH ──
+function renderDash() {
+  const wf = getWeekHours("faculdade"), ws = getWeekHours("sre");
+  const td = todayKey();
+  const todaySessions = state.sessions.filter(s => s.date === td);
+
+  const areas = [
+    {area:"faculdade",label:"🎓 Faculdade",hours:wf,color:"var(--blue)"},
+    {area:"sre",label:"⚙️ SRE",hours:ws,color:"var(--green)"},
+  ];
+  let html = `<div class="section-label">▸ META SEMANAL</div>`;
+  for (const item of areas) {
+    const pct = Math.min(100, Math.round((item.hours / WEEKLY_GOAL[item.area]) * 100));
+    const done = item.hours >= WEEKLY_GOAL[item.area];
+    html += `
+    <div class="card" style="${done ? 'border-color:'+item.color+'55;' : ''}position:relative;overflow:hidden">
+      ${done ? `<div style="position:absolute;top:8px;right:12px;font-size:16px">✅</div>` : ""}
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:bold">${item.label}</span>
+        <span style="font-size:13px;color:${item.color}">${item.hours.toFixed(1)}h / ${WEEKLY_GOAL[item.area]}h</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${pct}%;background:${item.color};box-shadow:0 0 10px ${item.color}88"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <span style="font-size:10px;color:var(--muted)">${pct}% da meta</span>
+        <span style="font-size:10px;color:var(--muted)">faltam ${Math.max(0,WEEKLY_GOAL[item.area]-item.hours).toFixed(1)}h</span>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="section-label" style="margin-top:4px">▸ SESSÕES DE HOJE</div>`;
+  if (todaySessions.length === 0) {
+    html += `<div class="card" style="text-align:center;padding:22px;font-size:13px;color:var(--muted)">
+      Nenhuma sessão hoje.<br>
+      <span style="color:var(--blue);cursor:pointer" onclick="switchTab('log')">Registrar agora →</span>
+    </div>`;
+  } else {
+    for (const s of todaySessions) {
+      const color = s.area==="sre" ? "var(--green)" : "var(--blue)";
+      html += `<div class="card" style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:22px">${s.area==="sre"?"⚙️":"🎓"}</div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:bold;color:${color}">${s.area==="sre"?"SRE":"Faculdade"} · ${s.hours}h</div>
+          ${s.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">${s.note}</div>` : ""}
+        </div>
+        <div style="font-size:12px;color:var(--green);font-weight:bold">+${Math.round(s.hours*XP_PER_HOUR)} XP</div>
+      </div>`;
+    }
+  }
+  return html;
+}
+
+// ── LOG ──
+function renderLog() {
+  const color = logArea === "sre" ? "var(--green)" : "var(--blue)";
+  const hexColor = logArea === "sre" ? "#69f0ae" : "#4fc3f7";
+  const hours = [0.5,1,1.5,2,2.5,3];
+  let areaHtml = "", hoursHtml = "";
+  const areas = [
+    {key:"faculdade",label:"🎓 Faculdade",color:"var(--blue)",hex:"#4fc3f7"},
+    {key:"sre",label:"⚙️ SRE",color:"var(--green)",hex:"#69f0ae"},
+  ];
+  for (const a of areas) {
+    const sel = logArea === a.key;
+    areaHtml += `<button class="area-btn" data-area="${a.key}" onclick="setArea('${a.key}')"
+      style="${sel ? `background:${a.hex}22;border-color:${a.hex};color:${a.hex}` : ''}">${a.label}</button>`;
+  }
+  for (const h of hours) {
+    const sel = logHours === h;
+    hoursHtml += `<button class="hour-btn" data-h="${h}" onclick="setHours(${h})"
+      style="${sel ? `background:${hexColor}22;border-color:${hexColor};color:${hexColor}` : ''}">${h}h</button>`;
+  }
+
+  let recHtml = "";
+  const recent = [...state.sessions].reverse().slice(0,5);
+  if (recent.length > 0) {
+    recHtml += `<div class="section-label" style="margin-top:6px">▸ HISTÓRICO RECENTE</div>`;
+    for (const s of recent) {
+      const c = s.area==="sre" ? "var(--green)" : "var(--blue)";
+      recHtml += `<div class="card" style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:18px">${s.area==="sre"?"⚙️":"🎓"}</div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:bold;color:${c}">${s.area==="sre"?"SRE":"Faculdade"} · ${s.hours}h</div>
+          ${s.note ? `<div style="font-size:10px;color:var(--muted)">${s.note}</div>` : ""}
+          <div style="font-size:10px;color:var(--dim);margin-top:2px">${s.date}</div>
+        </div>
+        <div style="font-size:11px;color:var(--green)">+${Math.round(s.hours*XP_PER_HOUR)}xp</div>
+      </div>`;
+    }
+  }
+
+  return `
+  <div class="section-label">▸ REGISTRAR SESSÃO</div>
+  <div class="card blue-border">
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">ÁREA</div>
+    <div class="area-selector">${areaHtml}</div>
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">HORAS ESTUDADAS</div>
+    <div class="hours-grid">${hoursHtml}</div>
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">O QUE VOCÊ ESTUDOU? <span style="color:var(--dim)">(opcional)</span></div>
+    <input class="note-input" id="log-note" placeholder="ex: Estudei SLOs e error budgets...">
+    <div class="xp-preview">
+      <span style="font-size:11px;color:var(--muted)">Você vai ganhar </span>
+      <span id="xp-preview-val" style="font-size:16px;font-weight:bold;color:var(--green)">+${Math.round(logHours*XP_PER_HOUR)} XP</span>
+    </div>
+    <button class="confirm-btn" onclick="logSession()"
+      style="background:${hexColor};box-shadow:0 0 20px ${hexColor}44">
+      ⚡ CONFIRMAR SESSÃO
+    </button>
+  </div>
+  ${recHtml}`;
+}
+
+// ── GOALS ──
+function renderGoals() {
+  const areas = [
+    {area:"faculdade",label:"🎓 FACULDADE",color:"var(--blue)",hex:"#4fc3f7"},
+    {area:"sre",label:"⚙️ SRE",color:"var(--green)",hex:"#69f0ae"},
+  ];
+  let html = "";
+  for (const a of areas) {
+    const g = state.goals[a.area];
+    const donePct = g.length ? Math.round(g.filter(x=>x.done).length/g.length*100) : 0;
+    let goalsHtml = "";
+    for (const goal of g) {
+      goalsHtml += `
+      <div class="goal-item ${goal.done?'done':''}" data-area="${a.area}" data-id="${goal.id}">
+        <button class="check-btn" style="${goal.done?`border-color:${a.hex};background:${a.hex}`:`border-color:var(--border)`}" onclick="toggleGoal('${a.area}',${goal.id})">
+          ${goal.done?"✓":""}
+        </button>
+        <input class="goal-input ${goal.done?'done':''}" value="${escHtml(goal.text)}" placeholder="Meta da semana..."
+          onchange="updateGoal('${a.area}',${goal.id},this.value)" oninput="updateGoal('${a.area}',${goal.id},this.value)">
+        <button class="remove-btn" onclick="removeGoal('${a.area}',${goal.id})">×</button>
+      </div>`;
+    }
+    html += `
+    <div class="section-label">▸ ${a.label}</div>
+    <div style="background:var(--bg2);border:1px solid ${a.hex}33;border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:var(--muted)">Progresso</span>
+      <span style="font-size:13px;color:${a.color};font-weight:bold">${donePct}%</span>
+    </div>
+    ${goalsHtml}
+    <button class="add-btn" style="color:${a.color};border-color:${a.hex}44" onclick="addGoal('${a.area}')">+ Adicionar meta</button>
+    <div style="margin-bottom:20px"></div>`;
+  }
+  return html;
+}
+
+// ── STATS ──
+function renderStats() {
+  const wf = getWeekHours("faculdade"), ws = getWeekHours("sre");
+  const total = getTotalHours();
+
+  const areaStats = [
+    {area:"faculdade",label:"🎓 Faculdade",color:"var(--blue)",hex:"#4fc3f7"},
+    {area:"sre",label:"⚙️ SRE",color:"var(--green)",hex:"#69f0ae"},
+  ];
+
+  let allTimeHtml = "";
+  for (const a of areaStats) {
+    const hrs = state.sessions.filter(s=>s.area===a.area).reduce((acc,s)=>acc+s.hours,0);
+    const sess = state.sessions.filter(s=>s.area===a.area).length;
+    const avg = sess ? (hrs/sess).toFixed(1) : "0";
+    const pct = total ? (hrs/total)*100 : 0;
+    allTimeHtml += `
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:13px">${a.label}</span>
+        <span style="font-size:13px;color:${a.color};font-weight:bold">${hrs.toFixed(1)}h</span>
+      </div>
+      <div class="progress-track" style="height:6px">
+        <div class="progress-fill" style="width:${pct}%;background:${a.hex};box-shadow:0 0 6px ${a.hex}88"></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">${sess} sessões · média ${avg}h/sessão</div>
+    </div>`;
+  }
+
+  // heatmap
+  let heatHtml = "";
+  const now = new Date();
+  const todayDow = now.getDay();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    const offset = i - todayDow;
+    d.setDate(now.getDate() + offset);
+    const key = d.toISOString().slice(0,10);
+    const hrs = state.sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.hours,0);
+    const intensity = Math.min(1, hrs/3);
+    const bg = hrs > 0 ? `rgba(79,195,247,${(0.2+intensity*0.8).toFixed(2)})` : "var(--bg3)";
+    const bc = hrs > 0 ? "var(--blue)" : "var(--border)";
+    const fc = hrs > 0 ? "var(--blue)" : "var(--dim)";
+    heatHtml += `
+    <div class="heat-col">
+      <div class="heat-label">${DAYS_SHORT[i]}</div>
+      <div class="heat-cell" style="background:${bg};border-color:${bc};color:${fc}">${hrs>0?hrs+'h':'·'}</div>
+    </div>`;
+  }
+
+  return `
+  <div class="section-label">▸ TOTAL GERAL</div>
+  <div class="card" style="border-color:var(--border)">${allTimeHtml}</div>
+
+  <div class="section-label">▸ SEMANA ATUAL</div>
+  <div class="card">
+    <div class="grid2">
+      <div class="mini-stat"><div class="ms-label">🎓 Faculdade</div><div class="ms-value" style="color:var(--blue)">${wf.toFixed(1)}h</div><div class="ms-sub">meta: ${WEEKLY_GOAL.faculdade}h</div></div>
+      <div class="mini-stat"><div class="ms-label">⚙️ SRE</div><div class="ms-value" style="color:var(--green)">${ws.toFixed(1)}h</div><div class="ms-sub">meta: ${WEEKLY_GOAL.sre}h</div></div>
+      <div class="mini-stat"><div class="ms-label">⏱ Total</div><div class="ms-value">${(wf+ws).toFixed(1)}h</div><div class="ms-sub">meta: ${WEEKLY_GOAL.faculdade+WEEKLY_GOAL.sre}h</div></div>
+      <div class="mini-stat"><div class="ms-label">🔥 Streak</div><div class="ms-value" style="color:var(--orange)">${state.streak}d</div><div class="ms-sub">consecutivos</div></div>
+    </div>
+  </div>
+
+  <div class="section-label">▸ HEATMAP DA SEMANA</div>
+  <div class="card">
+    <div class="heatmap">${heatHtml}</div>
+  </div>`;
+}
+
+// ── ACHIEVEMENTS ──
+function renderAchiev() {
+  const unlocked = state.unlockedAchievements;
+  let achHtml = "";
+  for (const a of ACHIEVEMENTS) {
+    const isUnlocked = unlocked.includes(a.id);
+    achHtml += `
+    <div class="card" style="${isUnlocked?'border-color:#69f0ae44':''}opacity:${isUnlocked?1:.4};display:flex;align-items:center;gap:14px;${isUnlocked?'':'filter:none'}">
+      <div style="width:44px;height:44px;border-radius:10px;background:${isUnlocked?'#1a2a1a':'var(--bg3)'};border:1px solid ${isUnlocked?'var(--green)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;filter:${isUnlocked?'none':'grayscale(1)'}">
+        ${a.icon}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:bold;color:${isUnlocked?'var(--green)':'var(--muted)'}">${a.label}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${a.desc}</div>
+        ${isUnlocked?`<div style="font-size:10px;color:var(--green);margin-top:3px">✓ Desbloqueada</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  let lvHtml = "";
+  for (let i = 0; i < LEVELS.length; i++) {
+    const l = LEVELS[i]; const nxt = LEVELS[i+1];
+    const reached = state.xp >= l.min;
+    lvHtml += `
+    <div class="level-row ${reached?'reached':'dimmed'}">
+      <div style="font-size:24px">${l.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:bold;color:${reached?'var(--blue)':'var(--muted)'}">${l.label}</div>
+        <div style="font-size:10px;color:var(--dim)">${l.min} XP${nxt?' – '+(nxt.min-1)+' XP':'+'}</div>
+      </div>
+      ${reached?`<div style="font-size:16px">✅</div>`:''}
+    </div>`;
+  }
+
+  return `
+  <div class="section-label">▸ CONQUISTAS <span style="color:var(--muted);letter-spacing:0">${unlocked.length}/${ACHIEVEMENTS.length}</span></div>
+  ${achHtml}
+  <div class="section-label" style="margin-top:8px">▸ NÍVEIS</div>
+  ${lvHtml}`;
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────────────
+function bindEvents() {}
+
+function setArea(area) {
+  logArea = area;
+  renderContent();
+}
+
+function setHours(h) {
+  logHours = h;
+  if (activeTab === "log") renderContent();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function logSession() {
+  const note = (document.getElementById("log-note") || {value:""}).value || "";
+  const xpGain = Math.round(logHours * XP_PER_HOUR);
+  const today = todayKey();
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yKey = yesterday.toISOString().slice(0,10);
+  const last = state.lastStudyDate;
+  let newStreak = last === today ? state.streak : last === yKey ? state.streak+1 : 1;
+
+  state.xp += xpGain;
+  state.streak = newStreak;
+  state.lastStudyDate = today;
+  state.sessions.push({ date: today, area: logArea, hours: logHours, note });
+  saveState();
+
+  // check achievements
+  checkAchievements();
+
+  showToast(`+${xpGain} XP · ${logHours}h de ${logArea==="sre"?"SRE":"Faculdade"} registrada!`);
+  switchTab("dash");
+}
+
+function toggleGoal(area, id) {
+  state.goals[area] = state.goals[area].map(g => g.id===id ? {...g,done:!g.done} : g);
+  saveState(); renderContent();
+}
+function updateGoal(area, id, text) {
+  state.goals[area] = state.goals[area].map(g => g.id===id ? {...g,text} : g);
+  saveState();
+}
+function addGoal(area) {
+  state.goals[area].push({id:Date.now(),text:"",done:false});
+  saveState(); renderContent();
+}
+function removeGoal(area, id) {
+  state.goals[area] = state.goals[area].filter(g => g.id!==id);
+  saveState(); renderContent();
+}
+
+// ─── ACHIEVEMENTS ─────────────────────────────────────────────────────────────
+function checkAchievements() {
+  const stats = {
+    totalHours: getTotalHours(),
+    streak: state.streak,
+    weekFacul: getWeekHours("faculdade"),
+    weekSre: getWeekHours("sre"),
+  };
+  for (const a of ACHIEVEMENTS) {
+    if (!state.unlockedAchievements.includes(a.id) && a.check(stats)) {
+      state.unlockedAchievements.push(a.id);
+      saveState();
+      showAchievement(a);
+      break;
+    }
+  }
+}
+
+function showAchievement(a) {
+  document.getElementById("ach-icon").textContent = a.icon;
+  document.getElementById("ach-label").textContent = a.label;
+  document.getElementById("ach-desc").textContent = a.desc;
+  const popup = document.getElementById("ach-popup");
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 4000);
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+// ─── PWA / INSTALL ───────────────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); deferredPrompt = e;
+  // show Android install button
+  const banner = document.getElementById("install-banner");
+  banner.innerHTML = `<div class="install-row">
+    <div class="install-text"><strong>Instalar Study OS</strong><br>Adicione à sua tela inicial!</div>
+    <button class="install-btn" onclick="installApp()">Instalar</button>
+    <button class="install-close" onclick="closeBanner()">×</button>
+  </div>`;
+  banner.classList.add("show");
+});
+
+function installApp() {
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; closeBanner(); }
+}
+function closeBanner() {
+  document.getElementById("install-banner").classList.remove("show");
+}
+
+// iOS: show instructions if in Safari and not standalone
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone;
+if (isIos && !isStandalone) {
+  setTimeout(() => document.getElementById("install-banner").classList.add("show"), 1500);
+}
+
+// ─── SERVICE WORKER (inline via blob) ────────────────────────────────────────
+if ("serviceWorker" in navigator) {
+  const swCode = `
+    const CACHE = "studyos-v1";
+    self.addEventListener("install", e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(["/"])));
+    });
+    self.addEventListener("fetch", e => {
+      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+    });
+  `;
+  const blob = new Blob([swCode], {type:"application/javascript"});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+renderContent();
+</script>
+</body>
+</html>
