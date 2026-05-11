@@ -32,46 +32,6 @@
   "monthActuals": {},
   "entries": [
     {
-      "id": 1,
-      "month": "2026-05",
-      "type": "expense",
-      "category": "essenciais",
-      "name": "Aluguel/Condomínio",
-      "projected": 2500,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
-      "id": 2,
-      "month": "2026-05",
-      "type": "expense",
-      "category": "essenciais",
-      "name": "Mercado",
-      "projected": 1600,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
-      "id": 3,
-      "month": "2026-05",
-      "type": "expense",
-      "category": "lazer",
-      "name": "Lazer/restaurantes",
-      "projected": 800,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
-      "id": 4,
-      "month": "2026-05",
-      "type": "investment",
-      "category": "investimentos",
-      "name": "Investimentos",
-      "projected": 2000,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
       "id": 5,
       "month": "2026-06",
       "type": "expense",
