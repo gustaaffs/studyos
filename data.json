@@ -101,26 +101,29 @@
   ],
   "taskChecks": {},
   "study": {
-    "me": {
-      "xp": 100,
-      "streak": 1,
-      "lastStudyDate": "2026-05-11",
-      "sessions": [
-        {
-          "id": 1778515145204,
-          "date": "2026-05-11",
-          "hours": 1,
-          "topic": "Faculdade"
-        }
-      ],
-      "goals": []
-    },
-    "partner": {
-      "xp": 0,
-      "streak": 0,
-      "lastStudyDate": null,
+    "gus": {
       "sessions": [],
       "goals": []
+    },
+    "maria": {
+      "sessions": [],
+      "goals": [
+        {
+          "id": 4,
+          "text": "Estudo pessoal",
+          "done": false
+        },
+        {
+          "id": 5,
+          "text": "Leitura",
+          "done": false
+        },
+        {
+          "id": 6,
+          "text": "Curso",
+          "done": false
+        }
+      ]
     }
   },
   "version": 3,
