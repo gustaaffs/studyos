@@ -64,12 +64,6 @@
   ],
   "goals": [
     {
-      "id": 1,
-      "name": "Reserva de emergência",
-      "target": 30000,
-      "current": 0
-    },
-    {
       "id": 2,
       "name": "Viagem",
       "target": 8000,
