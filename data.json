@@ -42,7 +42,18 @@
       "lifestyle": 20,
       "dividas": 10
     },
-    "expenses": [],
+    "expenses": [
+      {
+        "id": 1778515423323,
+        "name": "Mercado Pago",
+        "value": 1329,
+        "bucket": "dividas",
+        "payer": "me",
+        "split": "proporcional",
+        "type": "parcela",
+        "month": "2026-05"
+      }
+    ],
     "goals": []
   },
   "home": {
