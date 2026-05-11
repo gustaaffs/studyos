@@ -64,12 +64,6 @@
   ],
   "goals": [
     {
-      "id": 2,
-      "name": "Viagem",
-      "target": 8000,
-      "current": 0
-    },
-    {
       "id": 3,
       "name": "Investimentos 2026",
       "target": 20000,
