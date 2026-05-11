@@ -107,23 +107,7 @@
     },
     "maria": {
       "sessions": [],
-      "goals": [
-        {
-          "id": 4,
-          "text": "Estudo pessoal",
-          "done": false
-        },
-        {
-          "id": 5,
-          "text": "Leitura",
-          "done": false
-        },
-        {
-          "id": 6,
-          "text": "Curso",
-          "done": false
-        }
-      ]
+      "goals": []
     }
   },
   "version": 3,
