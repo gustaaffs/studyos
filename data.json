@@ -85,13 +85,6 @@
       "value": 234.12,
       "yearMonth": "2026-06",
       "type": "fatura"
-    },
-    {
-      "id": 1778511613688,
-      "name": "Itaú (Lenir)",
-      "value": 9454.11,
-      "yearMonth": "2026-06",
-      "type": "fatura"
     }
   ],
   "routineTasks": [],
