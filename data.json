@@ -106,6 +106,17 @@
       ],
       "owner": "Gus",
       "time": "Manhã"
+    },
+    {
+      "id": 1778529665080,
+      "name": "Aspirar Casa",
+      "days": [
+        1,
+        3,
+        5
+      ],
+      "owner": "Gus",
+      "time": "Noite"
     }
   ],
   "taskChecks": {},
