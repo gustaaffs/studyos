@@ -1,1424 +1,569 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#07080a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Life OS">
-<title>Life OS v2.0</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#07080a" />
+<title>Life OS Casal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:     #07080a;
-  --bg2:    #0d0f12;
-  --bg3:    #12151a;
-  --card:   #161b22;
-  --border: #1f2937;
-  --border2:#2d3748;
-  --text:   #e2e8f0;
-  --muted:  #64748b;
-  --dim:    #374151;
-  --blue:   #38bdf8;
-  --green:  #4ade80;
-  --orange: #fb923c;
-  --red:    #f87171;
-  --yellow: #fbbf24;
-  --purple: #a78bfa;
-  --safe-t: env(safe-area-inset-top,0px);
-  --safe-b: env(safe-area-inset-bottom,0px);
-  --mono: 'Space Mono', monospace;
-  --display: 'Syne', sans-serif;
+:root{
+  --bg:#07080a;--bg2:#0d0f12;--bg3:#12151a;--card:#161b22;--border:#1f2937;--border2:#2d3748;
+  --text:#e2e8f0;--muted:#64748b;--dim:#374151;--blue:#38bdf8;--green:#4ade80;--orange:#fb923c;
+  --red:#f87171;--yellow:#fbbf24;--purple:#a78bfa;--pink:#f472b6;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+  --mono:'Space Mono',monospace;--display:'Syne',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow-x:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh;min-height:-webkit-fill-available}
-input,select,button,textarea{font-family:var(--mono)}
-input::placeholder,textarea::placeholder{color:var(--dim)}
-input:focus,textarea:focus,select:focus{outline:none}
-button{cursor:pointer}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+html,body{height:100%;overflow-x:hidden}body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;min-height:100vh}
+input,select,button,textarea{font-family:var(--mono)}button{cursor:pointer}input,select,textarea{outline:none}input::placeholder,textarea::placeholder{color:var(--dim)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+#module-nav{position:sticky;top:0;z-index:30;background:rgba(7,8,10,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:calc(12px + var(--safe-t)) 16px 0}
+.module-logo{font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;background:linear-gradient(135deg,var(--blue),var(--green),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}.top-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.tiny-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:5px 9px;font-size:10px}.tiny-btn.active{color:var(--green);border-color:#4ade8055;background:#4ade8011}
+.module-tabs{display:flex;gap:0}.mod-tab{flex:1;padding:10px 4px;background:transparent;border:none;color:var(--muted);font-size:10px;letter-spacing:.5px;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}.mod-tab.active{color:var(--text);border-bottom-color:var(--blue)}.tab-icon{display:block;font-size:16px;margin-bottom:2px}
+#app{padding:16px 16px calc(32px + var(--safe-b));max-width:760px;margin:0 auto}.fade-up{animation:fadeUp .22s ease forwards}@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sec{font-size:9px;letter-spacing:3px;color:var(--blue);margin:8px 0 12px}.sec.green{color:var(--green)}.sec.orange{color:var(--orange)}.sec.purple{color:var(--purple)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}.card-soft{background:linear-gradient(135deg,#111827,#0b1018);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px}.glow-blue{box-shadow:0 0 0 1px #38bdf822,0 4px 24px #38bdf811}.glow-green{box-shadow:0 0 0 1px #4ade8022,0 4px 24px #4ade8011}.glow-orange{box-shadow:0 0 0 1px #fb923c22,0 4px 24px #fb923c11}
+.sub-tabs{display:flex;gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:3px;margin-bottom:14px;overflow:auto}.sub-tab{flex:1;min-width:max-content;padding:8px 9px;background:transparent;border:none;color:var(--muted);font-size:10px;border-radius:9px;transition:.15s}.sub-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px #0005}
+.btn{border:none;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.3px;transition:.15s}.btn:active{transform:scale(.98)}.btn-primary{background:var(--blue);color:#000}.btn-green{background:var(--green);color:#000}.btn-orange{background:var(--orange);color:#000}.btn-purple{background:var(--purple);color:#000}.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}.btn-full{width:100%;padding:14px}
+.inp{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 12px;font-size:13px}.inp:focus{border-color:var(--blue)}.inp-sm{padding:8px 10px;font-size:12px}.lbl{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;display:block}.form-row{display:flex;gap:8px;margin-bottom:8px}.add-form{background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;padding:14px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}@media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}.form-row{flex-direction:column}}
+.mstat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center}.mv{font-family:var(--display);font-size:19px;font-weight:800;margin:3px 0}.ml{font-size:9px;color:var(--muted);letter-spacing:1px}.ms{font-size:10px;color:var(--dim)}
+.ptrack{background:var(--bg);border:1px solid var(--border);border-radius:6px;height:8px;overflow:hidden}.pfill{height:100%;border-radius:6px;transition:width .5s}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;border:1px solid;white-space:nowrap}
+.row{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 12px;margin-bottom:8px}.row.done{opacity:.55}.row-info{flex:1;min-width:0}.row-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-meta{font-size:10px;color:var(--muted);margin-top:2px}.rm-btn{background:none;border:none;color:var(--dim);font-size:18px;padding:0 4px}.chk{width:22px;height:22px;border-radius:7px;flex-shrink:0;border:2px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:#000}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px}.pill.active{color:var(--green);border-color:#4ade8066;background:#4ade8011}.pill.blue.active{color:var(--blue);border-color:#38bdf866;background:#38bdf811}.pill.purple.active{color:var(--purple);border-color:#a78bfa66;background:#a78bfa11}
+.hero-study{background:linear-gradient(135deg,#0d1f2d,#071219);border:1px solid #1e3a5f}.hero-fin{background:linear-gradient(135deg,#1a1200,#0d0900);border:1px solid #78350f}.hero-home{background:linear-gradient(135deg,#0d1a0d,#070d07);border:1px solid #14532d}.hero{border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.splitbar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--bg);border:1px solid var(--border)}.legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}.mini-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day-box{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 4px;text-align:center;min-height:58px}.day-box.today{border-color:var(--green);box-shadow:0 0 0 1px #4ade8022}.day-name{font-size:9px;color:var(--muted);margin-bottom:4px}.day-num{font-size:14px;font-weight:800;font-family:var(--display)}
+#toast{position:fixed;bottom:calc(90px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:10px 20px;z-index:400;font-size:12px;color:var(--green);white-space:nowrap;opacity:0;pointer-events:none;transition:.25s}#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal{display:none;position:fixed;inset:0;z-index:300;background:#000a;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modal-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:470px;max-height:90vh;overflow:auto}
 
-/* ══ MODULE NAV ══ */
-#module-nav{
-  position:sticky;top:0;z-index:30;
-  background:var(--bg);
-  border-bottom:1px solid var(--border);
-  padding:calc(12px + var(--safe-t)) 16px 0;
+/* =========================================================
+   RESPONSIVO — MOBILE x DESKTOP
+   Mobile: navegação superior compacta.
+   Desktop: sidebar fixa + conteúdo em grid amplo.
+   ========================================================= */
+
+/* Base mobile refinada */
+body{
+  background:
+    radial-gradient(circle at top, rgba(56,189,248,.06), transparent 32rem),
+    var(--bg);
 }
-.module-logo{
-  font-family:var(--display);font-size:22px;font-weight:800;
-  letter-spacing:-0.5px;margin-bottom:10px;
-  background:linear-gradient(135deg,var(--blue),var(--green),var(--orange));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
 }
-.module-tabs{display:flex;gap:0;border-bottom:none}
-.mod-tab{
-  flex:1;padding:10px 4px;background:transparent;border:none;
-  color:var(--muted);font-family:var(--mono);font-size:10px;
-  letter-spacing:.5px;border-bottom:2px solid transparent;
-  transition:all .2s;white-space:nowrap;
+.top-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  flex-wrap:wrap;
 }
-.mod-tab.active{color:var(--text);border-bottom-color:var(--blue)}
-.mod-tab .tab-icon{display:block;font-size:16px;margin-bottom:2px}
-
-/* ══ CONTENT ══ */
-#app{padding:16px 16px calc(32px + var(--safe-b));max-width:600px;margin:0 auto}
-
-/* ══ SECTION LABELS ══ */
-.sec{font-size:9px;letter-spacing:3px;color:var(--blue);margin-bottom:12px;margin-top:4px}
-.sec.green{color:var(--green)}
-.sec.orange{color:var(--orange)}
-
-/* ══ CARD ══ */
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
-.card.glow-blue{box-shadow:0 0 0 1px #38bdf822,0 4px 24px #38bdf811}
-.card.glow-green{box-shadow:0 0 0 1px #4ade8022,0 4px 24px #4ade8011}
-.card.glow-orange{box-shadow:0 0 0 1px #fb923c22,0 4px 24px #fb923c11}
-
-/* ══ PROGRESS BAR ══ */
-.ptrack{background:var(--bg);border:1px solid var(--border);border-radius:4px;height:8px;overflow:hidden}
-.pfill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-
-/* ══ BADGE / TAG ══ */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;border:1px solid;white-space:nowrap}
-
-/* ══ BUTTONS ══ */
-.btn{border:none;border-radius:8px;padding:10px 18px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.5px;transition:all .15s}
-.btn-primary{background:var(--blue);color:#000}
-.btn-primary:active{transform:scale(.97)}
-.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
-.btn-full{width:100%;padding:14px}
-.btn-green{background:var(--green);color:#000}
-.btn-orange{background:var(--orange);color:#000}
-
-/* ══ INPUT ══ */
-.inp{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:13px;transition:border-color .15s}
-.inp:focus{border-color:var(--blue)}
-.inp.green:focus{border-color:var(--green)}
-.inp.orange:focus{border-color:var(--orange)}
-.inp-sm{padding:7px 10px;font-size:12px}
-
-/* ══ GRID ══ */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-
-/* ══ MINI STAT ══ */
-.mstat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center}
-.mstat .mv{font-size:18px;font-weight:700;margin:4px 0 2px;font-family:var(--display)}
-.mstat .ml{font-size:9px;color:var(--muted);letter-spacing:1px}
-.mstat .ms{font-size:10px;color:var(--dim)}
-
-/* ══ GOAL ITEM ══ */
-.goal-row{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px 12px;margin-bottom:8px;transition:all .2s}
-.goal-row.done{opacity:.55;border-color:var(--dim)}
-.chk{width:22px;height:22px;border-radius:5px;flex-shrink:0;border:2px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;transition:all .15s}
-.goal-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:13px}
-.goal-inp.done{color:var(--muted);text-decoration:line-through}
-.rm-btn{background:none;border:none;color:var(--dim);font-size:18px;padding:0 4px;line-height:1}
-
-/* ══ TOAST ══ */
-#toast{
-  position:fixed;bottom:calc(90px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--card);border:1px solid var(--border2);border-radius:20px;
-  padding:10px 20px;z-index:200;font-size:12px;color:var(--green);
-  white-space:nowrap;opacity:0;pointer-events:none;transition:all .25s;
+.module-tabs{
+  display:flex;
+  gap:0;
+  border-top:1px solid rgba(255,255,255,.02);
 }
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ══ ACHIEVEMENT POPUP ══ */
-#ach-popup{
-  position:fixed;top:calc(20px + var(--safe-t));left:50%;transform:translateX(-50%) translateY(-20px);
-  background:var(--card);border:2px solid var(--green);border-radius:16px;
-  padding:18px 24px;z-index:200;text-align:center;min-width:260px;
-  box-shadow:0 0 40px #4ade8033;opacity:0;pointer-events:none;transition:all .3s;
+.sub-tabs{
+  overflow-x:auto;
+  scrollbar-width:none;
 }
-#ach-popup.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ══ STUDY HEADER ══ */
-.study-hero{
-  background:linear-gradient(135deg,#0d1f2d 0%,#071219 100%);
-  border:1px solid #1e3a5f;border-radius:14px;padding:18px;margin-bottom:12px;
+.sub-tabs::-webkit-scrollbar{display:none}
+.sub-tab{
+  min-width:max-content;
 }
-.xp-bar-track{background:var(--bg);border:1px solid var(--border);border-radius:4px;height:8px;overflow:hidden}
-.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;transition:width .5s;box-shadow:0 0 10px #38bdf866}
-
-/* ══ AREA SELECTOR ══ */
-.area-sel{display:flex;gap:8px;margin-bottom:16px}
-.area-btn{flex:1;padding:13px 8px;background:transparent;border:2px solid var(--border);color:var(--muted);border-radius:10px;font-family:var(--mono);font-size:13px;font-weight:700;transition:all .15s}
-.hours-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.hour-btn{padding:10px 13px;background:transparent;border:2px solid var(--border);color:var(--muted);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;transition:all .15s}
-
-/* ══ HEATMAP ══ */
-.heatmap{display:flex;gap:5px}
-.hcol{flex:1;text-align:center}
-.hlabel{font-size:9px;color:var(--muted);margin-bottom:4px}
-.hcell{height:36px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--dim);background:var(--bg3);transition:all .3s}
-
-/* ══ FINANCE ══ */
-.finance-hero{
-  background:linear-gradient(135deg,#1a1200 0%,#0d0900 100%);
-  border:1px solid #78350f;border-radius:14px;padding:18px;margin-bottom:12px;
-  position:relative;overflow:hidden;
+.form-row{
+  flex-wrap:wrap;
 }
-.finance-hero::before{
-  content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;
-  background:radial-gradient(circle,#fbbf2420 0%,transparent 70%);border-radius:50%;
+.form-row > *{
+  min-width:0;
 }
-.budget-ring-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px}
-.budget-ring{position:relative;width:80px;height:80px;flex-shrink:0}
-.ring-svg{transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:#1f2937;stroke-width:8}
-.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
-.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring-pct{font-size:16px;font-weight:700;font-family:var(--display)}
-.ring-sub{font-size:8px;color:var(--muted);letter-spacing:1px}
-
-.expense-row{
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
-  padding:10px 12px;margin-bottom:7px;transition:all .2s;
-}
-.exp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.exp-info{flex:1;min-width:0}
-.exp-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.exp-meta{font-size:10px;color:var(--muted);margin-top:1px}
-.exp-val{font-size:13px;font-weight:700;flex-shrink:0}
-.exp-rm{background:none;border:none;color:var(--dim);font-size:16px;padding:0 2px}
-
-.cat-pill{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 10px;border-radius:20px;border:1px solid;
-  font-size:11px;cursor:pointer;transition:all .15s;background:transparent;
-  font-family:var(--mono);
+.g2,.g3,.g4{
+  align-items:stretch;
 }
 
-/* ══ HOME ══ */
-.home-hero{
-  background:linear-gradient(135deg,#0d1a0d 0%,#070d07 100%);
-  border:1px solid #14532d;border-radius:14px;padding:18px;margin-bottom:12px;
+/* Celular pequeno */
+@media (max-width: 520px){
+  body{font-size:12px}
+  #module-nav{
+    padding:calc(10px + var(--safe-t)) 12px 0;
+  }
+  #app{
+    padding:12px 12px calc(28px + var(--safe-b));
+  }
+  .module-logo{
+    font-size:18px;
+    line-height:1.05;
+  }
+  .top-row{
+    flex-direction:column;
+    gap:8px;
+  }
+  .top-actions{
+    width:100%;
+    justify-content:space-between;
+  }
+  .tiny-btn{
+    flex:1;
+    text-align:center;
+    padding:7px 8px;
+  }
+  .mod-tab{
+    font-size:9px;
+    padding:9px 2px;
+  }
+  .mod-tab .tab-icon{
+    font-size:15px;
+  }
+  .hero{
+    padding:15px;
+    border-radius:14px;
+  }
+  .card,.add-form{
+    padding:13px;
+    border-radius:12px;
+  }
+  .g2,.g3,.g4{
+    grid-template-columns:1fr !important;
+  }
+  .mini-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+  .day-box{
+    min-height:52px;
+  }
+  .form-row{
+    flex-direction:column;
+  }
+  .form-row input,
+  .form-row button,
+  .form-row label{
+    width:100% !important;
+  }
+  .modal{
+    padding:10px;
+    align-items:flex-end;
+  }
+  .modal-card{
+    max-width:none;
+    border-radius:18px 18px 0 0;
+    max-height:88vh;
+  }
 }
-.day-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:10px;
-}
-.day-label{font-family:var(--display);font-size:15px;font-weight:700}
-.day-count{font-size:10px;color:var(--muted)}
-.task-row{
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
-  padding:10px 12px;margin-bottom:6px;transition:all .2s;
-}
-.task-row.done{opacity:.5;border-color:var(--dim)}
-.task-chk{
-  width:22px;height:22px;border-radius:50%;flex-shrink:0;
-  border:2px solid var(--border2);background:transparent;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;color:#000;transition:all .15s;
-}
-.task-info{flex:1}
-.task-name{font-size:12px}
-.task-name.done{text-decoration:line-through;color:var(--muted)}
-.task-who{font-size:10px;color:var(--muted);margin-top:2px}
-.who-pill{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:2px 7px;border-radius:10px;font-size:10px;border:1px solid;
-  cursor:pointer;transition:all .15s;background:transparent;font-family:var(--mono);
+
+/* Tablet */
+@media (min-width: 700px) and (max-width: 1023px){
+  #app{
+    max-width:920px;
+  }
+  .g3{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .g4{
+    grid-template-columns:repeat(4,1fr);
+  }
+  .card-grid-tablet{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
 }
 
-/* ══ ADD FORM ══ */
-.add-form{background:var(--bg2);border:1px dashed var(--border2);border-radius:10px;padding:14px;margin-bottom:10px}
-.form-row{display:flex;gap:8px;margin-bottom:8px}
-.form-row:last-child{margin-bottom:0}
-.lbl{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;display:block}
+/* Desktop */
+@media (min-width: 1024px){
+  html,body{
+    min-height:100%;
+  }
+  body{
+    overflow-x:hidden;
+  }
+  #module-nav{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:286px;
+    height:100vh;
+    padding:28px 18px;
+    border-right:1px solid var(--border);
+    border-bottom:none;
+    display:flex;
+    flex-direction:column;
+    background:
+      linear-gradient(180deg, rgba(13,15,18,.98), rgba(7,8,10,.98)),
+      var(--bg);
+  }
+  .top-row{
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+  }
+  .module-logo{
+    font-size:28px;
+    margin-bottom:0;
+  }
+  .top-actions{
+    justify-content:flex-start;
+    align-items:stretch;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  #sync-status{
+    grid-column:1 / -1;
+    padding:10px 12px;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:10px;
+  }
+  .tiny-btn{
+    width:100%;
+    padding:9px 10px;
+  }
+  .module-tabs{
+    flex-direction:column;
+    gap:10px;
+    margin-top:24px;
+    border-top:none;
+  }
+  .mod-tab{
+    flex:none;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-align:left;
+    justify-content:flex-start;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 12px;
+    font-size:12px;
+    background:var(--bg2);
+  }
+  .mod-tab.active{
+    border-color:var(--blue);
+    background:rgba(56,189,248,.10);
+    box-shadow:0 0 0 1px rgba(56,189,248,.08), 0 12px 30px rgba(0,0,0,.18);
+  }
+  .mod-tab .tab-icon{
+    display:inline;
+    font-size:19px;
+    margin:0;
+  }
 
-/* ══ LEVEL / ACH ══ */
-.lv-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);margin-bottom:8px;transition:all .2s}
-.lv-row.reached{border-color:#38bdf844;background:var(--card)}
-.lv-row.dimmed{opacity:.35}
-.ach-row{display:flex;align-items:center;gap:14px;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);margin-bottom:8px;transition:all .2s}
-.ach-row.unlocked{border-color:#4ade8044;background:var(--card)}
-.ach-icon-wrap{width:44px;height:44px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.ach-row.unlocked .ach-icon-wrap{border-color:var(--green);background:#0d1f0d}
+  #app{
+    max-width:1180px;
+    margin:0 0 0 286px;
+    padding:30px 34px 44px;
+  }
 
-/* ══ PROFILE SELECTOR ══ */
-.profile-btns{display:flex;gap:6px;flex-wrap:wrap}
-.prof-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--mono);font-size:11px;transition:all .15s}
-.prof-btn.active{border-color:var(--green);color:var(--green);background:#0d1f0d}
+  .fade-up{
+    max-width:1180px;
+  }
 
-/* ══ TABS (secondary) ══ */
-.sub-tabs{display:flex;gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:14px}
-.sub-tab{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.3px;border-radius:7px;transition:all .15s}
-.sub-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px #0005}
+  .hero{
+    padding:24px;
+    margin-bottom:18px;
+  }
 
-/* ══ SEPARATOR ══ */
-.sep{border:none;border-top:1px solid var(--border);margin:16px 0}
+  .sub-tabs{
+    display:flex;
+    gap:8px;
+    background:transparent;
+    border:none;
+    padding:0;
+    margin-bottom:18px;
+    overflow:visible;
+  }
+  .sub-tab{
+    border:1px solid var(--border);
+    background:var(--bg2);
+    border-radius:10px;
+    padding:10px 14px;
+    flex:0 0 auto;
+  }
+  .sub-tab.active{
+    background:var(--card);
+    border-color:var(--border2);
+  }
 
-/* ══ ANIMATIONS ══ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .25s ease forwards}
+  .card,.add-form{
+    border-radius:16px;
+  }
 
-/* ══ INSTALL BANNER ══ */
-#install-banner{
-  display:none;position:fixed;bottom:0;left:0;right:0;
-  background:var(--card);border-top:1px solid var(--border);
-  padding:14px 16px calc(14px + var(--safe-b));z-index:50;
-  flex-direction:column;gap:8px;
+  .g2{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .g3{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .g4{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .mstat{
+    min-height:86px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .row,.expense-row,.task-row{
+    transition:transform .16s ease, border-color .16s ease, background .16s ease;
+  }
+  .row:hover,.expense-row:hover,.task-row:hover{
+    transform:translateY(-1px);
+    border-color:var(--border2);
+    background:#18202a;
+  }
+
+  .modal-card{
+    max-width:560px;
+  }
+
+  #toast{
+    left:auto;
+    right:34px;
+    transform:translateY(10px);
+  }
+  #toast.show{
+    transform:translateY(0);
+  }
 }
-#install-banner.show{display:flex}
-.ib-row{display:flex;gap:10px;align-items:center}
-.ib-text{flex:1;font-size:12px;color:var(--muted)}
-.ib-text strong{color:var(--text)}
-.ib-btn{background:var(--blue);border:none;color:#000;border-radius:8px;padding:9px 14px;font-family:var(--mono);font-size:11px;font-weight:700;white-space:nowrap}
-.ib-close{background:none;border:none;color:var(--muted);font-size:20px;padding:0 4px}
+
+/* Desktop grande */
+@media (min-width: 1320px){
+  #app{
+    max-width:1280px;
+    padding-left:44px;
+    padding-right:44px;
+  }
+  .hero{
+    padding:28px;
+  }
+}
+
 </style>
 </head>
 <body>
-
-<!-- Settings Modal -->
-<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:300;background:#000a;align-items:center;justify-content:center;padding:20px">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px">
+<div id="settings-modal" class="modal">
+  <div class="modal-card">
     <div style="font-family:var(--display);font-size:18px;font-weight:800;margin-bottom:4px">⚙️ Configurações</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:18px">GitHub como banco de dados</div>
-
-    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:6px">SEU TOKEN DO GITHUB</div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-        style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;"
-        value="">
-      <button onclick="saveToken()" style="background:var(--blue);border:none;color:#000;border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px">GitHub como banco de dados + perfis do casal</div>
+    <span class="lbl">TOKEN DO GITHUB</span>
+    <div class="form-row">
+      <input id="token-input" class="inp" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="flex:1">
+      <button class="btn btn-primary" onclick="saveToken()">Salvar</button>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.6">
-      Como gerar o token:<br>
-      1. github.com → foto → <b style="color:var(--text)">Settings</b><br>
-      2. <b style="color:var(--text)">Developer settings</b> → Personal access tokens → <b style="color:var(--text)">Tokens (classic)</b><br>
-      3. <b style="color:var(--text)">Generate new token</b> → marque <b style="color:var(--text)">repo</b><br>
-      4. Copie e cole aqui
+    <div class="card" style="font-size:11px;color:var(--muted);line-height:1.6;padding:12px;margin-bottom:14px">
+      Gere um token classic no GitHub com permissão <b style="color:var(--text)">repo</b>. O arquivo usado como banco será <b style="color:var(--text)">data.json</b> no repositório configurado no código.
     </div>
-
-    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">SYNC MANUAL</div>
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button onclick="ghLoad()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;cursor:pointer">⬇️ Carregar do GitHub</button>
-      <button onclick="saveST()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;cursor:pointer">⬆️ Salvar no GitHub</button>
+    <span class="lbl">NOMES</span>
+    <div class="form-row">
+      <input id="me-name" class="inp inp-sm" placeholder="Seu nome">
+      <input id="partner-name" class="inp inp-sm" placeholder="Nome da Maria">
     </div>
-
-    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">DADOS LOCAIS</div>
-    <div style="display:flex;gap:8px;margin-bottom:20px">
-      <button onclick="exportJSON()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:11px;cursor:pointer">📥 Exportar JSON</button>
-      <label style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:11px;cursor:pointer;text-align:center">
-        📤 Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none">
-      </label>
+    <button class="btn btn-green btn-full" onclick="saveNames()" style="margin-bottom:10px">Salvar nomes</button>
+    <span class="lbl">SYNC MANUAL</span>
+    <div class="form-row">
+      <button class="btn btn-ghost" onclick="ghLoad()" style="flex:1">⬇️ Carregar</button>
+      <button class="btn btn-ghost" onclick="saveST()" style="flex:1">⬆️ Salvar</button>
     </div>
-
-    <button onclick="closeSettings()" style="width:100%;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:11px;font-family:var(--mono);font-size:12px;cursor:pointer">Fechar</button>
+    <span class="lbl">BACKUP LOCAL</span>
+    <div class="form-row">
+      <button class="btn btn-ghost" onclick="exportJSON()" style="flex:1">📥 Exportar JSON</button>
+      <label class="btn btn-ghost" style="flex:1;text-align:center">📤 Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+    </div>
+    <button class="btn btn-ghost btn-full" onclick="closeSettings()">Fechar</button>
   </div>
 </div>
-
-<div id="ach-popup">
-  <div id="ach-icon" style="font-size:32px;margin-bottom:4px"></div>
-  <div style="font-size:11px;color:var(--green);letter-spacing:2px;font-weight:700">CONQUISTA!</div>
-  <div id="ach-label" style="font-size:15px;font-weight:700;margin-top:4px;font-family:var(--display)"></div>
-  <div id="ach-desc" style="font-size:11px;color:var(--muted);margin-top:3px"></div>
-</div>
-
 <div id="toast"></div>
-
-<div id="install-banner">
-  <div class="ib-row">
-    <div class="ib-text"><strong>Instalar Life OS?</strong><br>Compartilhar → "Adicionar à Tela de Início"</div>
-    <button class="ib-close" onclick="closeBanner()">×</button>
-  </div>
-</div>
-
-<!-- MODULE NAV -->
 <div id="module-nav">
-  <div class="module-logo">LIFE OS</div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-    <div id="sync-status" style="font-size:10px;color:var(--muted)">☁️ salvo</div>
-    <button onclick="openSettings()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 9px;font-family:var(--mono);font-size:10px;cursor:pointer">⚙️ config</button>
+  <div class="top-row">
+    <div class="module-logo">LIFE OS CASAL</div>
+    <div class="top-actions">
+      <span id="sync-status" style="font-size:10px;color:var(--muted)">☁️ salvo</span>
+      <button id="profile-me" class="tiny-btn active" onclick="setPerson('me')">Eu</button>
+      <button id="profile-partner" class="tiny-btn" onclick="setPerson('partner')">Maria</button>
+      <button class="tiny-btn" onclick="openSettings()">⚙️ config</button>
+    </div>
   </div>
   <div class="module-tabs">
-    <button class="mod-tab active" onclick="setModule('study')"><span class="tab-icon">🎓</span>ESTUDOS</button>
+    <button class="mod-tab active" onclick="setModule('study')"><span class="tab-icon">🎓</span>ESTUDO</button>
     <button class="mod-tab" onclick="setModule('finance')"><span class="tab-icon">💰</span>FINANÇAS</button>
     <button class="mod-tab" onclick="setModule('home')"><span class="tab-icon">🏠</span>CASA</button>
   </div>
 </div>
-
 <div id="app"></div>
-
 <script>
-// ════════════════════════════════════════════════════════
-// CONSTANTS
-// ════════════════════════════════════════════════════════
-const WEEKLY_GOAL = {faculdade:4,sre:4};
-const XP_PER_HOUR = 100;
-const LEVELS = [
-  {min:0,    label:"Novato",       icon:"🌱"},
-  {min:300,  label:"Aprendiz",     icon:"📖"},
-  {min:800,  label:"Estudante",    icon:"🎓"},
-  {min:1600, label:"Especialista", icon:"⚙️"},
-  {min:3000, label:"Sênior SRE",   icon:"🚀"},
-  {min:5000, label:"Mestre",       icon:"👑"},
-];
-const ACHIEVEMENTS = [
-  {id:"first_hour", label:"Primeira Hora",  desc:"1h de estudo registrada",          icon:"⚡", check:s=>s.totalH>=1},
-  {id:"ten_hours",  label:"Dez Horas",      desc:"10h totais estudadas",             icon:"🔥", check:s=>s.totalH>=10},
-  {id:"streak3",    label:"Sequência x3",   desc:"3 dias seguidos de estudo",        icon:"🎯", check:s=>s.streak>=3},
-  {id:"streak7",    label:"Semana Perfeita",desc:"7 dias seguidos",                  icon:"🏆", check:s=>s.streak>=7},
-  {id:"goal_week",  label:"Meta Semanal",   desc:"4h em uma área na semana",         icon:"✅", check:s=>s.wFacul>=4||s.wSre>=4},
-  {id:"balanced",   label:"Equilibrado",    desc:"4h facul + 4h SRE em 1 semana",   icon:"⚖️", check:s=>s.wFacul>=4&&s.wSre>=4},
-  {id:"budget_set", label:"Planejador",     desc:"Orçamento configurado",            icon:"📊", check:s=>s.budgetSet},
-  {id:"house_week", label:"Casa em Ordem",  desc:"Todas as tarefas da semana feitas",icon:"🏡", check:s=>s.houseComplete},
-];
-const EXP_CATS = [
-  {id:"fixed",    label:"Fixa",     color:"#38bdf8", emoji:"📌"},
-  {id:"variable", label:"Variável", color:"#4ade80", emoji:"🛒"},
-  {id:"parcel",   label:"Parcela",  color:"#fb923c", emoji:"💳"},
-];
-const DAYS_PT = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-const DAYS_FULL = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-const PROFILES = ["Eu","Parceiro(a)","Ambos"];
-
-// ════════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════════
-function defaultState() {
-  return {
-    // study
-    xp:0, streak:0, lastStudyDate:null, sessions:[], unlockedAchievements:[],
-    goals:{
-      faculdade:[{id:1,text:"",done:false},{id:2,text:"",done:false},{id:3,text:"",done:false}],
-      sre:[{id:10,text:"",done:false},{id:11,text:"",done:false},{id:12,text:"",done:false}]
-    },
-    // finance
-    salary: 0,
-    expenses: [], // {id,name,value,cat,parcels,currentParcel}
-    futureExpenses: [], // {id,name,value,yearMonth,type}
-    // home
-    routineTasks: [], // {id,name,days:[],who,color}
-    taskChecks: {}, // "YYYY-MM-DD_taskId" -> true
-    myName: "Eu",
-    partnerName: "Parceiro(a)",
-  };
-}
-let ST = loadST();
-let module = "study";
-let studyTab = "dash";
-let logArea = "sre";
-let logHours = 1;
-let finTab = "overview";
-let homeTab = "today";
-let showAddExp = false;
-let showAddTask = false;
-let newExp = {name:"",value:"",cat:"fixed",parcels:1};
-let newFut = {name:"",value:"",yearMonth:"",type:"avulso"};
-let showAddFut = false;
-let newTask = {name:"",days:[],who:"Ambos",color:"#4ade80"};
-
-// ════════════════════════════════════════════════════════
-// GITHUB DB CONFIG
-// ════════════════════════════════════════════════════════
+// ===================== CONFIG DO GITHUB =====================
 const GH_OWNER = "gustaaffs";
 const GH_REPO  = "studyos";
 const GH_FILE  = "data.json";
 const GH_BRANCH= "main";
 
-function ghToken(){ return localStorage.getItem("gh_token")||""; }
-function ghHeaders(){ return {"Authorization":"token "+ghToken(),"Content-Type":"application/json","Accept":"application/vnd.github+json"}; }
+// ===================== CONSTANTES =====================
+const XP_PER_HOUR = 100;
+const WEEKLY_GOAL = 6;
+const LEVELS=[{min:0,label:"Início",icon:"🌱"},{min:400,label:"Constante",icon:"📖"},{min:1000,label:"Focado",icon:"🎯"},{min:2200,label:"Especialista",icon:"⚙️"},{min:4200,label:"Mestre",icon:"👑"}];
+const FIN_BUCKETS=[
+  {id:"essenciais",label:"Essenciais",desc:"moradia, mercado, contas",pct:50,color:"#38bdf8",emoji:"🏠"},
+  {id:"investimentos",label:"Investimentos",desc:"reserva, renda fixa, metas",pct:20,color:"#4ade80",emoji:"📈"},
+  {id:"lifestyle",label:"Lifestyle",desc:"lazer, delivery, compras",pct:20,color:"#fb923c",emoji:"✨"},
+  {id:"dividas",label:"Dívidas",desc:"cartão, empréstimos, parcelas",pct:10,color:"#f87171",emoji:"💳"},
+];
+const DAYS_PT=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const DAYS_FULL=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function money(n){return "R$ "+Number(n||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function monthKey(d=new Date()){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+function weekStart(){const d=new Date();const day=d.getDay();const m=new Date(d);m.setDate(d.getDate()-((day+6)%7));return m.toISOString().slice(0,10)}
+function personName(p){return p==="me"?ST.people.me.name:ST.people.partner.name}
+function uid(){return Date.now()+Math.floor(Math.random()*999)}
 
-let _ghSha = null; // current SHA of data.json, needed to update it
-
-// Load from GitHub, fall back to localStorage while loading
-function loadST(){
-  try{const r=localStorage.getItem("lifeos_v2");return r?{...defaultState(),...JSON.parse(r)}:defaultState();}
-  catch(e){return defaultState();}
+// ===================== ESTADO =====================
+function defaultState(){return {
+  version:3,
+  people:{me:{name:"Gus"},partner:{name:"Maria"}},
+  study:{me:{xp:0,streak:0,lastStudyDate:null,sessions:[],goals:[]},partner:{xp:0,streak:0,lastStudyDate:null,sessions:[],goals:[]}},
+  finance:{
+    salaries:{me:0,partner:0},
+    buckets:FIN_BUCKETS.reduce((a,b)=>{a[b.id]=b.pct;return a},{}),
+    expenses:[], // {id,name,value,bucket,payer,split,type,dueDay,paidMonth}
+    goals:[] // {id,name,target,current,owner,deadline}
+  },
+  home:{
+    tasks:[], // {id,name,days,assignee,area,estimated,color}
+    checks:{} // YYYY-MM-DD_taskId:true
+  }
+}}
+function migrate(raw){
+  const base=defaultState();
+  const s={...base,...raw};
+  s.people={...base.people,...(raw.people||{})};
+  s.study={me:{...base.study.me,...((raw.study||{}).me||{})},partner:{...base.study.partner,...((raw.study||{}).partner||{})}};
+  s.finance={...base.finance,...(raw.finance||{})};
+  s.finance.salaries={...base.finance.salaries,...((raw.finance||{}).salaries||{})};
+  s.finance.buckets={...base.finance.buckets,...((raw.finance||{}).buckets||{})};
+  s.finance.expenses=s.finance.expenses||[];s.finance.goals=s.finance.goals||[];
+  s.home={...base.home,...(raw.home||{})};s.home.tasks=s.home.tasks||[];s.home.checks=s.home.checks||{};
+  return s;
 }
+function loadST(){try{const r=localStorage.getItem("lifeos_casal_v3");return r?migrate(JSON.parse(r)):defaultState()}catch(e){return defaultState()}}
+let ST=loadST();let module="study";let person="me";let studyTab="dash";let finTab="overview";let homeTab="today";
+let newExpense={name:"",value:"",bucket:"essenciais",payer:"shared",split:"proporcional",type:"fixo",dueDay:""};
+let showAddExpense=false;let newGoal={name:"",target:"",current:"",owner:"shared",deadline:""};let showAddGoal=false;
+let newTask={name:"",days:[],assignee:"shared",area:"Geral",estimated:"",color:"#4ade80"};let showAddTask=false;
+let _ghSha=null;
 
+// ===================== GITHUB SYNC =====================
+function ghToken(){return localStorage.getItem("gh_token")||""}
+function ghHeaders(){return {"Authorization":"token "+ghToken(),"Content-Type":"application/json","Accept":"application/vnd.github+json"}}
 async function ghLoad(){
-  if(!ghToken()) return;
+  if(!ghToken()){setSyncStatus("notoken");return}
   setSyncStatus("syncing");
   try{
     const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders()});
-    if(res.status===404){
-      // file doesn't exist yet, will be created on first save
-      setSyncStatus("ok"); return;
-    }
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const json=await res.json();
-    _ghSha=json.sha;
-    const data = JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g, "")))));
-    ST={...defaultState(),...data};
-    localStorage.setItem("lifeos_v2",JSON.stringify(ST));
-    setSyncStatus("ok");
-    render();
-  }catch(e){
-    console.error("ghLoad",e);
-    setSyncStatus("error");
-  }
+    if(res.status===404){setSyncStatus("ok");return}
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const json=await res.json();_ghSha=json.sha;
+    const clean=json.content.replace(/\n/g,"");
+    const data=JSON.parse(decodeURIComponent(escape(atob(clean))));
+    ST=migrate(data);localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));setSyncStatus("ok");render();
+  }catch(e){console.error(e);setSyncStatus("error");toast("Erro ao carregar do GitHub")}
 }
-
 async function saveST(){
-  // always update localStorage immediately
-  try{localStorage.setItem("lifeos_v2",JSON.stringify(ST));}catch(e){}
-  if(!ghToken()){setSyncStatus("notoken");return;}
+  try{localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST))}catch(e){}
+  if(!ghToken()){setSyncStatus("notoken");return}
   setSyncStatus("syncing");
   try{
-    const body={message:"update data",content:btoa(unescape(encodeURIComponent(JSON.stringify(ST,null,2)))),branch:GH_BRANCH};
-    if(_ghSha) body.sha=_ghSha;
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(ST,null,2))));
+    const body={message:"update life os casal",content,branch:GH_BRANCH};if(_ghSha)body.sha=_ghSha;
     const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
-    if(!res.ok){const t=await res.text();throw new Error(t);}
-    const json=await res.json();
-    _ghSha=json.content.sha;
-    setSyncStatus("ok");
-  }catch(e){
-    console.error("saveST",e);
-    setSyncStatus("error");
-  }
+    if(!res.ok){const txt=await res.text();throw new Error(txt)}
+    const json=await res.json();_ghSha=json.content.sha;setSyncStatus("ok");
+  }catch(e){console.error(e);setSyncStatus("error");toast("Erro ao salvar no GitHub")}
 }
+function setSyncStatus(s){const el=$("sync-status");if(!el)return;const map={syncing:["⏳","syncing...","#fbbf24"],ok:["☁️","salvo","#4ade80"],error:["⚠️","erro","#f87171"],notoken:["🔑","sem token","#fb923c"]};const [i,l,c]=map[s]||map.ok;el.innerHTML=`<span style="color:${c}">${i} ${l}</span>`}
 
-function setSyncStatus(s){
-  const el=document.getElementById("sync-status");
-  if(!el)return;
-  const map={syncing:["⏳","syncing...","#fbbf24"],ok:["☁️","salvo","#4ade80"],error:["⚠️","erro","#f87171"],notoken:["🔑","sem token","#fb923c"]};
-  const [icon,label,color]=map[s]||map.ok;
-  el.innerHTML=`<span style="color:${color}">${icon} ${label}</span>`;
-}
-
-// ════════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════════
-const $ = id => document.getElementById(id);
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function fmt(n){return "R$ "+Number(n).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function todayKey(){return new Date().toISOString().slice(0,10);}
-function weekStart(){
-  const d=new Date();const day=d.getDay();
-  const mon=new Date(d);mon.setDate(d.getDate()-((day+6)%7));
-  return mon.toISOString().slice(0,10);
-}
-function getTotalH(){return ST.sessions.reduce((a,s)=>a+s.hours,0);}
-function getWeekH(area){const wk=weekStart();return ST.sessions.filter(s=>s.date>=wk&&s.area===area).reduce((a,s)=>a+s.hours,0);}
-function getTodayH(){const td=todayKey();return ST.sessions.filter(s=>s.date===td).reduce((a,s)=>a+s.hours,0);}
-function getLevel(xp){let lv=LEVELS[0];for(const l of LEVELS){if(xp>=l.min)lv=l;}return lv;}
-function getNextLv(xp){return LEVELS.find(l=>l.min>xp)||null;}
-function getLvPct(xp){const lv=getLevel(xp);const nx=getNextLv(xp);if(!nx)return 100;return Math.round((xp-lv.min)/(nx.min-lv.min)*100);}
-function totalExpenses(){return ST.expenses.reduce((a,e)=>a+(Number(e.value)||0),0);}
-function getSurplus(){return (Number(ST.salary)||0)-totalExpenses();}
-function todayDow(){return new Date().getDay();}
-function tasksDoneToday(){
-  const td=todayKey();
-  return ST.routineTasks.filter(t=>t.days.includes(todayDow())&&ST.taskChecks[td+"_"+t.id]);
-}
-function tasksToday(){return ST.routineTasks.filter(t=>t.days.includes(todayDow()));}
-function houseComplete(){
-  const all=ST.routineTasks.length;if(!all)return false;
-  const td=todayKey();const week=weekStart();
-  const done=ST.routineTasks.every(t=>
-    t.days.every(d=>{
-      const dayDate=new Date(week);dayDate.setDate(dayDate.getDate()+((d+6)%7));
-      const key=dayDate.toISOString().slice(0,10)+"_"+t.id;
-      return !t.days.includes(d)||ST.taskChecks[key];
-    })
-  );
-  return done;
-}
-
-// ════════════════════════════════════════════════════════
-// RENDER ENGINE
-// ════════════════════════════════════════════════════════
+// ===================== RENDER BASE =====================
 function render(){
-  $("app").innerHTML = "";
-  const el=document.createElement("div");
-  el.className="fade-up";
-  if(module==="study") el.innerHTML=renderStudy();
-  else if(module==="finance") el.innerHTML=renderFinance();
-  else if(module==="home") el.innerHTML=renderHome();
-  $("app").appendChild(el);
+  $("profile-me").textContent=ST.people.me.name;$("profile-partner").textContent=ST.people.partner.name;
+  $("profile-me").classList.toggle("active",person==="me");$("profile-partner").classList.toggle("active",person==="partner");
+  document.querySelectorAll(".mod-tab").forEach((b,i)=>b.classList.toggle("active",["study","finance","home"][i]===module));
+  const el=document.createElement("div");el.className="fade-up";el.innerHTML=module==="study"?renderStudy():module==="finance"?renderFinance():renderHome();
+  $("app").innerHTML="";$("app").appendChild(el);
 }
-
 function setModule(m){
   module=m;
-  document.querySelectorAll(".mod-tab").forEach((b,i)=>{
-    b.classList.toggle("active",["study","finance","home"][i]===m);
-  });
+  document.querySelectorAll('.mod-tab').forEach((b,i)=>b.classList.toggle('active',['study','finance','home'][i]===m));
   render();
 }
-
-// ════════════════════════════════════════════════════════
-// MODULE: STUDY
-// ════════════════════════════════════════════════════════
-function renderStudy(){
-  const lv=getLevel(ST.xp);
-  const nx=getNextLv(ST.xp);
-  const pct=getLvPct(ST.xp);
-  const wf=getWeekH("faculdade"),ws=getWeekH("sre");
-
-  let inner="";
-  if(studyTab==="dash") inner=renderStudyDash(wf,ws);
-  else if(studyTab==="log") inner=renderStudyLog();
-  else if(studyTab==="goals") inner=renderStudyGoals();
-  else if(studyTab==="stats") inner=renderStudyStats(wf,ws);
-  else if(studyTab==="achiev") inner=renderStudyAchiev();
-
-  return `
-  <!-- study hero -->
-  <div class="study-hero">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div>
-        <div style="font-size:9px;color:var(--blue);letter-spacing:3px;margin-bottom:4px">NÍVEL ATUAL</div>
-        <div style="font-family:var(--display);font-size:20px;font-weight:800">${lv.icon} ${lv.label}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">${ST.xp} XP total</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:9px;color:var(--muted);margin-bottom:4px">${nx?`até ${nx.label}`:"MAX"}</div>
-        <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--display)">${pct}%</div>
-      </div>
-    </div>
-    <div class="xp-bar-track"><div class="xp-bar-fill" style="width:${pct}%"></div></div>
-    <div class="g4" style="margin-top:10px">
-      <div class="mstat" style="background:#0d1f2d;border-color:#1e3a5f"><div class="ml">🔥 STREAK</div><div class="mv" style="color:var(--orange)">${ST.streak}d</div></div>
-      <div class="mstat" style="background:#0d1f2d;border-color:#1e3a5f"><div class="ml">⏱ HOJE</div><div class="mv" style="color:var(--blue)">${getTodayH()}h</div></div>
-      <div class="mstat" style="background:#0d1f2d;border-color:#1e3a5f"><div class="ml">📅 SEM</div><div class="mv">${(wf+ws).toFixed(1)}h</div></div>
-      <div class="mstat" style="background:#0d1f2d;border-color:#1e3a5f"><div class="ml">📚 TOTAL</div><div class="mv">${getTotalH().toFixed(1)}h</div></div>
-    </div>
-  </div>
-  <!-- study sub-tabs -->
-  <div class="sub-tabs">
-    ${["dash","log","goals","stats","achiev"].map((t,i)=>`
-    <button class="sub-tab ${studyTab===t?"active":""}" onclick="setStudyTab('${t}')">
-      ${["🏠 Base","⏱ Log","🎯 Metas","📊 Stats","🏆"][i]}
-    </button>`).join("")}
-  </div>
-  ${inner}`;
-}
-
-function renderStudyDash(wf,ws){
-  const td=todayKey();
-  const todaySess=ST.sessions.filter(s=>s.date===td);
-  let areas=[
-    {area:"faculdade",label:"🎓 Faculdade",hours:wf,color:"var(--blue)",hex:"#38bdf8"},
-    {area:"sre",label:"⚙️ SRE",hours:ws,color:"var(--green)",hex:"#4ade80"},
-  ];
-  let html=`<div class="sec">▸ META SEMANAL</div>`;
-  for(const a of areas){
-    const pct=Math.min(100,Math.round(a.hours/WEEKLY_GOAL[a.area]*100));
-    const done=a.hours>=WEEKLY_GOAL[a.area];
-    html+=`<div class="card${done?" glow-"+( a.hex==="#38bdf8"?"blue":"green"):""}" style="position:relative;overflow:hidden">
-      ${done?`<div style="position:absolute;top:10px;right:12px;font-size:16px">✅</div>`:""}
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <span style="font-weight:700">${a.label}</span>
-        <span style="color:${a.color};font-weight:700">${a.hours.toFixed(1)}h / ${WEEKLY_GOAL[a.area]}h</span>
-      </div>
-      <div class="ptrack"><div class="pfill" style="width:${pct}%;background:${a.hex};box-shadow:0 0 10px ${a.hex}88"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:5px">
-        <span style="font-size:10px;color:var(--muted)">${pct}%</span>
-        <span style="font-size:10px;color:var(--muted)">faltam ${Math.max(0,WEEKLY_GOAL[a.area]-a.hours).toFixed(1)}h</span>
-      </div>
-    </div>`;
-  }
-  html+=`<div class="sec" style="margin-top:4px">▸ SESSÕES DE HOJE</div>`;
-  if(!todaySess.length){
-    html+=`<div class="card" style="text-align:center;padding:22px;color:var(--muted)">
-      Nenhuma sessão hoje.<br>
-      <span style="color:var(--blue);cursor:pointer" onclick="setStudyTab('log')">Registrar →</span>
-    </div>`;
-  } else {
-    for(const s of todaySess){
-      const c=s.area==="sre"?"var(--green)":"var(--blue)";
-      html+=`<div class="card" style="display:flex;align-items:center;gap:12px">
-        <div style="font-size:22px">${s.area==="sre"?"⚙️":"🎓"}</div>
-        <div style="flex:1">
-          <div style="font-weight:700;color:${c}">${s.area==="sre"?"SRE":"Faculdade"} · ${s.hours}h</div>
-          ${s.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(s.note)}</div>`:""}
-        </div>
-        <div style="color:var(--green);font-weight:700">+${Math.round(s.hours*XP_PER_HOUR)} XP</div>
-      </div>`;
-    }
-  }
-  return html;
-}
-
-function renderStudyLog(){
-  const hc=logArea==="sre"?"#4ade80":"#38bdf8";
-  const hcv=`var(--${logArea==="sre"?"green":"blue"})`;
-  return `
-  <div class="sec">▸ REGISTRAR SESSÃO</div>
-  <div class="card glow-blue">
-    <span class="lbl">ÁREA</span>
-    <div class="area-sel">
-      <button class="area-btn" onclick="setLogArea('faculdade')" style="${logArea==="faculdade"?"border-color:#38bdf8;color:#38bdf8;background:#38bdf811":""}">🎓 Faculdade</button>
-      <button class="area-btn" onclick="setLogArea('sre')" style="${logArea==="sre"?"border-color:#4ade80;color:#4ade80;background:#4ade8011":""}">⚙️ SRE</button>
-    </div>
-    <span class="lbl">HORAS ESTUDADAS</span>
-    <div class="hours-grid">
-      ${[0.5,1,1.5,2,2.5,3].map(h=>`
-      <button class="hour-btn" onclick="setLogHours(${h})" style="${logHours===h?`border-color:${hc};color:${hc};background:${hc}11`:""}">
-        ${h}h
-      </button>`).join("")}
-    </div>
-    <span class="lbl">O QUE ESTUDOU? (opcional)</span>
-    <input class="inp" id="log-note" style="margin-bottom:14px" placeholder="ex: SLOs, error budgets...">
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:14px;text-align:center">
-      <span style="color:var(--muted);font-size:11px">você vai ganhar </span>
-      <span style="color:var(--green);font-size:17px;font-weight:700;font-family:var(--display)">+${Math.round(logHours*XP_PER_HOUR)} XP</span>
-    </div>
-    <button class="btn btn-full" onclick="logSession()" style="background:${hc};color:#000;box-shadow:0 0 20px ${hc}44">
-      ⚡ CONFIRMAR SESSÃO
-    </button>
-  </div>
-  ${ST.sessions.length?`
-  <div class="sec" style="margin-top:4px">▸ HISTÓRICO RECENTE</div>
-  ${[...ST.sessions].reverse().slice(0,5).map(s=>{
-    const c=s.area==="sre"?"var(--green)":"var(--blue)";
-    return `<div class="card" style="display:flex;align-items:center;gap:10px">
-      <div style="font-size:18px">${s.area==="sre"?"⚙️":"🎓"}</div>
-      <div style="flex:1">
-        <div style="font-weight:700;color:${c}">${s.area==="sre"?"SRE":"Faculdade"} · ${s.hours}h</div>
-        ${s.note?`<div style="font-size:10px;color:var(--muted)">${esc(s.note)}</div>`:""}
-        <div style="font-size:10px;color:var(--dim);margin-top:2px">${s.date}</div>
-      </div>
-      <div style="color:var(--green);font-size:11px">+${Math.round(s.hours*XP_PER_HOUR)}xp</div>
-    </div>`;
-  }).join("")}`:""}`;
-}
-
-function renderStudyGoals(){
-  const areas=[
-    {area:"faculdade",label:"🎓 FACULDADE",color:"var(--blue)",hex:"#38bdf8"},
-    {area:"sre",label:"⚙️ SRE",color:"var(--green)",hex:"#4ade80"},
-  ];
-  return areas.map(a=>{
-    const g=ST.goals[a.area];
-    const dp=g.length?Math.round(g.filter(x=>x.done).length/g.length*100):0;
-    return `
-    <div class="sec ${a.hex==="#4ade80"?"green":""}">▸ ${a.label}</div>
-    <div style="background:var(--bg2);border:1px solid ${a.hex}33;border-radius:8px;padding:8px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
-      <span style="color:var(--muted)">progresso</span>
-      <span style="color:${a.color};font-weight:700;font-family:var(--display)">${dp}%</span>
-    </div>
-    ${g.map(goal=>`
-    <div class="goal-row ${goal.done?"done":""}">
-      <button class="chk" onclick="toggleGoal('${a.area}',${goal.id})" style="${goal.done?`border-color:${a.hex};background:${a.hex}`:``}">
-        ${goal.done?"✓":""}
-      </button>
-      <input class="goal-inp ${goal.done?"done":""}" value="${esc(goal.text)}" placeholder="Meta da semana..."
-        oninput="updateGoal('${a.area}',${goal.id},this.value)">
-      <button class="rm-btn" onclick="removeGoal('${a.area}',${goal.id})">×</button>
-    </div>`).join("")}
-    <button onclick="addGoal('${a.area}')" style="width:100%;background:transparent;border:1px dashed ${a.hex}44;color:${a.color};border-radius:8px;padding:9px;font-family:var(--mono);font-size:11px;letter-spacing:1px;margin-bottom:20px">
-      + Adicionar meta
-    </button>`;
-  }).join("");
-}
-
-function renderStudyStats(wf,ws){
-  const total=getTotalH();
-  const now=new Date();const todayDow2=now.getDay();
-  const heatHtml=DAYS_PT.map((day,i)=>{
-    const d=new Date(now);d.setDate(now.getDate()+(i-todayDow2));
-    const key=d.toISOString().slice(0,10);
-    const hrs=ST.sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.hours,0);
-    const intensity=Math.min(1,hrs/3);
-    const bg=hrs>0?`rgba(56,189,248,${(0.15+intensity*0.85).toFixed(2)})`:"var(--bg3)";
-    const bc=hrs>0?"var(--blue)":"var(--border)";
-    const fc=hrs>0?"var(--blue)":"var(--dim)";
-    return `<div class="hcol"><div class="hlabel">${day}</div>
-      <div class="hcell" style="background:${bg};border-color:${bc};color:${fc}">${hrs>0?hrs+"h":"·"}</div>
-    </div>`;
-  }).join("");
-
-  return `
-  <div class="sec">▸ TOTAL GERAL</div>
-  <div class="card">
-    ${[
-      {area:"faculdade",label:"🎓 Faculdade",hex:"#38bdf8"},
-      {area:"sre",label:"⚙️ SRE",hex:"#4ade80"},
-    ].map(a=>{
-      const hrs=ST.sessions.filter(s=>s.area===a.area).reduce((acc,s)=>acc+s.hours,0);
-      const sess=ST.sessions.filter(s=>s.area===a.area).length;
-      const avg=sess?(hrs/sess).toFixed(1):"0";
-      const pct=total?(hrs/total)*100:0;
-      return `<div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span>${a.label}</span>
-          <span style="color:${a.hex};font-weight:700">${hrs.toFixed(1)}h</span>
-        </div>
-        <div class="ptrack" style="height:6px"><div class="pfill" style="width:${pct}%;background:${a.hex};box-shadow:0 0 6px ${a.hex}88"></div></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px">${sess} sessões · média ${avg}h/sessão</div>
-      </div>`;
-    }).join("")}
-  </div>
-  <div class="sec">▸ SEMANA ATUAL</div>
-  <div class="card"><div class="g2">
-    <div class="mstat"><div class="ml">🎓 Faculdade</div><div class="mv" style="color:var(--blue)">${wf.toFixed(1)}h</div><div class="ms">meta ${WEEKLY_GOAL.faculdade}h</div></div>
-    <div class="mstat"><div class="ml">⚙️ SRE</div><div class="mv" style="color:var(--green)">${ws.toFixed(1)}h</div><div class="ms">meta ${WEEKLY_GOAL.sre}h</div></div>
-    <div class="mstat"><div class="ml">⏱ Total</div><div class="mv">${(wf+ws).toFixed(1)}h</div><div class="ms">meta ${WEEKLY_GOAL.faculdade+WEEKLY_GOAL.sre}h</div></div>
-    <div class="mstat"><div class="ml">🔥 Streak</div><div class="mv" style="color:var(--orange)">${ST.streak}d</div><div class="ms">consecutivos</div></div>
-  </div></div>
-  <div class="sec">▸ HEATMAP</div>
-  <div class="card"><div class="heatmap">${heatHtml}</div></div>`;
-}
-
-function renderStudyAchiev(){
-  return `
-  <div class="sec">▸ CONQUISTAS <span style="color:var(--muted);letter-spacing:0">${ST.unlockedAchievements.length}/${ACHIEVEMENTS.length}</span></div>
-  ${ACHIEVEMENTS.map(a=>{
-    const u=ST.unlockedAchievements.includes(a.id);
-    return `<div class="ach-row ${u?"unlocked":""}" style="opacity:${u?1:.35}">
-      <div class="ach-icon-wrap" style="filter:${u?"none":"grayscale(1)"}">${a.icon}</div>
-      <div>
-        <div style="font-weight:700;color:${u?"var(--green)":"var(--muted)"};font-family:var(--display)">${a.label}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${a.desc}</div>
-        ${u?`<div style="font-size:10px;color:var(--green);margin-top:3px">✓ Desbloqueada</div>`:""}
-      </div>
-    </div>`;
-  }).join("")}
-  <div class="sec" style="margin-top:8px">▸ NÍVEIS</div>
-  ${LEVELS.map((l,i)=>{
-    const nx=LEVELS[i+1];const reached=ST.xp>=l.min;
-    return `<div class="lv-row ${reached?"reached":"dimmed"}">
-      <div style="font-size:22px">${l.icon}</div>
-      <div style="flex:1">
-        <div style="font-weight:700;color:${reached?"var(--blue)":"var(--muted)"};font-family:var(--display)">${l.label}</div>
-        <div style="font-size:10px;color:var(--dim)">${l.min}xp${nx?" – "+(nx.min-1)+"xp":"+"}</div>
-      </div>
-      ${reached?`<div style="font-size:16px">✅</div>`:""}
-    </div>`;
-  }).join("")}`;
-}
-
-// ════════════════════════════════════════════════════════
-// MODULE: FINANCE
-// ════════════════════════════════════════════════════════
-function renderFinance(){
-  const sal=Number(ST.salary)||0;
-  const total=totalExpenses();
-  const surplus=sal-total;
-  const pct=sal?Math.min(100,Math.round(total/sal*100)):0;
-  const ringColor=pct>90?"#f87171":pct>70?"#fbbf24":"#4ade80";
-  const circ=2*Math.PI*32;
-  const dash=circ-(pct/100)*circ;
-
-  const cats={fixed:0,variable:0,parcel:0};
-  for(const e of ST.expenses) cats[e.cat]=(cats[e.cat]||0)+Number(e.value);
-
-  let inner="";
-  if(finTab==="overview") inner=renderFinOverview(sal,total,surplus,pct,ringColor,circ,dash,cats);
-  else if(finTab==="expenses") inner=renderFinExpenses();
-  else if(finTab==="projection") inner=renderFinProjection(sal,total,surplus,cats);
-
-  return `
-  <div class="finance-hero">
-    <div style="font-size:9px;color:var(--yellow);letter-spacing:3px;margin-bottom:8px">ORÇAMENTO MENSAL</div>
-    <div class="budget-ring-wrap">
-      <div class="budget-ring">
-        <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
-          <circle class="ring-bg" cx="40" cy="40" r="32"/>
-          <circle class="ring-fill" cx="40" cy="40" r="32"
-            stroke="${ringColor}" stroke-dasharray="${circ}" stroke-dashoffset="${dash}"/>
-        </svg>
-        <div class="ring-text">
-          <div class="ring-pct" style="color:${ringColor}">${pct}%</div>
-          <div class="ring-sub">gasto</div>
-        </div>
-      </div>
-      <div style="flex:1">
-        <div style="font-family:var(--display);font-size:11px;color:var(--muted);margin-bottom:2px">SALÁRIO</div>
-        <div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--yellow)">${fmt(sal)}</div>
-        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
-          <span class="badge" style="color:var(--red);border-color:#f8717133">▼ ${fmt(total)}</span>
-          <span class="badge" style="color:${surplus>=0?"var(--green)":"var(--red)"};border-color:${surplus>=0?"#4ade8033":"#f8717133"}">${surplus>=0?"▲":"▼"} ${fmt(Math.abs(surplus))}</span>
-        </div>
-      </div>
-    </div>
-    ${sal===0?`<button class="btn btn-full btn-ghost" style="margin-top:4px" onclick="promptSalary()">📝 Configurar salário</button>`:""}
-  </div>
-  <div class="sub-tabs">
-    <button class="sub-tab ${finTab==="overview"?"active":""}" onclick="setFinTab('overview')">📊 Visão</button>
-    <button class="sub-tab ${finTab==="expenses"?"active":""}" onclick="setFinTab('expenses')">💸 Gastos</button>
-    <button class="sub-tab ${finTab==="projection"?"active":""}" onclick="setFinTab('projection')">📅 Projeção</button>
-  </div>
-  ${inner}`;
-}
-
-function renderFinOverview(sal,total,surplus,pct,ringColor,circ,dash,cats){
-  return `
-  <div class="sec orange">▸ DISTRIBUIÇÃO</div>
-  <div class="card">
-    ${EXP_CATS.map(c=>{
-      const val=cats[c.id]||0;
-      const cp=sal?Math.min(100,Math.round(val/sal*100)):0;
-      const count=ST.expenses.filter(e=>e.cat===c.id).length;
-      return `<div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span>${c.emoji} ${c.label} <span style="color:var(--muted);font-size:10px">${count} item${count!==1?"s":""}</span></span>
-          <span style="color:${c.color};font-weight:700">${fmt(val)}</span>
-        </div>
-        <div class="ptrack" style="height:6px"><div class="pfill" style="width:${cp}%;background:${c.color}"></div></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px">${cp}% do salário</div>
-      </div>`;
-    }).join("")}
-  </div>
-  <div class="sec orange">▸ SALDO</div>
-  <div class="card" style="border-color:${surplus>=0?"#4ade8033":"#f8717133"}">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${surplus>=0?"SOBRA NO MÊS":"DÉFICIT NO MÊS"}</div>
-        <div style="font-family:var(--display);font-size:26px;font-weight:800;color:${surplus>=0?"var(--green)":"var(--red)"}">${fmt(Math.abs(surplus))}</div>
-      </div>
-      <div style="font-size:36px">${surplus>=0?"💰":"⚠️"}</div>
-    </div>
-    ${surplus<0?`<div style="margin-top:10px;padding:8px 12px;background:#f8717111;border:1px solid #f8717133;border-radius:8px;font-size:11px;color:#f87171">
-      Seus gastos estão R$ ${fmt(Math.abs(surplus))} acima do salário!
-    </div>`:""}
-    ${surplus>0?`<div style="margin-top:10px;padding:8px 12px;background:#4ade8011;border:1px solid #4ade8033;border-radius:8px;font-size:11px;color:var(--green)">
-      Ótimo! Você pode guardar ${fmt(surplus)} este mês.
-    </div>`:""}
-  </div>
-  <button class="btn btn-full btn-ghost" onclick="promptSalary()" style="margin-top:4px">
-    ✏️ Editar salário (${fmt(sal)})
-  </button>`;
-}
-
-function renderFinExpenses(){
-  const grouped={fixed:[],variable:[],parcel:[]};
-  for(const e of ST.expenses) grouped[e.cat].push(e);
-  let html=`
-  <div class="sec orange">▸ MEUS GASTOS</div>
-  ${EXP_CATS.map(cat=>{
-    const list=grouped[cat.id];
-    return `
-    <div style="margin-bottom:4px;display:flex;align-items:center;gap:6px">
-      <span style="font-size:9px;letter-spacing:2px;color:${cat.color}">${cat.emoji} ${cat.label.toUpperCase()}</span>
-      <span style="font-size:10px;color:var(--muted)">(${list.length})</span>
-    </div>
-    ${list.length?list.map(e=>`
-    <div class="expense-row">
-      <div class="exp-dot" style="background:${cat.color}"></div>
-      <div class="exp-info">
-        <div class="exp-name">${esc(e.name)}</div>
-        <div class="exp-meta">${cat.label}${e.cat==="parcel"?` · parcela ${e.currentParcel||1}/${e.parcels||1}`:""}</div>
-      </div>
-      <div class="exp-val" style="color:${cat.color}">${fmt(e.value)}</div>
-      <button class="exp-rm" onclick="removeExpense(${e.id})">×</button>
-    </div>`).join(""):`<div style="color:var(--muted);font-size:11px;padding:8px 4px;margin-bottom:8px">Nenhum gasto ${cat.label.toLowerCase()}.</div>`}
-    `;
-  }).join("")}`;
-
-  if(showAddExp){
-    html+=`
-    <div class="sec orange" style="margin-top:4px">▸ NOVO GASTO</div>
-    <div class="add-form">
-      <div class="form-row">
-        <input class="inp inp-sm orange" id="exp-name" placeholder="Nome do gasto" value="${esc(newExp.name)}" oninput="newExp.name=this.value" style="flex:1">
-        <input class="inp inp-sm orange" id="exp-val" placeholder="R$ 0,00" type="number" value="${newExp.value}" oninput="newExp.value=this.value" style="width:110px">
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-        ${EXP_CATS.map(c=>`
-        <button class="cat-pill" onclick="newExp.cat='${c.id}';render()" style="color:${c.color};border-color:${c.color}${newExp.cat===c.id?"":"44"};background:${newExp.cat===c.id?c.color+"22":"transparent"}">
-          ${c.emoji} ${c.label}
-        </button>`).join("")}
-      </div>
-      ${newExp.cat==="parcel"?`
-      <div class="form-row" style="align-items:center;margin-bottom:10px">
-        <span style="font-size:11px;color:var(--muted)">Parcelas:</span>
-        <input class="inp inp-sm" type="number" min="1" max="60" value="${newExp.parcels}" oninput="newExp.parcels=parseInt(this.value)||1" style="width:70px">
-        <span style="font-size:11px;color:var(--muted)">Parcela atual:</span>
-        <input class="inp inp-sm" type="number" min="1" max="60" value="${newExp.currentParcel||1}" oninput="newExp.currentParcel=parseInt(this.value)||1" style="width:70px">
-      </div>`:""}
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-orange" style="flex:1" onclick="addExpense()">✓ Adicionar</button>
-        <button class="btn btn-ghost" onclick="showAddExp=false;render()">Cancelar</button>
-      </div>
-    </div>`;
-  } else {
-    html+=`<button class="btn btn-full btn-ghost" style="margin-top:8px;border-color:#fb923c44;color:var(--orange)" onclick="showAddExp=true;render()">+ Adicionar gasto</button>`;
-  }
-  return html;
-}
-
-function ymLabel(ym){
-  const [y,m]=ym.split("-").map(Number);
-  const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-  return months[m-1]+" /"+String(y).slice(2);
-}
-function ymKey(offset){
-  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-}
-function renderFinProjection(sal,total,surplus,cats){
-  const parcels=ST.expenses.filter(e=>e.cat==="parcel");
-  if(!ST.futureExpenses) ST.futureExpenses=[];
-  const months=[];
-  for(let i=0;i<=5;i++) months.push(ymKey(i));
-
-  let html=`<div class="sec orange">▸ LINHA DO TEMPO — 6 MESES</div>`;
-
-  for(const ym of months){
-    const isNow=ym===ymKey(0);
-    const baseFixed=cats.fixed||0;
-    const baseVar=cats.variable||0;
-    const parcelTotal=parcels.reduce((acc,p)=>{
-      const offset=months.indexOf(ym);
-      const cur=(p.currentParcel||1)+offset;
-      if(cur<=(p.parcels||1)) return acc+Number(p.value);
-      return acc;
-    },0);
-    const futThisMonth=ST.futureExpenses.filter(f=>f.yearMonth===ym);
-    const futTotal=futThisMonth.reduce((a,f)=>a+Number(f.value),0);
-    const monthTotal=baseFixed+baseVar+parcelTotal+futTotal;
-    const monthSurplus=sal-monthTotal;
-    const pct=sal?Math.min(100,Math.round(monthTotal/sal*100)):0;
-    const barColor=pct>100?"#f87171":pct>85?"#fbbf24":"#4ade80";
-
-    html+=`
-    <div class="card" style="border-color:${isNow?"var(--yellow)":"var(--border)"};margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-        <div>
-          <div style="font-family:var(--display);font-size:15px;font-weight:800;color:${isNow?"var(--yellow)":"var(--text)"}">${ymLabel(ym)}${isNow?' <span style="font-size:10px"> ← atual</span>':""}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${futThisMonth.length} extra${futThisMonth.length!==1?"s":""} lançado${futThisMonth.length!==1?"s":""}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:13px;font-weight:700;color:var(--orange)">${fmt(monthTotal)}</div>
-          <div style="font-size:10px;color:${monthSurplus>=0?"var(--green)":"var(--red)"};margin-top:2px">${monthSurplus>=0?"▲ sobra":"▼ déficit"} ${fmt(Math.abs(monthSurplus))}</div>
-        </div>
-      </div>
-      <div class="ptrack" style="height:6px;margin-bottom:8px">
-        <div class="pfill" style="width:${Math.min(100,pct)}%;background:${barColor};box-shadow:0 0 6px ${barColor}88"></div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:${futThisMonth.length?"10px":"0"}">
-        ${baseFixed?`<span class="badge" style="color:#38bdf8;border-color:#38bdf833">📌 ${fmt(baseFixed)}</span>`:""}
-        ${baseVar?`<span class="badge" style="color:#4ade80;border-color:#4ade8033">🛒 ${fmt(baseVar)}</span>`:""}
-        ${parcelTotal?`<span class="badge" style="color:#fb923c;border-color:#fb923c33">💳 ${fmt(parcelTotal)}</span>`:""}
-        ${futTotal?`<span class="badge" style="color:#a78bfa;border-color:#a78bfa33">🗓 ${fmt(futTotal)}</span>`:""}
-      </div>
-      ${futThisMonth.length?`<div style="border-top:1px solid var(--border);padding-top:8px">
-        ${futThisMonth.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0">
-          <span style="font-size:14px">${f.type==="fatura"?"💳":"📅"}</span>
-          <span style="flex:1;font-size:12px">${esc(f.name)}</span>
-          <span style="font-weight:700;color:#a78bfa;font-size:12px">${fmt(f.value)}</span>
-          <button onclick="removeFutExp(${f.id})" style="background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer">×</button>
-        </div>`).join("")}
-      </div>`:""}
-      <button onclick="openAddFut('${ym}')" style="width:100%;background:transparent;border:1px dashed #a78bfa44;color:#a78bfa;border-radius:8px;padding:7px;font-family:var(--mono);font-size:11px;letter-spacing:1px;margin-top:8px;cursor:pointer">
-        + Lançar gasto em ${ymLabel(ym)}
-      </button>
-    </div>`;
-  }
-
-  if(showAddFut){
-    const selYm=newFut.yearMonth||ymKey(0);
-    html+=`
-    <div class="sec orange">▸ LANÇAR GASTO FUTURO</div>
-    <div class="add-form" style="border-color:#a78bfa44">
-      <div class="form-row">
-        <input class="inp inp-sm" id="fut-name" placeholder="Descrição (ex: IPVA, Netflix Anual)" value="${esc(newFut.name)}" oninput="newFut.name=this.value" style="flex:1">
-        <input class="inp inp-sm" id="fut-val" placeholder="R$" type="number" value="${newFut.value}" oninput="newFut.value=this.value" style="width:100px">
-      </div>
-      <span class="lbl" style="margin-top:4px">MÊS</span>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        ${months.map(ym=>`<button onclick="newFut.yearMonth='${ym}';render()" style="padding:6px 11px;border-radius:20px;border:1px solid ${selYm===ym?"#a78bfa":"var(--border)"};background:${selYm===ym?"#a78bfa22":"transparent"};color:${selYm===ym?"#a78bfa":"var(--muted)"};font-family:var(--mono);font-size:11px;cursor:pointer">${ymLabel(ym)}</button>`).join("")}
-      </div>
-      <span class="lbl">TIPO</span>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button onclick="newFut.type='avulso';render()" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${newFut.type==="avulso"?"#a78bfa":"var(--border)"};background:${newFut.type==="avulso"?"#a78bfa22":"transparent"};color:${newFut.type==="avulso"?"#a78bfa":"var(--muted)"};font-family:var(--mono);font-size:12px;cursor:pointer">📅 Gasto avulso</button>
-        <button onclick="newFut.type='fatura';render()" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${newFut.type==="fatura"?"#a78bfa":"var(--border)"};background:${newFut.type==="fatura"?"#a78bfa22":"transparent"};color:${newFut.type==="fatura"?"#a78bfa":"var(--muted)"};font-family:var(--mono);font-size:12px;cursor:pointer">💳 Fatura cartão</button>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="addFutExp()" style="flex:1;background:#a78bfa;border:none;color:#000;border-radius:8px;padding:11px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer">✓ Lançar</button>
-        <button class="btn btn-ghost" onclick="showAddFut=false;render()">Cancelar</button>
-      </div>
-    </div>`;
-  }
-
-  if(parcels.length){
-    html+=`<div class="sec orange">▸ PARCELAS EM ANDAMENTO</div>
-    ${parcels.map(p=>{
-      const cur=p.currentParcel||1;const tot=p.parcels||1;
-      const rem=tot-cur;const pct2=Math.round((cur/tot)*100);
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-weight:700">💳 ${esc(p.name)}</span>
-          <span style="color:var(--orange)">${fmt(p.value)}/mês</span>
-        </div>
-        <div class="ptrack" style="height:6px;margin-bottom:5px"><div class="pfill" style="width:${pct2}%;background:var(--orange)"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)">
-          <span>parcela ${cur} de ${tot}</span>
-          <span>${rem} restante${rem!==1?"s":""} · ${fmt(rem*Number(p.value))}</span>
-        </div>
-      </div>`;
-    }).join("")}`;
-  }
-
-  html+=`<div class="sec orange">▸ METAS DE ECONOMIA</div>
-  <div class="card" style="border-color:${surplus>=0?"#4ade8033":"#f8717133"}">
-    <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Se guardar a sobra mensalmente:</div>
-    ${[3,6,12].map(m=>`
-    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
-      <span style="color:var(--muted)">${m} mese${m===1?"":"s"}</span>
-      <span style="font-weight:700;color:${surplus>=0?"var(--green)":"var(--red)"}">${surplus>=0?fmt(surplus*m):"—"}</span>
-    </div>`).join("")}
-    <div style="font-size:10px;color:var(--muted);margin-top:8px">sobra atual: ${fmt(Math.max(0,surplus))}/mês</div>
-  </div>`;
-
-  return html;
-}
-
-// ════════════════════════════════════════════════════════
-// MODULE: HOME
-// ════════════════════════════════════════════════════════
-function renderHome(){
-  const today2=tasksToday();
-  const done2=tasksDoneToday();
-  const allPct=today2.length?Math.round(done2.length/today2.length*100):0;
-
-  let inner="";
-  if(homeTab==="today") inner=renderHomeToday(today2,done2,allPct);
-  else if(homeTab==="routine") inner=renderHomeRoutine();
-  else if(homeTab==="week") inner=renderHomeWeek();
-
-  return `
-  <div class="home-hero">
-    <div style="font-size:9px;color:var(--green);letter-spacing:3px;margin-bottom:8px">ROTINA DA CASA</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div>
-        <div style="font-family:var(--display);font-size:18px;font-weight:800">${DAYS_FULL[new Date().getDay()]}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">${done2.length} de ${today2.length} tarefas</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--display);font-size:26px;font-weight:800;color:${allPct===100?"var(--green)":allPct>50?"var(--yellow)":"var(--muted)"}">${allPct}%</div>
-        <div style="font-size:9px;color:var(--muted)">de hoje</div>
-      </div>
-    </div>
-    <div class="ptrack"><div class="pfill" style="width:${allPct}%;background:${allPct===100?"var(--green)":allPct>50?"var(--yellow)":"#64748b"};box-shadow:${allPct===100?"0 0 12px #4ade8088":"none"}"></div></div>
-    ${allPct===100&&today2.length?`<div style="margin-top:8px;font-size:12px;color:var(--green)">🎉 Casa toda em ordem hoje!</div>`:""}
-  </div>
-  <div class="sub-tabs">
-    <button class="sub-tab ${homeTab==="today"?"active":""}" onclick="setHomeTab('today')">📋 Hoje</button>
-    <button class="sub-tab ${homeTab==="routine"?"active":""}" onclick="setHomeTab('routine')">🔄 Rotina</button>
-    <button class="sub-tab ${homeTab==="week"?"active":""}" onclick="setHomeTab('week')">📅 Semana</button>
-  </div>
-  ${inner}`;
-}
-
-function renderHomeToday(today2,done2,allPct){
-  if(!today2.length){
-    return `<div class="card" style="text-align:center;padding:28px;color:var(--muted)">
-      Sem tarefas hoje! 😌<br>
-      <span style="color:var(--green);cursor:pointer" onclick="setHomeTab('routine')">Configurar rotina →</span>
-    </div>`;
-  }
-  const td=todayKey();
-  const byWho={[ST.myName]:[],"Parceiro(a)":[],"Ambos":[]};
-  for(const t of today2){
-    const w=t.who||"Ambos";byWho[w]=(byWho[w]||[]);byWho[w].push(t);
-  }
-
-  let html="";
-  for(const [who,tasks] of Object.entries(byWho)){
-    if(!tasks.length) continue;
-    const wcolor=who===ST.myName?"var(--blue)":who==="Parceiro(a)"?"var(--purple)":"var(--green)";
-    html+=`<div class="sec ${who===ST.myName?"":"green"}" style="color:${wcolor}">▸ ${who.toUpperCase()}</div>`;
-    for(const t of tasks){
-      const checked=!!ST.taskChecks[td+"_"+t.id];
-      html+=`<div class="task-row ${checked?"done":""}">
-        <button class="task-chk" onclick="toggleTask(${t.id})"
-          style="${checked?`border-color:${t.color||"var(--green)"};background:${t.color||"var(--green)"}`:``}">
-          ${checked?"✓":""}
-        </button>
-        <div class="task-info">
-          <div class="task-name ${checked?"done":""}">${esc(t.name)}</div>
-          <div class="task-who">${t.who||"Ambos"}</div>
-        </div>
-        <div style="width:8px;height:8px;border-radius:50%;background:${t.color||"var(--green)"};flex-shrink:0"></div>
-      </div>`;
-    }
-  }
-  return html;
-}
-
-function renderHomeRoutine(){
-  let html=`<div class="sec green">▸ TAREFAS FIXAS</div>`;
-  if(!ST.routineTasks.length){
-    html+=`<div class="card" style="text-align:center;padding:22px;color:var(--muted)">Nenhuma tarefa ainda.</div>`;
-  } else {
-    for(const t of ST.routineTasks){
-      const dayLabels=t.days.map(d=>DAYS_PT[d]).join(", ");
-      html+=`<div class="task-row">
-        <div style="width:10px;height:10px;border-radius:50%;background:${t.color||"var(--green)"};flex-shrink:0"></div>
-        <div style="flex:1">
-          <div style="font-weight:700">${esc(t.name)}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">📅 ${dayLabels} · 👤 ${t.who||"Ambos"}</div>
-        </div>
-        <button class="exp-rm" onclick="removeTask(${t.id})">×</button>
-      </div>`;
-    }
-  }
-
-  if(showAddTask){
-    html+=`
-    <div class="sec green" style="margin-top:8px">▸ NOVA TAREFA</div>
-    <div class="add-form">
-      <span class="lbl">NOME DA TAREFA</span>
-      <input class="inp inp-sm green" id="task-name" placeholder="ex: Lavar louça" value="${esc(newTask.name)}" oninput="newTask.name=this.value" style="margin-bottom:10px">
-      <span class="lbl">DIAS DA SEMANA</span>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
-        ${DAYS_PT.map((d,i)=>`
-        <button onclick="toggleNewTaskDay(${i})" style="padding:6px 10px;border-radius:20px;border:1px solid ${newTask.days.includes(i)?"var(--green)":"var(--border)"};background:${newTask.days.includes(i)?"#4ade8022":"transparent"};color:${newTask.days.includes(i)?"var(--green)":"var(--muted)"};font-family:var(--mono);font-size:11px">
-          ${d}
-        </button>`).join("")}
-      </div>
-      <span class="lbl">RESPONSÁVEL</span>
-      <div class="profile-btns" style="margin-bottom:10px">
-        ${[ST.myName,"Parceiro(a)","Ambos"].map(w=>`
-        <button class="prof-btn ${newTask.who===w?"active":""}" onclick="newTask.who='${w}';render()">${w}</button>`).join("")}
-      </div>
-      <span class="lbl">COR</span>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        ${["#4ade80","#38bdf8","#fb923c","#a78bfa","#f87171","#fbbf24"].map(c=>`
-        <button onclick="newTask.color='${c}';render()" style="width:28px;height:28px;border-radius:50%;background:${c};border:3px solid ${newTask.color===c?"white":"transparent"};cursor:pointer"></button>`).join("")}
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-green" style="flex:1" onclick="addTask()">✓ Adicionar</button>
-        <button class="btn btn-ghost" onclick="showAddTask=false;render()">Cancelar</button>
-      </div>
-    </div>`;
-  } else {
-    html+=`<button class="btn btn-full btn-ghost" style="margin-top:8px;border-color:#4ade8044;color:var(--green)" onclick="showAddTask=true;render()">+ Nova tarefa</button>`;
-  }
-  return html;
-}
-
-function renderHomeWeek(){
-  const td=todayKey();
-  const weekStartDate=new Date();
-  const dow=weekStartDate.getDay();
-  weekStartDate.setDate(weekStartDate.getDate()-dow);
-
-  let html=`<div class="sec green">▸ VISÃO SEMANAL</div>`;
-  for(let d=0;d<7;d++){
-    const date=new Date(weekStartDate);date.setDate(weekStartDate.getDate()+d);
-    const key=date.toISOString().slice(0,10);
-    const dayTasks=ST.routineTasks.filter(t=>t.days.includes(d));
-    const doneTasks=dayTasks.filter(t=>!!ST.taskChecks[key+"_"+t.id]);
-    const isToday=key===todayKey();
-    const allDone=dayTasks.length>0&&doneTasks.length===dayTasks.length;
-
-    html+=`<div class="card" style="border-color:${isToday?"var(--green)":"var(--border)"};${allDone?"background:#0d1f0d":""};margin-bottom:8px">
-      <div class="day-header">
-        <div class="day-label" style="color:${isToday?"var(--green)":"var(--text)"}">
-          ${DAYS_FULL[d]} ${isToday?"← hoje":""}
-        </div>
-        <div style="font-size:10px;color:${allDone?"var(--green)":"var(--muted)"}">
-          ${allDone&&dayTasks.length?"✅ ":""} ${doneTasks.length}/${dayTasks.length}
-        </div>
-      </div>
-      ${dayTasks.length?dayTasks.map(t=>{
-        const done=!!ST.taskChecks[key+"_"+t.id];
-        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;opacity:${done?.55:1}">
-          <div style="width:7px;height:7px;border-radius:50%;background:${t.color||"var(--green)"};flex-shrink:0"></div>
-          <span style="font-size:12px;${done?"text-decoration:line-through;color:var(--muted)":""}">${esc(t.name)}</span>
-          <span style="font-size:10px;color:var(--muted);margin-left:auto">${t.who}</span>
-        </div>`;
-      }).join(""):
-      `<div style="font-size:11px;color:var(--dim)">Dia livre</div>`}
-    </div>`;
-  }
-  return html;
-}
-
-// ════════════════════════════════════════════════════════
-// ACTIONS
-// ════════════════════════════════════════════════════════
-function setStudyTab(t){studyTab=t;render();}
-function setFinTab(t){finTab=t;render();}
-function setHomeTab(t){homeTab=t;render();}
-function setLogArea(a){logArea=a;render();}
-function setLogHours(h){logHours=h;render();}
-function toggleNewTaskDay(d){
-  const i=newTask.days.indexOf(d);
-  if(i>=0)newTask.days.splice(i,1);else newTask.days.push(d);
+function setPerson(p){
+  person=p;
+  const me=document.getElementById('profile-me');
+  const partner=document.getElementById('profile-partner');
+  if(me)me.classList.toggle('active',p==='me');
+  if(partner)partner.classList.toggle('active',p==='partner');
   render();
-}
+}function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2600)}
 
-function logSession(){
-  const note=($("log-note")||{value:""}).value||"";
-  const xpGain=Math.round(logHours*XP_PER_HOUR);
-  const today=todayKey();
-  const yest=new Date();yest.setDate(yest.getDate()-1);
-  const yKey=yest.toISOString().slice(0,10);
-  const last=ST.lastStudyDate;
-  ST.streak=last===today?ST.streak:last===yKey?ST.streak+1:1;
-  ST.xp+=xpGain;ST.lastStudyDate=today;
-  ST.sessions.push({date:today,area:logArea,hours:logHours,note});
-  saveST();checkAchievements();
-  toast(`+${xpGain} XP · ${logHours}h de ${logArea==="sre"?"SRE":"Faculdade"}!`);
-  studyTab="dash";render();
-}
+// ===================== STUDY INDIVIDUAL =====================
+function studyState(){return ST.study[person]}function totalStudyH(p=person){return ST.study[p].sessions.reduce((a,s)=>a+Number(s.hours||0),0)}
+function weekStudyH(p=person){const wk=weekStart();return ST.study[p].sessions.filter(s=>s.date>=wk).reduce((a,s)=>a+Number(s.hours||0),0)}
+function todayStudyH(p=person){const td=todayKey();return ST.study[p].sessions.filter(s=>s.date===td).reduce((a,s)=>a+Number(s.hours||0),0)}
+function level(xp){let lv=LEVELS[0];for(const l of LEVELS){if(xp>=l.min)lv=l}return lv}function nextLevel(xp){return LEVELS.find(l=>l.min>xp)||null}function levelPct(xp){const l=level(xp),n=nextLevel(xp);if(!n)return 100;return Math.round((xp-l.min)/(n.min-l.min)*100)}
+function renderStudy(){const s=studyState(),lv=level(s.xp),nx=nextLevel(s.xp),pct=levelPct(s.xp),wk=weekStudyH();return `
+  <div class="hero hero-study">
+    <div style="font-size:9px;color:var(--blue);letter-spacing:3px;margin-bottom:8px">ESTUDO INDIVIDUAL — ${esc(personName(person)).toUpperCase()}</div>
+    <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:10px"><div><div style="font-family:var(--display);font-size:21px;font-weight:800">${lv.icon} ${lv.label}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${s.xp} XP · ${totalStudyH().toFixed(1)}h totais</div></div><div style="text-align:right"><div style="font-size:9px;color:var(--muted)">${nx?"até "+nx.label:"MAX"}</div><div style="font-family:var(--display);font-size:24px;color:var(--blue);font-weight:800">${pct}%</div></div></div>
+    <div class="ptrack"><div class="pfill" style="width:${pct}%;background:linear-gradient(90deg,var(--blue),var(--green))"></div></div>
+    <div class="g4" style="margin-top:10px"><div class="mstat"><div class="ml">🔥 STREAK</div><div class="mv" style="color:var(--orange)">${s.streak}d</div></div><div class="mstat"><div class="ml">HOJE</div><div class="mv" style="color:var(--blue)">${todayStudyH()}h</div></div><div class="mstat"><div class="ml">SEMANA</div><div class="mv">${wk.toFixed(1)}h</div></div><div class="mstat"><div class="ml">META</div><div class="mv" style="color:${wk>=WEEKLY_GOAL?'var(--green)':'var(--muted)'}">${WEEKLY_GOAL}h</div></div></div>
+  </div>
+  <div class="sub-tabs"><button class="sub-tab ${studyTab==='dash'?'active':''}" onclick="studyTab='dash';render()">Base</button><button class="sub-tab ${studyTab==='log'?'active':''}" onclick="studyTab='log';render()">Registrar</button><button class="sub-tab ${studyTab==='goals'?'active':''}" onclick="studyTab='goals';render()">Metas</button><button class="sub-tab ${studyTab==='history'?'active':''}" onclick="studyTab='history';render()">Histórico</button></div>
+  ${studyTab==='dash'?renderStudyDash():studyTab==='log'?renderStudyLog():studyTab==='goals'?renderStudyGoals():renderStudyHistory()}`}
+function renderStudyDash(){const wk=weekStudyH(),pct=Math.min(100,Math.round(wk/WEEKLY_GOAL*100));return `<div class="sec">▸ META DA SEMANA</div><div class="card glow-blue"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><b>${esc(personName(person))}</b><b style="color:var(--blue)">${wk.toFixed(1)}h / ${WEEKLY_GOAL}h</b></div><div class="ptrack"><div class="pfill" style="width:${pct}%;background:var(--blue)"></div></div><div style="font-size:10px;color:var(--muted);margin-top:6px">Faltam ${Math.max(0,WEEKLY_GOAL-wk).toFixed(1)}h para bater a meta.</div></div><div class="sec">▸ COMPARATIVO DO CASAL</div><div class="g2"><div class="mstat"><div class="ml">${esc(ST.people.me.name)}</div><div class="mv" style="color:var(--blue)">${weekStudyH('me').toFixed(1)}h</div><div class="ms">semana</div></div><div class="mstat"><div class="ml">${esc(ST.people.partner.name)}</div><div class="mv" style="color:var(--purple)">${weekStudyH('partner').toFixed(1)}h</div><div class="ms">semana</div></div></div>`}
+function renderStudyLog(){return `<div class="sec">▸ REGISTRAR SESSÃO</div><div class="card glow-blue"><span class="lbl">HORAS</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${[0.5,1,1.5,2,2.5,3].map(h=>`<button class="pill blue" onclick="$('study-hours').value='${h}'">${h}h</button>`).join('')}</div><input id="study-hours" class="inp" type="number" step="0.5" placeholder="Horas estudadas" style="margin-bottom:8px"><input id="study-topic" class="inp" placeholder="O que estudou?" style="margin-bottom:12px"><button class="btn btn-primary btn-full" onclick="addStudySession()">⚡ Registrar estudo</button></div>`}
+function renderStudyGoals(){const s=studyState();return `<div class="sec">▸ METAS INDIVIDUAIS</div>${s.goals.length?s.goals.map(g=>`<div class="row ${g.done?'done':''}"><button class="chk" onclick="toggleStudyGoal(${g.id})" style="${g.done?'background:var(--blue);border-color:var(--blue)':''}">${g.done?'✓':''}</button><div class="row-info"><div class="row-title">${esc(g.text)}</div><div class="row-meta">${g.done?'Concluída':'Pendente'}</div></div><button class="rm-btn" onclick="removeStudyGoal(${g.id})">×</button></div>`).join(''):'<div class="card" style="color:var(--muted);text-align:center">Nenhuma meta individual ainda.</div>'}<div class="add-form"><input id="study-goal" class="inp" placeholder="Nova meta de estudo" style="margin-bottom:10px"><button class="btn btn-primary btn-full" onclick="addStudyGoal()">+ Adicionar meta</button></div>`}
+function renderStudyHistory(){const list=[...studyState().sessions].reverse();return `<div class="sec">▸ HISTÓRICO</div>${list.length?list.slice(0,20).map(s=>`<div class="row"><div style="font-size:20px">🎓</div><div class="row-info"><div class="row-title">${s.hours}h · ${esc(s.topic||'Estudo')}</div><div class="row-meta">${s.date} · +${Math.round(s.hours*XP_PER_HOUR)} XP</div></div><button class="rm-btn" onclick="removeStudySession(${s.id})">×</button></div>`).join(''):'<div class="card" style="color:var(--muted);text-align:center">Sem sessões registradas.</div>'}`}
+function addStudySession(){const h=parseFloat(($('study-hours')||{}).value||0);if(!h){toast('Informe as horas');return}const topic=($('study-topic')||{}).value||'';const s=studyState(),td=todayKey();const y=new Date();y.setDate(y.getDate()-1);const yk=y.toISOString().slice(0,10);s.streak=s.lastStudyDate===td?s.streak:s.lastStudyDate===yk?s.streak+1:1;s.lastStudyDate=td;s.xp+=Math.round(h*XP_PER_HOUR);s.sessions.push({id:uid(),date:td,hours:h,topic});saveST();studyTab='dash';render();toast('Estudo registrado!')}
+function removeStudySession(id){const s=studyState();s.sessions=s.sessions.filter(x=>x.id!==id);s.xp=Math.max(0,s.sessions.reduce((a,x)=>a+Math.round(x.hours*XP_PER_HOUR),0));saveST();render()}function addStudyGoal(){const v=($('study-goal')||{}).value||'';if(!v.trim())return;studyState().goals.push({id:uid(),text:v,done:false});saveST();render()}function toggleStudyGoal(id){const g=studyState().goals.find(x=>x.id===id);if(g)g.done=!g.done;saveST();render()}function removeStudyGoal(id){const s=studyState();s.goals=s.goals.filter(g=>g.id!==id);saveST();render()}
 
-function toggleGoal(area,id){
-  ST.goals[area]=ST.goals[area].map(g=>g.id===id?{...g,done:!g.done}:g);
-  saveST();render();
-}
-function updateGoal(area,id,text){
-  ST.goals[area]=ST.goals[area].map(g=>g.id===id?{...g,text}:g);
-  saveST();
-}
-function addGoal(area){
-  ST.goals[area].push({id:Date.now(),text:"",done:false});
-  saveST();render();
-}
-function removeGoal(area,id){
-  ST.goals[area]=ST.goals[area].filter(g=>g.id!==id);
-  saveST();render();
-}
+// ===================== FINANCEIRO COMPARTILHADO =====================
+function salaryTotal(){return Number(ST.finance.salaries.me||0)+Number(ST.finance.salaries.partner||0)}
+function expTotal(){return ST.finance.expenses.reduce((a,e)=>a+Number(e.value||0),0)}function bucketSpent(id){return ST.finance.expenses.filter(e=>e.bucket===id).reduce((a,e)=>a+Number(e.value||0),0)}
+function renderFinance(){const totalSal=salaryTotal(),spent=expTotal(),free=totalSal-spent;return `<div class="hero hero-fin"><div style="font-size:9px;color:var(--yellow);letter-spacing:3px;margin-bottom:8px">FINANÇAS COMPARTILHADAS</div><div style="display:flex;justify-content:space-between;gap:12px"><div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--yellow)">${money(totalSal)}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">renda mensal do casal</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--muted)">saldo previsto</div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:${free>=0?'var(--green)':'var(--red)'}">${money(free)}</div></div></div><div class="g3" style="margin-top:12px"><div class="mstat"><div class="ml">${esc(ST.people.me.name)}</div><div class="mv" style="color:var(--blue)">${money(ST.finance.salaries.me)}</div></div><div class="mstat"><div class="ml">${esc(ST.people.partner.name)}</div><div class="mv" style="color:var(--purple)">${money(ST.finance.salaries.partner)}</div></div><div class="mstat"><div class="ml">GASTOS</div><div class="mv" style="color:var(--orange)">${money(spent)}</div></div></div></div><div class="sub-tabs"><button class="sub-tab ${finTab==='overview'?'active':''}" onclick="finTab='overview';render()">Visão</button><button class="sub-tab ${finTab==='plan'?'active':''}" onclick="finTab='plan';render()">% Salário</button><button class="sub-tab ${finTab==='expenses'?'active':''}" onclick="finTab='expenses';render()">Gastos</button><button class="sub-tab ${finTab==='goals'?'active':''}" onclick="finTab='goals';render()">Metas</button></div>${finTab==='overview'?renderFinOverview():finTab==='plan'?renderFinPlan():finTab==='expenses'?renderFinExpenses():renderFinGoals()}`}
+function renderFinOverview(){const total=salaryTotal();return `<div class="sec orange">▸ SAÚDE DO ORÇAMENTO</div><div class="card">${FIN_BUCKETS.map(b=>{const limit=total*(Number(ST.finance.buckets[b.id]||0)/100),spent=bucketSpent(b.id),pct=limit?Math.round(spent/limit*100):0;return `<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span>${b.emoji} ${b.label}</span><b style="color:${b.color}">${money(spent)} / ${money(limit)}</b></div><div class="ptrack"><div class="pfill" style="width:${Math.min(100,pct)}%;background:${pct>100?'var(--red)':b.color}"></div></div><div style="font-size:10px;color:${pct>100?'var(--red)':'var(--muted)'};margin-top:4px">${pct}% usado · ${b.desc}</div></div>`}).join('')}</div><button class="btn btn-orange btn-full" onclick="finTab='expenses';showAddExpense=true;render()">+ Lançar gasto</button>`}
+function renderFinPlan(){const total=salaryTotal();return `<div class="sec orange">▸ RENDA DO CASAL</div><div class="card"><div class="form-row"><div style="flex:1"><span class="lbl">SALÁRIO ${esc(ST.people.me.name).toUpperCase()}</span><input id="sal-me" class="inp" type="number" value="${ST.finance.salaries.me||''}"></div><div style="flex:1"><span class="lbl">SALÁRIO ${esc(ST.people.partner.name).toUpperCase()}</span><input id="sal-partner" class="inp" type="number" value="${ST.finance.salaries.partner||''}"></div></div><button class="btn btn-green btn-full" onclick="saveSalaries()">Salvar salários</button></div><div class="sec orange">▸ DIVISÃO POR %</div><div class="card"><div style="font-size:11px;color:var(--muted);margin-bottom:12px">Modelo editável inspirado em: essenciais, investimentos, lifestyle e dívidas. Ajustem para combinar com a realidade de vocês.</div>${FIN_BUCKETS.map(b=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>${b.emoji} ${b.label}</span><b style="color:${b.color}">${money(total*(Number(ST.finance.buckets[b.id]||0)/100))}</b></div><div class="form-row"><input id="bucket-${b.id}" class="inp inp-sm" type="number" value="${ST.finance.buckets[b.id]||0}" style="width:90px"><div style="font-size:11px;color:var(--muted);align-self:center">% da renda · ${b.desc}</div></div></div>`).join('')}<button class="btn btn-orange btn-full" onclick="saveBuckets()">Salvar percentuais</button></div>`}
+function renderFinExpenses(){const list=ST.finance.expenses;return `<div class="sec orange">▸ GASTOS DO MÊS</div>${list.length?list.map(e=>{const b=FIN_BUCKETS.find(x=>x.id===e.bucket)||FIN_BUCKETS[0];return `<div class="row"><span class="dot" style="background:${b.color}"></span><div class="row-info"><div class="row-title">${esc(e.name)} · ${money(e.value)}</div><div class="row-meta">${b.emoji} ${b.label} · pagador: ${e.payer==='shared'?'Casal':personName(e.payer)} · divisão: ${e.split}</div></div><button class="rm-btn" onclick="removeExpense(${e.id})">×</button></div>`}).join(''):'<div class="card" style="color:var(--muted);text-align:center">Nenhum gasto lançado ainda.</div>'}${showAddExpense?renderAddExpense():`<button class="btn btn-orange btn-full" onclick="showAddExpense=true;render()">+ Adicionar gasto</button>`}`}
+function renderAddExpense(){return `<div class="add-form"><span class="lbl">NOVO GASTO</span><div class="form-row"><input id="exp-name" class="inp" placeholder="Nome"><input id="exp-value" class="inp" type="number" placeholder="Valor"></div><div class="form-row"><select id="exp-bucket" class="inp">${FIN_BUCKETS.map(b=>`<option value="${b.id}">${b.emoji} ${b.label}</option>`).join('')}</select><select id="exp-payer" class="inp"><option value="shared">Casal</option><option value="me">${esc(ST.people.me.name)}</option><option value="partner">${esc(ST.people.partner.name)}</option></select></div><div class="form-row"><select id="exp-split" class="inp"><option value="proporcional">Dividir proporcional ao salário</option><option value="meio-a-meio">Dividir 50/50</option><option value="individual">Individual</option></select><select id="exp-type" class="inp"><option value="fixo">Fixo mensal</option><option value="variavel">Variável</option><option value="parcela">Parcela/dívida</option><option value="investimento">Investimento</option></select></div><div style="display:flex;gap:8px"><button class="btn btn-orange" style="flex:1" onclick="addExpense()">Salvar gasto</button><button class="btn btn-ghost" onclick="showAddExpense=false;render()">Cancelar</button></div></div>`}
+function renderFinGoals(){const list=ST.finance.goals;return `<div class="sec orange">▸ METAS FINANCEIRAS</div>${list.length?list.map(g=>{const pct=g.target?Math.round((Number(g.current||0)/Number(g.target||0))*100):0;return `<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b>${esc(g.name)}</b><b style="color:var(--green)">${pct}%</b></div><div class="ptrack"><div class="pfill" style="width:${Math.min(100,pct)}%;background:var(--green)"></div></div><div style="font-size:10px;color:var(--muted);margin-top:6px">${money(g.current)} de ${money(g.target)} · dono: ${g.owner==='shared'?'Casal':personName(g.owner)} ${g.deadline?'· prazo '+g.deadline:''}</div><button class="tiny-btn" style="margin-top:8px" onclick="removeFinGoal(${g.id})">remover</button></div>`}).join(''):'<div class="card" style="color:var(--muted);text-align:center">Sem metas financeiras.</div>'}${showAddGoal?`<div class="add-form"><div class="form-row"><input id="goal-name" class="inp" placeholder="Ex: Reserva de emergência"><input id="goal-target" class="inp" type="number" placeholder="Meta R$"></div><div class="form-row"><input id="goal-current" class="inp" type="number" placeholder="Atual R$"><select id="goal-owner" class="inp"><option value="shared">Casal</option><option value="me">${esc(ST.people.me.name)}</option><option value="partner">${esc(ST.people.partner.name)}</option></select></div><input id="goal-deadline" class="inp" type="month" style="margin-bottom:10px"><button class="btn btn-green btn-full" onclick="addFinGoal()">Salvar meta</button></div>`:`<button class="btn btn-green btn-full" onclick="showAddGoal=true;render()">+ Nova meta</button>`}`}
+function saveSalaries(){ST.finance.salaries.me=parseFloat($('sal-me').value||0);ST.finance.salaries.partner=parseFloat($('sal-partner').value||0);saveST();render();toast('Salários salvos')}function saveBuckets(){FIN_BUCKETS.forEach(b=>ST.finance.buckets[b.id]=parseFloat($('bucket-'+b.id).value||0));saveST();render();toast('Percentuais salvos')}function addExpense(){const name=$('exp-name').value.trim(),value=parseFloat($('exp-value').value||0);if(!name||!value){toast('Preencha nome e valor');return}ST.finance.expenses.push({id:uid(),name,value,bucket:$('exp-bucket').value,payer:$('exp-payer').value,split:$('exp-split').value,type:$('exp-type').value,month:monthKey()});showAddExpense=false;saveST();render();toast('Gasto lançado')}function removeExpense(id){ST.finance.expenses=ST.finance.expenses.filter(e=>e.id!==id);saveST();render()}function addFinGoal(){const name=$('goal-name').value.trim(),target=parseFloat($('goal-target').value||0);if(!name||!target){toast('Preencha nome e meta');return}ST.finance.goals.push({id:uid(),name,target,current:parseFloat($('goal-current').value||0),owner:$('goal-owner').value,deadline:$('goal-deadline').value});showAddGoal=false;saveST();render()}function removeFinGoal(id){ST.finance.goals=ST.finance.goals.filter(g=>g.id!==id);saveST();render()}
 
-function promptSalary(){
-  const val=prompt("Digite seu salário mensal (R$):",ST.salary||"");
-  if(val!==null){ST.salary=parseFloat(val.replace(",","."))||0;saveST();checkAchievements();render();}
-}
-function addExpense(){
-  if(!newExp.name||!newExp.value){toast("Preencha nome e valor!");return;}
-  ST.expenses.push({id:Date.now(),name:newExp.name,value:parseFloat(String(newExp.value).replace(",","."))||0,cat:newExp.cat,parcels:newExp.parcels||1,currentParcel:newExp.currentParcel||1});
-  newExp={name:"",value:"",cat:"fixed",parcels:1};showAddExp=false;
-  saveST();checkAchievements();render();
-  toast("Gasto adicionado!");
-}
-function removeExpense(id){
-  ST.expenses=ST.expenses.filter(e=>e.id!==id);saveST();render();
-}
+// ===================== CASA COMPARTILHADA =====================
+function todayTasks(){return ST.home.tasks.filter(t=>t.days.includes(new Date().getDay()))}function taskDone(date,id){return !!ST.home.checks[date+'_'+id]}
+function renderHome(){const list=todayTasks(),done=list.filter(t=>taskDone(todayKey(),t.id)).length,pct=list.length?Math.round(done/list.length*100):0;return `<div class="hero hero-home"><div style="font-size:9px;color:var(--green);letter-spacing:3px;margin-bottom:8px">CASA COMPARTILHADA</div><div style="display:flex;justify-content:space-between"><div><div style="font-family:var(--display);font-size:22px;font-weight:800">${DAYS_FULL[new Date().getDay()]}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${done} de ${list.length} tarefas concluídas hoje</div></div><div style="font-family:var(--display);font-size:28px;color:${pct===100?'var(--green)':'var(--muted)'};font-weight:800">${pct}%</div></div><div class="ptrack" style="margin-top:12px"><div class="pfill" style="width:${pct}%;background:${pct===100?'var(--green)':'var(--yellow)'}"></div></div></div><div class="sub-tabs"><button class="sub-tab ${homeTab==='today'?'active':''}" onclick="homeTab='today';render()">Hoje</button><button class="sub-tab ${homeTab==='routine'?'active':''}" onclick="homeTab='routine';render()">Rotina</button><button class="sub-tab ${homeTab==='week'?'active':''}" onclick="homeTab='week';render()">Semana</button></div>${homeTab==='today'?renderHomeToday():homeTab==='routine'?renderHomeRoutine():renderHomeWeek()}`}
+function assigneeLabel(a){return a==='shared'?'Casal':personName(a)}function renderHomeToday(){const list=todayTasks(),date=todayKey();return `<div class="sec green">▸ TAREFAS DE HOJE</div>${list.length?list.map(t=>{const done=taskDone(date,t.id);return `<div class="row ${done?'done':''}"><button class="chk" onclick="toggleTask(${t.id})" style="${done?'background:'+t.color+';border-color:'+t.color:''}">${done?'✓':''}</button><div class="row-info"><div class="row-title">${esc(t.name)}</div><div class="row-meta">${t.area} · ${assigneeLabel(t.assignee)} ${t.estimated?'· '+t.estimated+' min':''}</div></div><span class="dot" style="background:${t.color}"></span></div>`}).join(''):'<div class="card" style="color:var(--muted);text-align:center">Nenhuma tarefa para hoje.</div>'}<button class="btn btn-green btn-full" onclick="homeTab='routine';showAddTask=true;render()">+ Criar tarefa recorrente</button>`}
+function renderHomeRoutine(){return `<div class="sec green">▸ PLANEJAMENTO DA CASA</div>${ST.home.tasks.length?ST.home.tasks.map(t=>`<div class="row"><span class="dot" style="background:${t.color}"></span><div class="row-info"><div class="row-title">${esc(t.name)}</div><div class="row-meta">${t.area} · ${assigneeLabel(t.assignee)} · ${t.days.map(d=>DAYS_PT[d]).join(', ')}</div></div><button class="rm-btn" onclick="removeTask(${t.id})">×</button></div>`).join(''):'<div class="card" style="color:var(--muted);text-align:center">Sem rotina cadastrada.</div>'}${showAddTask?renderAddTask():`<button class="btn btn-green btn-full" onclick="showAddTask=true;render()">+ Nova tarefa</button>`}`}
+function renderAddTask(){return `<div class="add-form"><span class="lbl">NOVA TAREFA</span><input id="task-name" class="inp" placeholder="Ex: Lavar louça" style="margin-bottom:8px"><div class="form-row"><select id="task-assignee" class="inp"><option value="shared">Casal</option><option value="me">${esc(ST.people.me.name)}</option><option value="partner">${esc(ST.people.partner.name)}</option></select><input id="task-area" class="inp" placeholder="Área: cozinha, banheiro..."></div><div class="form-row"><input id="task-est" class="inp" type="number" placeholder="Minutos estimados"><input id="task-color" class="inp" type="color" value="#4ade80"></div><span class="lbl">DIAS</span><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">${DAYS_PT.map((d,i)=>`<button id="day-${i}" class="pill" onclick="toggleTaskDay(${i})">${d}</button>`).join('')}</div><div style="display:flex;gap:8px"><button class="btn btn-green" style="flex:1" onclick="addTask()">Salvar tarefa</button><button class="btn btn-ghost" onclick="showAddTask=false;newTask.days=[];render()">Cancelar</button></div></div>`}
+function renderHomeWeek(){const start=new Date();start.setDate(start.getDate()-start.getDay());return `<div class="sec green">▸ MAPA DA SEMANA</div><div class="mini-grid">${[0,1,2,3,4,5,6].map(d=>{const date=new Date(start);date.setDate(start.getDate()+d);const key=date.toISOString().slice(0,10);const tasks=ST.home.tasks.filter(t=>t.days.includes(d));const done=tasks.filter(t=>taskDone(key,t.id)).length;return `<div class="day-box ${key===todayKey()?'today':''}"><div class="day-name">${DAYS_PT[d]}</div><div class="day-num">${done}/${tasks.length}</div><div style="font-size:9px;color:var(--muted);margin-top:2px">tarefas</div></div>`}).join('')}</div><div class="sec green">▸ CARGA POR PESSOA</div><div class="g3"><div class="mstat"><div class="ml">${esc(ST.people.me.name)}</div><div class="mv" style="color:var(--blue)">${ST.home.tasks.filter(t=>t.assignee==='me').length}</div><div class="ms">tarefas fixas</div></div><div class="mstat"><div class="ml">${esc(ST.people.partner.name)}</div><div class="mv" style="color:var(--purple)">${ST.home.tasks.filter(t=>t.assignee==='partner').length}</div><div class="ms">tarefas fixas</div></div><div class="mstat"><div class="ml">CASAL</div><div class="mv" style="color:var(--green)">${ST.home.tasks.filter(t=>t.assignee==='shared').length}</div><div class="ms">tarefas conjuntas</div></div></div>`}
+function toggleTaskDay(d){const i=newTask.days.indexOf(d);if(i>=0)newTask.days.splice(i,1);else newTask.days.push(d);const el=$('day-'+d);if(el)el.classList.toggle('active',newTask.days.includes(d))}function addTask(){const name=$('task-name').value.trim();if(!name){toast('Digite a tarefa');return}if(!newTask.days.length){toast('Selecione os dias');return}ST.home.tasks.push({id:uid(),name,days:[...newTask.days],assignee:$('task-assignee').value,area:$('task-area').value||'Geral',estimated:$('task-est').value,color:$('task-color').value||'#4ade80'});newTask.days=[];showAddTask=false;saveST();render();toast('Tarefa criada')}function removeTask(id){ST.home.tasks=ST.home.tasks.filter(t=>t.id!==id);saveST();render()}function toggleTask(id){const key=todayKey()+'_'+id;ST.home.checks[key]=!ST.home.checks[key];saveST();render()}
 
-function openAddFut(ym){
-  newFut={name:"",value:"",yearMonth:ym,type:"avulso"};
-  showAddFut=true;finTab="projection";render();
-  setTimeout(()=>{const el=document.getElementById("fut-name");if(el)el.focus();},100);
-}
-function addFutExp(){
-  if(!newFut.name||!newFut.value){toast("Preencha nome e valor!");return;}
-  if(!newFut.yearMonth){toast("Selecione o mês!");return;}
-  if(!ST.futureExpenses)ST.futureExpenses=[];
-  ST.futureExpenses.push({id:Date.now(),name:newFut.name,value:parseFloat(String(newFut.value).replace(",","."))||0,yearMonth:newFut.yearMonth,type:newFut.type});
-  newFut={name:"",value:"",yearMonth:"",type:"avulso"};showAddFut=false;
-  saveST();render();toast("Gasto lançado!");
-}
-function removeFutExp(id){
-  ST.futureExpenses=(ST.futureExpenses||[]).filter(f=>f.id!==id);saveST();render();
-}
-function addTask(){
-  if(!newTask.name){toast("Digite o nome da tarefa!");return;}
-  if(!newTask.days.length){toast("Selecione pelo menos 1 dia!");return;}
-  ST.routineTasks.push({id:Date.now(),name:newTask.name,days:[...newTask.days],who:newTask.who||"Ambos",color:newTask.color||"#4ade80"});
-  newTask={name:"",days:[],who:"Ambos",color:"#4ade80"};showAddTask=false;
-  saveST();render();toast("Tarefa adicionada à rotina!");
-}
-function removeTask(id){
-  ST.routineTasks=ST.routineTasks.filter(t=>t.id!==id);saveST();render();
-}
-function toggleTask(id){
-  const key=todayKey()+"_"+id;
-  ST.taskChecks[key]=!ST.taskChecks[key];
-  saveST();checkAchievements();render();
-}
+// ===================== SETTINGS / BACKUP =====================
+function openSettings(){ $('settings-modal').classList.add('show');$('token-input').value=ghToken();$('me-name').value=ST.people.me.name;$('partner-name').value=ST.people.partner.name}
+function closeSettings(){ $('settings-modal').classList.remove('show')}
+function saveToken(){const v=$('token-input').value.trim();if(!v){toast('Cole o token primeiro');return}localStorage.setItem('gh_token',v);toast('Token salvo');ghLoad();closeSettings()}
+function saveNames(){ST.people.me.name=$('me-name').value.trim()||'Eu';ST.people.partner.name=$('partner-name').value.trim()||'Maria';saveST();closeSettings();render();toast('Nomes salvos')}
+function exportJSON(){const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifeos-casal-backup.json';a.click()}
+function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{ST=migrate(JSON.parse(ev.target.result));saveST();render();closeSettings();toast('Dados importados')}catch(err){toast('JSON inválido')}};reader.readAsText(file)}
 
-// ════════════════════════════════════════════════════════
-// ACHIEVEMENTS
-// ════════════════════════════════════════════════════════
-function checkAchievements(){
-  const stats={
-    totalH:getTotalH(),streak:ST.streak,
-    wFacul:getWeekH("faculdade"),wSre:getWeekH("sre"),
-    budgetSet:ST.salary>0,
-    houseComplete:houseComplete(),
-  };
-  for(const a of ACHIEVEMENTS){
-    if(!ST.unlockedAchievements.includes(a.id)&&a.check(stats)){
-      ST.unlockedAchievements.push(a.id);saveST();showAch(a);break;
-    }
-  }
-}
-function showAch(a){
-  $("ach-icon").textContent=a.icon;$("ach-label").textContent=a.label;$("ach-desc").textContent=a.desc;
-  const p=$("ach-popup");p.classList.add("show");
-  setTimeout(()=>p.classList.remove("show"),4000);
-}
-function toast(msg){
-  const el=$("toast");el.textContent=msg;el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"),3000);
-}
-
-// ════════════════════════════════════════════════════════
-// PWA
-// ════════════════════════════════════════════════════════
-let deferredPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{
-  e.preventDefault();deferredPrompt=e;
-  const b=$("install-banner");
-  b.innerHTML=`<div class="ib-row">
-    <div class="ib-text"><strong>Instalar Life OS</strong><br>Adicione à sua tela inicial!</div>
-    <button class="ib-btn" onclick="installApp()">Instalar</button>
-    <button class="ib-close" onclick="closeBanner()">×</button>
-  </div>`;
-  b.classList.add("show");
-});
-function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;closeBanner();}}
-function closeBanner(){$("install-banner").classList.remove("show");}
-const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
-const isStandalone=window.navigator.standalone;
-if(isIos&&!isStandalone) setTimeout(()=>$("install-banner").classList.add("show"),2000);
-
-if("serviceWorker" in navigator){
-  const sw=`const C="lifeos-v2";self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./"])))});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
-  const blob=new Blob([sw],{type:"application/javascript"});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-}
-
-// ════════════════════════════════════════════════════════
-// SETTINGS MODAL
-// ════════════════════════════════════════════════════════
-function openSettings(){
-  const m=document.getElementById("settings-modal");
-  m.style.display="flex";
-  const inp=document.getElementById("token-input");
-  if(inp) inp.value=ghToken()||"";
-}
-function closeSettings(){ document.getElementById("settings-modal").style.display="none"; }
-function saveToken(){
-  const val=(document.getElementById("token-input")||{}).value||"";
-  if(!val){toast("Cole o token primeiro!");return;}
-  localStorage.setItem("gh_token",val.trim());
-  toast("Token salvo! Sincronizando...");
-  closeSettings();
-  ghLoad();
-}
-function exportJSON(){
-  const blob=new Blob([JSON.stringify(ST,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download="lifeos-backup.json";a.click();
-}
-function importJSON(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const data=JSON.parse(ev.target.result);
-      ST={...defaultState(),...data};
-      saveST();render();toast("Dados importados!");closeSettings();
-    }catch(err){toast("Arquivo inválido!");}
-  };
-  reader.readAsText(file);
-}
-
-// ════════════════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════════════════
-render();
-// Load from GitHub on start (if token exists)
-if(ghToken()) ghLoad(); else setSyncStatus("notoken");
+render();if(ghToken())ghLoad();else setSyncStatus('notoken');
 </script>
 </body>
 </html>
