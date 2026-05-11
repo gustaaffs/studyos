@@ -6,22 +6,9 @@
 <title>Life OS — Casal</title>
 <style>
 :root{
-  --bg:#070b10;
-  --bg2:#0b1118;
-  --panel:#101923;
-  --panel2:#15212d;
-  --panel3:#1a2734;
-  --border:#243445;
-  --border2:#365066;
-  --text:#f2f7fb;
-  --muted:#93a8ba;
-  --dim:#5e7182;
-  --blue:#38bdf8;
-  --green:#4ade80;
-  --orange:#fb923c;
-  --purple:#a78bfa;
-  --red:#f87171;
-  --yellow:#fbbf24;
+  --bg:#070b10;--bg2:#0b1118;--panel:#101923;--panel2:#15212d;--panel3:#1a2734;
+  --border:#243445;--border2:#365066;--text:#f2f7fb;--muted:#93a8ba;--dim:#5e7182;
+  --blue:#38bdf8;--green:#4ade80;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--yellow:#fbbf24;
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
@@ -74,7 +61,7 @@ body{
 .hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .metric .label{font-size:14px;color:#9ab3c8;margin-top:3px}
 .metric .value{font-size:34px;font-weight:950;line-height:1.05;letter-spacing:-1px}
-.value.green{color:var(--green)}.value.red{color:var(--red)}.value.orange{color:var(--orange)}
+.value.green{color:var(--green)}.value.red{color:var(--red)}.value.orange{color:var(--orange)}.value.blue{color:var(--blue)}.value.purple{color:var(--purple)}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;align-items:stretch}
 .card{
   background:rgba(16,25,35,.92);border:1px solid var(--border);border-radius:22px;
@@ -92,12 +79,13 @@ body{
   border:none;border-radius:13px;padding:11px 14px;font-weight:900;background:var(--blue);color:#001018
 }
 .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}.btn.red{background:var(--red)}
-.input,.select{
+.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}.btn.red{background:var(--red)}.btn.purple{background:var(--purple)}
+.input,.select,.textarea{
   width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:13px;color:var(--text);
   padding:11px 12px;font-size:14px;outline:none
 }
-.input:focus,.select:focus{border-color:var(--blue)}
+.textarea{min-height:82px;resize:vertical}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--blue)}
 .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:12px}
 .f3{grid-column:span 3}.f4{grid-column:span 4}.f5{grid-column:span 5}.f6{grid-column:span 6}.f8{grid-column:span 8}.f12{grid-column:span 12}
 .label-small{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
@@ -133,7 +121,6 @@ td{font-size:15px}
 .task-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--border2);background:transparent;color:#001018;font-weight:950}
 .task-check.done{background:var(--green);border-color:var(--green)}
 .footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.hidden{display:none!important}
 .toast{
   position:fixed;right:24px;bottom:24px;background:var(--panel2);border:1px solid var(--border2);
   border-radius:999px;padding:12px 18px;color:var(--green);font-weight:900;opacity:0;transform:translateY(8px);
@@ -219,27 +206,17 @@ const monthsPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","N
 const fullMonths = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const days = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
-// ======================================================
-// GITHUB DB — CONFIGURAÇÃO NATIVA
-// Coloque seu token aqui. O token precisa ter permissão de escrita no repositório.
-// Recomendo criar um Fine-grained token apenas para este repositório.
-// ======================================================
 const GH_TOKEN_KEY = "lifeos_github_token";
-
-function ghToken(){
-  return localStorage.getItem(GH_TOKEN_KEY) || "";
-}
 const GH_OWNER  = "gustaaffs";
 const GH_REPO   = "studyos";
 const GH_FILE   = "data.json";
 const GH_BRANCH = "main";
-
 let GH_SHA = null;
 let GH_READY = false;
+let ghSaveTimer = null;
 
-function ghConfigured(){
-  return ghToken().trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH;
-}
+function ghToken(){ return localStorage.getItem(GH_TOKEN_KEY) || ""; }
+function ghConfigured(){ return ghToken().trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH; }
 function ghHeaders(){
   return {
     "Authorization": "Bearer " + ghToken().trim(),
@@ -257,15 +234,12 @@ function setSyncStatus(state,msg){
   if(a)a.innerHTML=html;
   if(b)b.innerHTML=html;
 }
-function encodeBase64Unicode(str){
-  return btoa(unescape(encodeURIComponent(str)));
-}
-function decodeBase64Unicode(str){
-  return decodeURIComponent(escape(atob(str.replace(/\n/g,""))));
-}
+function encodeBase64Unicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function decodeBase64Unicode(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,"")))); }
+
 async function ghLoad(){
   if(!ghConfigured()){
-    setSyncStatus("error","Configure o GH_TOKEN no HTML.");
+    setSyncStatus("error","Informe o token em Config.");
     return false;
   }
   setSyncStatus("sync","carregando do GitHub...");
@@ -275,7 +249,7 @@ async function ghLoad(){
     if(res.status===404){
       GH_READY=true;
       GH_SHA=null;
-      setSyncStatus("ok","data.json ainda não existe. Será criado no próximo salvamento.");
+      setSyncStatus("ok","data.json não existe. Será criado no próximo salvamento.");
       await ghSave();
       return true;
     }
@@ -283,8 +257,8 @@ async function ghLoad(){
     const json=await res.json();
     GH_SHA=json.sha;
     const data=JSON.parse(decodeBase64Unicode(json.content));
-    ST={...defaultState(),...data};
-    localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));
+    ST=mergeState(data);
+    localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST));
     GH_READY=true;
     setSyncStatus("ok","sincronizado com GitHub.");
     render();
@@ -295,15 +269,14 @@ async function ghLoad(){
     return false;
   }
 }
-let ghSaveTimer=null;
 function scheduleGhSave(){
   clearTimeout(ghSaveTimer);
   ghSaveTimer=setTimeout(()=>ghSave(),700);
 }
 async function ghSave(){
-  try{ localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST)); }catch(e){}
+  try{ localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST)); }catch(e){}
   if(!ghConfigured()){
-    setSyncStatus("error","Configure o GH_TOKEN no HTML.");
+    setSyncStatus("error","Informe o token em Config.");
     return false;
   }
   setSyncStatus("sync","salvando no GitHub...");
@@ -339,43 +312,6 @@ async function ghSave(){
   }
 }
 
-
-const defaultState = () => ({
-  salaries:{gus:7000,maria:6400},
-  rules:[
-    {id:"essenciais",name:"Essenciais",pct:50,color:"blue"},
-    {id:"investimentos",name:"Investimentos",pct:20,color:"green"},
-    {id:"lazer",name:"Lazer",pct:10,color:"orange"},
-    {id:"reserva",name:"Reserva/Metas",pct:20,color:"purple"}
-  ],
-  monthActuals:{},
-  entries:[
-    {id:1,month:ym(0),type:"expense",category:"essenciais",name:"Aluguel/Condomínio",projected:2500,actual:0,owner:"casal"},
-    {id:2,month:ym(0),type:"expense",category:"essenciais",name:"Mercado",projected:1600,actual:0,owner:"casal"},
-    {id:3,month:ym(0),type:"expense",category:"lazer",name:"Lazer/restaurantes",projected:800,actual:0,owner:"casal"},
-    {id:4,month:ym(0),type:"investment",category:"investimentos",name:"Investimentos",projected:2000,actual:0,owner:"casal"},
-    {id:5,month:ym(1),type:"expense",category:"essenciais",name:"Contas fixas",projected:3900,actual:0,owner:"casal"},
-    {id:6,month:ym(1),type:"investment",category:"investimentos",name:"Investimentos",projected:2200,actual:0,owner:"casal"},
-    {id:7,month:ym(2),type:"expense",category:"lazer",name:"Viagem",projected:3200,actual:0,owner:"casal"},
-  ],
-  goals:[
-    {id:1,name:"Reserva de emergência",target:30000,current:18000},
-    {id:2,name:"Viagem",target:8000,current:4200},
-    {id:3,name:"Investimentos 2026",target:20000,current:11300},
-  ],
-  tasks:[
-    {id:1,name:"Lavar roupa",days:[2,4],owner:"Maria",time:"Noite"},
-    {id:2,name:"Louça",days:[0,1,2,3,4,5,6],owner:"Gus",time:"Após jantar"},
-    {id:3,name:"Mercado",days:[6],owner:"Ambos",time:"Manhã"},
-    {id:4,name:"Faxina",days:[0],owner:"Ambos",time:"Manhã"},
-  ],
-  taskChecks:{},
-  study:{
-    gus:{sessions:[],goals:["Go","Zabbix","Concurso"]},
-    maria:{sessions:[],goals:["Estudo pessoal","Leitura","Curso"]}
-  }
-});
-
 function ym(offset=0){
   const d = new Date();
   d.setDate(1);
@@ -390,19 +326,86 @@ function shortYm(key){
   const [y,m]=key.split("-").map(Number);
   return monthsPT[m-1]+"/"+String(y).slice(2);
 }
+
+const defaultState = () => ({
+  salaries:{gus:7000,maria:6400},
+  rules:[
+    {id:"essenciais",name:"Essenciais",pct:50,color:"blue"},
+    {id:"investimentos",name:"Investimentos",pct:20,color:"green"},
+    {id:"lazer",name:"Lazer",pct:10,color:"orange"},
+    {id:"reserva",name:"Reserva/Metas",pct:20,color:"purple"}
+  ],
+  monthActuals:{},
+  entries:[
+    {id:1,month:ym(0),type:"expense",category:"essenciais",name:"Aluguel/Condomínio",projected:2500,actual:0,owner:"Casal"},
+    {id:2,month:ym(0),type:"expense",category:"essenciais",name:"Mercado",projected:1600,actual:0,owner:"Casal"},
+    {id:3,month:ym(0),type:"expense",category:"lazer",name:"Lazer/restaurantes",projected:800,actual:0,owner:"Casal"},
+    {id:4,month:ym(0),type:"investment",category:"investimentos",name:"Investimentos",projected:2000,actual:0,owner:"Casal"},
+    {id:5,month:ym(1),type:"expense",category:"essenciais",name:"Contas fixas",projected:3900,actual:0,owner:"Casal"},
+    {id:6,month:ym(1),type:"investment",category:"investimentos",name:"Investimentos",projected:2200,actual:0,owner:"Casal"},
+    {id:7,month:ym(2),type:"expense",category:"lazer",name:"Viagem",projected:3200,actual:0,owner:"Casal"}
+  ],
+  goals:[
+    {id:1,name:"Reserva de emergência",target:30000,current:18000},
+    {id:2,name:"Viagem",target:8000,current:4200},
+    {id:3,name:"Investimentos 2026",target:20000,current:11300}
+  ],
+  tasks:[
+    {id:1,name:"Lavar roupa",days:[2,4],owner:"Maria",time:"Noite"},
+    {id:2,name:"Louça",days:[0,1,2,3,4,5,6],owner:"Gus",time:"Após jantar"},
+    {id:3,name:"Mercado",days:[6],owner:"Ambos",time:"Manhã"},
+    {id:4,name:"Faxina",days:[0],owner:"Ambos",time:"Manhã"}
+  ],
+  taskChecks:{},
+  study:{
+    gus:{sessions:[],goals:[
+      {id:1,text:"Estudar Go",done:false},
+      {id:2,text:"Revisar Zabbix",done:false},
+      {id:3,text:"Questões do concurso",done:false}
+    ]},
+    maria:{sessions:[],goals:[
+      {id:4,text:"Estudo pessoal",done:false},
+      {id:5,text:"Leitura",done:false},
+      {id:6,text:"Curso",done:false}
+    ]}
+  }
+});
+
+function mergeState(data){
+  const base=defaultState();
+  const merged={...base,...data};
+  merged.salaries={...base.salaries,...(data?.salaries||{})};
+  merged.monthActuals={...(data?.monthActuals||{})};
+  merged.study={
+    gus:{...base.study.gus,...(data?.study?.gus||{})},
+    maria:{...base.study.maria,...(data?.study?.maria||{})}
+  };
+  if(!Array.isArray(merged.study.gus.sessions)) merged.study.gus.sessions=[];
+  if(!Array.isArray(merged.study.maria.sessions)) merged.study.maria.sessions=[];
+  if(!Array.isArray(merged.study.gus.goals)) merged.study.gus.goals=[];
+  if(!Array.isArray(merged.study.maria.goals)) merged.study.maria.goals=[];
+  if(!Array.isArray(merged.rules)) merged.rules=base.rules;
+  if(!Array.isArray(merged.entries)) merged.entries=base.entries;
+  if(!Array.isArray(merged.goals)) merged.goals=base.goals;
+  if(!Array.isArray(merged.tasks)) merged.tasks=base.tasks;
+  if(!merged.taskChecks) merged.taskChecks={};
+  return merged;
+}
+function load(){
+  try{
+    const raw = localStorage.getItem("lifeos_casal_v4") || localStorage.getItem("lifeos_casal_v3");
+    return raw ? mergeState(JSON.parse(raw)) : defaultState();
+  }catch(e){ return defaultState(); }
+}
 let ST = load();
 let module = "finance";
 let financeTab = "months";
 let selectedMonth = ym(0);
+let studyPerson = "gus";
+let studyTab = "log";
 
-function load(){
-  try{
-    const raw = localStorage.getItem("lifeos_casal_v3");
-    return raw ? {...defaultState(),...JSON.parse(raw)} : defaultState();
-  }catch(e){ return defaultState(); }
-}
 function save(){
-  localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));
+  localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST));
   scheduleGhSave();
 }
 function toast(msg){
@@ -415,9 +418,10 @@ function setModule(m){
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.module===m));
   render();
 }
-function setFinanceTab(t){
-  financeTab=t; render();
-}
+function setFinanceTab(t){ financeTab=t; render(); }
+function setStudyPerson(p){ studyPerson=p; render(); }
+function setStudyTab(t){ studyTab=t; render(); }
+
 function monthKeys(){
   const set = new Set([ym(0),ym(1),ym(2),ym(3),ym(4),ym(5)]);
   ST.entries.forEach(e=>set.add(e.month));
@@ -428,19 +432,13 @@ function monthSummary(key){
   const salaryProjected = (Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
   const actualOverride = ST.monthActuals?.[key]?.incomeActual;
   const incomeActual = Number(actualOverride)||0;
-
   const entries = ST.entries.filter(e=>e.month===key);
   const expenseProjected = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.projected||0),0);
   const expenseActual = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.actual||0),0);
   const invProjected = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.projected||0),0);
   const invActual = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.actual||0),0);
   return {
-    salaryProjected,
-    incomeActual,
-    expenseProjected,
-    expenseActual,
-    invProjected,
-    invActual,
+    salaryProjected,incomeActual,expenseProjected,expenseActual,invProjected,invActual,
     balanceProjected: salaryProjected - expenseProjected - invProjected,
     balanceActual: (incomeActual||salaryProjected) - expenseActual - invActual
   };
@@ -454,7 +452,6 @@ function render(){
   if(module==="study") app.innerHTML=renderStudy();
   if(module==="settings") app.innerHTML=renderSettings();
 }
-
 function renderHero(s){
   return `
   <section class="hero">
@@ -485,44 +482,26 @@ function renderFinance(){
   ${financeTab==='entries'?renderEntries():''}
   ${financeTab==='goals'?renderGoals():''}`;
 }
-
 function renderMonths(){
   const keys=monthKeys();
-  return `<div class="grid">
-    <div class="card span-12">
-      <h3>Timeline financeira mensal</h3>
-      <div class="month-list">
-        ${keys.map(k=>{
-          const s=monthSummary(k);
-          const active=k===selectedMonth;
-          return `<div class="month-card ${active?'active':''}">
-            <div>
-              <div class="month-title">${ymLabel(k)}</div>
-              <div class="month-kpis">
-                <span class="kpi-mini">Receita ${fmt(s.salaryProjected)}</span>
-                <span class="kpi-mini">Gastos ${fmt(s.expenseProjected)}</span>
-                <span class="kpi-mini">Invest. ${fmt(s.invProjected)}</span>
-              </div>
-            </div>
-            <div>
-              <div class="label-small">Saldo projetado</div>
-              <div class="money ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div>
-            </div>
-            <div>
-              <div class="label-small">Saldo realizado</div>
-              <div class="money ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div>
-            </div>
-            <div class="footer-actions" style="margin:0">
-              <button class="btn ghost" onclick="selectedMonth='${k}';financeTab='compare';render()">Abrir</button>
-              <button class="btn" onclick="openMonthEdit('${k}')">Realizado</button>
-            </div>
-          </div>`
-        }).join("")}
+  return `<div class="grid"><div class="card span-12"><h3>Timeline financeira mensal</h3><div class="month-list">
+  ${keys.map(k=>{
+    const s=monthSummary(k); const active=k===selectedMonth;
+    return `<div class="month-card ${active?'active':''}">
+      <div><div class="month-title">${ymLabel(k)}</div><div class="month-kpis">
+        <span class="kpi-mini">Receita ${fmt(s.salaryProjected)}</span>
+        <span class="kpi-mini">Gastos ${fmt(s.expenseProjected)}</span>
+        <span class="kpi-mini">Invest. ${fmt(s.invProjected)}</span>
+      </div></div>
+      <div><div class="label-small">Saldo projetado</div><div class="money ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div></div>
+      <div><div class="label-small">Saldo realizado</div><div class="money ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
+      <div class="footer-actions" style="margin:0">
+        <button class="btn ghost" onclick="selectedMonth='${k}';financeTab='compare';render()">Abrir</button>
+        <button class="btn" onclick="openMonthEdit('${k}')">Realizado</button>
       </div>
-    </div>
-  </div>`;
+    </div>`;
+  }).join("")}</div></div></div>`;
 }
-
 function renderCompare(){
   const s=currentSummary();
   const diffIncome=(s.incomeActual||s.salaryProjected)-s.salaryProjected;
@@ -530,111 +509,63 @@ function renderCompare(){
   const diffInv=s.invActual-s.invProjected;
   const diffBalance=s.balanceActual-s.balanceProjected;
   return `<div class="grid">
-    <div class="card span-7">
-      <h3>Comparativo — ${ymLabel(selectedMonth)}</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Item</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead>
-          <tbody>
-            ${compareRow("Receitas",s.salaryProjected,s.incomeActual||s.salaryProjected,diffIncome)}
-            ${compareRow("Gastos",s.expenseProjected,s.expenseActual,diffExpenses,true)}
-            ${compareRow("Investimentos",s.invProjected,s.invActual,diffInv)}
-            ${compareRow("Sobra",s.balanceProjected,s.balanceActual,diffBalance)}
-          </tbody>
-        </table>
-      </div>
-      <div class="footer-actions">
-        <button class="btn" onclick="openMonthEdit('${selectedMonth}')">Editar realizado do mês</button>
-        <button class="btn ghost" onclick="financeTab='entries';render()">Ver lançamentos</button>
-      </div>
+    <div class="card span-7"><h3>Comparativo — ${ymLabel(selectedMonth)}</h3><div class="table-wrap">
+      <table><thead><tr><th>Item</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>
+        ${compareRow("Receitas",s.salaryProjected,s.incomeActual||s.salaryProjected,diffIncome)}
+        ${compareRow("Gastos",s.expenseProjected,s.expenseActual,diffExpenses,true)}
+        ${compareRow("Investimentos",s.invProjected,s.invActual,diffInv)}
+        ${compareRow("Sobra",s.balanceProjected,s.balanceActual,diffBalance)}
+      </tbody></table></div>
+      <div class="footer-actions"><button class="btn" onclick="openMonthEdit('${selectedMonth}')">Editar realizado do mês</button><button class="btn ghost" onclick="financeTab='entries';render()">Ver lançamentos</button></div>
     </div>
-
-    <div class="card span-5">
-      <h3>Leitura rápida</h3>
-      <div class="compare-grid">
-        <div class="compare-box"><div class="name">Receita real</div><div class="num">${fmt(s.incomeActual||s.salaryProjected)}</div></div>
-        <div class="compare-box"><div class="name">Gasto real</div><div class="num">${fmt(s.expenseActual)}</div></div>
-        <div class="compare-box"><div class="name">Investido real</div><div class="num green">${fmt(s.invActual)}</div></div>
-        <div class="compare-box"><div class="name">Sobra real</div><div class="num ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
-      </div>
-      <p style="color:var(--muted);line-height:1.5;margin-bottom:0">
-        Use essa tela para planejar o mês antes e depois preencher o que realmente aconteceu.
-        Assim vocês enxergam se o mês saiu melhor ou pior do que o combinado.
-      </p>
-    </div>
+    <div class="card span-5"><h3>Leitura rápida</h3><div class="compare-grid">
+      <div class="compare-box"><div class="name">Receita real</div><div class="num">${fmt(s.incomeActual||s.salaryProjected)}</div></div>
+      <div class="compare-box"><div class="name">Gasto real</div><div class="num">${fmt(s.expenseActual)}</div></div>
+      <div class="compare-box"><div class="name">Investido real</div><div class="num green">${fmt(s.invActual)}</div></div>
+      <div class="compare-box"><div class="name">Sobra real</div><div class="num ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
+    </div><p style="color:var(--muted);line-height:1.5;margin-bottom:0">Planejem o mês e depois preencham o realizado para comparar o que saiu do combinado.</p></div>
   </div>`;
 }
 function compareRow(name,proj,real,diff,invert=false){
   const ok = invert ? diff<=0 : diff>=0;
-  return `<tr>
-    <td><strong>${name}</strong></td>
-    <td>${fmt(proj)}</td>
-    <td>${fmt(real)}</td>
-    <td class="money ${ok?'green':'red'}">${diff>=0?'+ ':''}${fmt(diff)}</td>
-  </tr>`;
+  return `<tr><td><strong>${name}</strong></td><td>${fmt(proj)}</td><td>${fmt(real)}</td><td class="money ${ok?'green':'red'}">${diff>=0?'+ ':''}${fmt(diff)}</td></tr>`;
 }
-
 function renderRules(){
   const income=(Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
   const entries=ST.entries.filter(e=>e.month===selectedMonth);
   return `<div class="grid">
-    <div class="card span-6">
-      <h3>Regra percentual da renda</h3>
+    <div class="card span-6"><h3>Regra percentual da renda</h3>
       ${ST.rules.map(r=>{
         const target=income*(Number(r.pct)||0)/100;
         const used=entries.filter(e=>e.category===r.id).reduce((a,e)=>a+Number(e.projected||0),0);
         const pct=target ? Math.min(140,used/target*100) : 0;
-        return `<div style="margin-bottom:18px">
-          <div style="display:flex;justify-content:space-between;gap:12px">
-            <strong>${r.name}</strong>
-            <span>${r.pct}% · alvo ${fmt(target)}</span>
-          </div>
+        return `<div style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;gap:12px">
+          <strong>${esc(r.name)}</strong><span>${r.pct}% · alvo ${fmt(target)}</span></div>
           <div class="bar"><div class="fill" style="width:${Math.min(100,pct)}%;background:var(--${r.color})"></div></div>
-          <div style="font-size:13px;color:${used>target?'var(--red)':'var(--muted)'}">Projetado no mês: ${fmt(used)} ${used>target?'— acima do alvo':''}</div>
-        </div>`
+          <div style="font-size:13px;color:${used>target?'var(--red)':'var(--muted)'}">Projetado no mês: ${fmt(used)} ${used>target?'— acima do alvo':''}</div></div>`;
       }).join("")}
     </div>
-    <div class="card span-6">
-      <h3>Editar salários e percentuais</h3>
-      <div class="form-grid">
-        <div class="f6"><div class="label-small">Salário Gus</div><input class="input" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
-        <div class="f6"><div class="label-small">Salário Maria</div><input class="input" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div>
-      </div>
-      ${ST.rules.map(r=>`
-        <div class="form-grid">
-          <div class="f8"><input class="input" value="${esc(r.name)}" onchange="updateRule('${r.id}','name',this.value)"></div>
-          <div class="f4"><input class="input" type="number" value="${r.pct}" onchange="updateRule('${r.id}','pct',this.value)"></div>
-        </div>`).join("")}
-    </div>
-  </div>`;
+    <div class="card span-6"><h3>Editar salários e percentuais</h3>
+      <div class="form-grid"><div class="f6"><div class="label-small">Salário Gus</div><input class="input" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
+      <div class="f6"><div class="label-small">Salário Maria</div><input class="input" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div></div>
+      ${ST.rules.map(r=>`<div class="form-grid"><div class="f8"><input class="input" value="${esc(r.name)}" onchange="updateRule('${r.id}','name',this.value)"></div><div class="f4"><input class="input" type="number" value="${r.pct}" onchange="updateRule('${r.id}','pct',this.value)"></div></div>`).join("")}
+    </div></div>`;
 }
 function updateRule(id,field,val){
   ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);
   save();render();
 }
-
 function renderEntries(){
   const entries=ST.entries.filter(e=>e.month===selectedMonth);
   return `<div class="grid">
-    <div class="card span-7">
-      <h3>Lançamentos — ${ymLabel(selectedMonth)}</h3>
-      ${entries.length?entries.map(e=>{
-        const typeLabel=e.type==="expense"?"Gasto":e.type==="investment"?"Investimento":"Receita";
-        return `<div class="row-card">
-          <div>
-            <div class="row-title">${esc(e.name)}</div>
-            <div class="row-sub">${typeLabel} · ${categoryName(e.category)} · ${e.owner}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="money">${fmt(e.projected)}</div>
-            <div class="row-sub">real: ${fmt(e.actual||0)}</div>
-          </div>
-          <button class="btn ghost" onclick="removeEntry(${e.id})">×</button>
-        </div>`
-      }).join(""):`<p style="color:var(--muted)">Nenhum lançamento neste mês.</p>`}
+    <div class="card span-7"><h3>Lançamentos — ${ymLabel(selectedMonth)}</h3>
+      ${entries.length?entries.map(e=>`<div class="row-card">
+        <div><div class="row-title">${esc(e.name)}</div><div class="row-sub">${e.type==="expense"?"Gasto":"Investimento"} · ${categoryName(e.category)} · ${e.owner}</div></div>
+        <div style="text-align:right"><div class="money">${fmt(e.projected)}</div><div class="row-sub">real: ${fmt(e.actual||0)}</div></div>
+        <button class="btn ghost" onclick="removeEntry(${e.id})">×</button>
+      </div>`).join(""):`<p style="color:var(--muted)">Nenhum lançamento neste mês.</p>`}
     </div>
-    <div class="card span-5">
-      <h3>Novo lançamento</h3>
+    <div class="card span-5"><h3>Novo lançamento</h3>
       <div class="form-grid">
         <div class="f12"><div class="label-small">Descrição</div><input id="e-name" class="input" placeholder="Ex: Mercado, aluguel, investimento..."></div>
         <div class="f6"><div class="label-small">Tipo</div><select id="e-type" class="select"><option value="expense">Gasto</option><option value="investment">Investimento</option></select></div>
@@ -642,54 +573,28 @@ function renderEntries(){
         <div class="f6"><div class="label-small">Projetado</div><input id="e-proj" class="input" type="number" placeholder="0"></div>
         <div class="f6"><div class="label-small">Realizado</div><input id="e-real" class="input" type="number" placeholder="0"></div>
         <div class="f12"><div class="label-small">Responsável</div><select id="e-owner" class="select"><option>Casal</option><option>Gus</option><option>Maria</option></select></div>
-      </div>
-      <button class="btn green" style="width:100%" onclick="addEntry()">Adicionar lançamento</button>
-    </div>
-  </div>`;
+      </div><button class="btn green" style="width:100%" onclick="addEntry()">Adicionar lançamento</button>
+    </div></div>`;
 }
 function categoryName(id){ return ST.rules.find(r=>r.id===id)?.name || id; }
 function addEntry(){
   const name=document.getElementById("e-name").value.trim();
   if(!name){toast("Digite a descrição.");return}
-  ST.entries.push({
-    id:Date.now(), month:selectedMonth, name,
-    type:document.getElementById("e-type").value,
-    category:document.getElementById("e-cat").value,
-    projected:Number(document.getElementById("e-proj").value)||0,
-    actual:Number(document.getElementById("e-real").value)||0,
-    owner:document.getElementById("e-owner").value
-  });
+  ST.entries.push({id:Date.now(), month:selectedMonth, name, type:document.getElementById("e-type").value, category:document.getElementById("e-cat").value, projected:Number(document.getElementById("e-proj").value)||0, actual:Number(document.getElementById("e-real").value)||0, owner:document.getElementById("e-owner").value});
   save();toast("Lançamento adicionado.");render();
 }
-function removeEntry(id){
-  ST.entries=ST.entries.filter(e=>e.id!==id);save();render();
-}
-
+function removeEntry(id){ ST.entries=ST.entries.filter(e=>e.id!==id);save();render(); }
 function renderGoals(){
-  return `<div class="grid">
-    <div class="card span-7">
-      <h3>Metas financeiras do casal</h3>
-      ${ST.goals.map(g=>{
-        const pct=g.target?Math.min(100,Number(g.current)/Number(g.target)*100):0;
-        return `<div class="row-card">
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;gap:12px"><strong>${esc(g.name)}</strong><span>${fmt(g.current)} / ${fmt(g.target)}</span></div>
-            <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
-          </div>
-          <button class="btn ghost" onclick="openGoalEdit(${g.id})">Editar</button>
-        </div>`
-      }).join("")}
-    </div>
-    <div class="card span-5">
-      <h3>Nova meta</h3>
-      <div class="form-grid">
-        <div class="f12"><input id="g-name" class="input" placeholder="Nome da meta"></div>
-        <div class="f6"><input id="g-current" class="input" type="number" placeholder="Atual"></div>
-        <div class="f6"><input id="g-target" class="input" type="number" placeholder="Objetivo"></div>
-      </div>
-      <button class="btn green" style="width:100%" onclick="addGoal()">Adicionar meta</button>
-    </div>
-  </div>`;
+  return `<div class="grid"><div class="card span-7"><h3>Metas financeiras do casal</h3>
+    ${ST.goals.map(g=>{
+      const pct=g.target?Math.min(100,Number(g.current)/Number(g.target)*100):0;
+      return `<div class="row-card"><div style="flex:1"><div style="display:flex;justify-content:space-between;gap:12px"><strong>${esc(g.name)}</strong><span>${fmt(g.current)} / ${fmt(g.target)}</span></div><div class="bar"><div class="fill" style="width:${pct}%"></div></div></div><button class="btn ghost" onclick="openGoalEdit(${g.id})">Editar</button></div>`;
+    }).join("")}</div>
+    <div class="card span-5"><h3>Nova meta</h3><div class="form-grid">
+      <div class="f12"><input id="g-name" class="input" placeholder="Nome da meta"></div>
+      <div class="f6"><input id="g-current" class="input" type="number" placeholder="Atual"></div>
+      <div class="f6"><input id="g-target" class="input" type="number" placeholder="Objetivo"></div>
+    </div><button class="btn green" style="width:100%" onclick="addGoal()">Adicionar meta</button></div></div>`;
 }
 function addGoal(){
   const name=document.getElementById("g-name").value.trim();
@@ -702,46 +607,29 @@ function renderHome(){
   const today=new Date().getDay();
   const todayKey=new Date().toISOString().slice(0,10);
   const todayTasks=ST.tasks.filter(t=>t.days.includes(today));
-  return `<section class="hero">
-    <div class="section-label">Casa — rotina do casal</div>
-    <div class="hero-grid">
-      <div class="metric"><div class="value">${todayTasks.length}</div><div class="label">Tarefas hoje</div></div>
-      <div class="metric"><div class="value green">${todayTasks.filter(t=>ST.taskChecks[todayKey+"_"+t.id]).length}</div><div class="label">Concluídas</div></div>
-      <div class="metric"><div class="value">${ST.tasks.filter(t=>t.owner==="Gus").length}</div><div class="label">Responsáveis Gus</div></div>
-      <div class="metric"><div class="value">${ST.tasks.filter(t=>t.owner==="Maria").length}</div><div class="label">Responsáveis Maria</div></div>
-    </div>
-  </section>
+  return `<section class="hero"><div class="section-label">Casa — rotina do casal</div><div class="hero-grid">
+    <div class="metric"><div class="value">${todayTasks.length}</div><div class="label">Tarefas hoje</div></div>
+    <div class="metric"><div class="value green">${todayTasks.filter(t=>ST.taskChecks[todayKey+"_"+t.id]).length}</div><div class="label">Concluídas</div></div>
+    <div class="metric"><div class="value blue">${ST.tasks.filter(t=>t.owner==="Gus").length}</div><div class="label">Responsáveis Gus</div></div>
+    <div class="metric"><div class="value purple">${ST.tasks.filter(t=>t.owner==="Maria").length}</div><div class="label">Responsáveis Maria</div></div>
+  </div></section>
   <div class="grid">
-    <div class="card span-7">
-      <h3>Tarefas de hoje</h3>
+    <div class="card span-7"><h3>Tarefas de hoje</h3>
       ${todayTasks.map(t=>{
         const key=todayKey+"_"+t.id; const done=!!ST.taskChecks[key];
-        return `<div class="row-card">
-          <button class="task-check ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button>
-          <div style="flex:1"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.owner} · ${t.time}</div></div>
-          <span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span>
-        </div>`
+        return `<div class="row-card"><button class="task-check ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button><div style="flex:1"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.owner} · ${esc(t.time)}</div></div><span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span></div>`;
       }).join("") || `<p style="color:var(--muted)">Sem tarefas hoje.</p>`}
     </div>
-    <div class="card span-5">
-      <h3>Nova tarefa fixa</h3>
+    <div class="card span-5"><h3>Nova tarefa fixa</h3>
       <div class="form-grid">
         <div class="f12"><input id="t-name" class="input" placeholder="Ex: Passar pano"></div>
         <div class="f6"><select id="t-owner" class="select"><option>Gus</option><option>Maria</option><option>Ambos</option></select></div>
         <div class="f6"><input id="t-time" class="input" placeholder="Horário ideal"></div>
-        <div class="f12"><div class="label-small">Dias</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">${days.map((d,i)=>`<label class="pill"><input type="checkbox" class="day-check" value="${i}"> ${d}</label>`).join("")}</div>
-        </div>
-      </div>
-      <button class="btn green" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
+        <div class="f12"><div class="label-small">Dias</div><div style="display:flex;gap:6px;flex-wrap:wrap">${days.map((d,i)=>`<label class="pill"><input type="checkbox" class="day-check" value="${i}"> ${d}</label>`).join("")}</div></div>
+      </div><button class="btn green" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
     </div>
-    <div class="card span-12">
-      <h3>Rotina completa</h3>
-      ${ST.tasks.map(t=>`<div class="row-card">
-        <div><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.days.map(d=>days[d]).join(", ")} · ${t.time}</div></div>
-        <span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span>
-        <button class="btn ghost" onclick="ST.tasks=ST.tasks.filter(x=>x.id!==${t.id});save();render()">×</button>
-      </div>`).join("")}
+    <div class="card span-12"><h3>Rotina completa</h3>
+      ${ST.tasks.map(t=>`<div class="row-card"><div><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.days.map(d=>days[d]).join(", ")} · ${esc(t.time)}</div></div><span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span><button class="btn ghost" onclick="ST.tasks=ST.tasks.filter(x=>x.id!==${t.id});save();render()">×</button></div>`).join("")}
     </div>
   </div>`;
 }
@@ -754,38 +642,137 @@ function addTask(){
 }
 
 function renderStudy(){
+  const person = ST.study[studyPerson] || {sessions:[],goals:[]};
+  const totalHours = sumStudy(studyPerson);
+  const weekHours = sumStudyWeek(studyPerson);
+  const todayHours = sumStudyToday(studyPerson);
   return `<section class="hero">
     <div class="section-label">Estudos individuais</div>
     <div class="hero-grid">
-      <div class="metric"><div class="value">${ST.study.gus.sessions.length}</div><div class="label">Sessões Gus</div></div>
-      <div class="metric"><div class="value">${ST.study.maria.sessions.length}</div><div class="label">Sessões Maria</div></div>
-      <div class="metric"><div class="value green">${sumStudy('gus')}h</div><div class="label">Horas Gus</div></div>
-      <div class="metric"><div class="value green">${sumStudy('maria')}h</div><div class="label">Horas Maria</div></div>
+      <div class="metric"><div class="value ${studyPerson==='gus'?'blue':'purple'}">${studyPerson==='gus'?'Gus':'Maria'}</div><div class="label">Perfil selecionado</div></div>
+      <div class="metric"><div class="value green">${totalHours.toFixed(1)}h</div><div class="label">Total estudado</div></div>
+      <div class="metric"><div class="value">${weekHours.toFixed(1)}h</div><div class="label">Esta semana</div></div>
+      <div class="metric"><div class="value orange">${todayHours.toFixed(1)}h</div><div class="label">Hoje</div></div>
     </div>
   </section>
-  <div class="grid">
-    ${["gus","maria"].map(p=>`<div class="card span-6">
-      <h3>${p==="gus"?"Gus":"Maria"}</h3>
+  <div class="tabs">
+    <button class="tab-btn ${studyPerson==='gus'?'active':''}" onclick="setStudyPerson('gus')">👤 Gus</button>
+    <button class="tab-btn ${studyPerson==='maria'?'active':''}" onclick="setStudyPerson('maria')">👤 Maria</button>
+    <button class="tab-btn ${studyTab==='log'?'active':''}" onclick="setStudyTab('log')">⏱ Registrar</button>
+    <button class="tab-btn ${studyTab==='goals'?'active':''}" onclick="setStudyTab('goals')">🎯 Metas</button>
+    <button class="tab-btn ${studyTab==='history'?'active':''}" onclick="setStudyTab('history')">📚 Histórico</button>
+  </div>
+  ${studyTab==='log'?renderStudyLog(studyPerson):''}
+  ${studyTab==='goals'?renderStudyGoals(studyPerson):''}
+  ${studyTab==='history'?renderStudyHistory(studyPerson):''}`;
+}
+function renderStudyLog(p){
+  const name=p==='gus'?'Gus':'Maria';
+  return `<div class="grid">
+    <div class="card span-6"><h3>Registrar estudo — ${name}</h3>
       <div class="form-grid">
-        <div class="f8"><input id="study-note-${p}" class="input" placeholder="O que estudou?"></div>
-        <div class="f4"><input id="study-hours-${p}" class="input" type="number" placeholder="Horas"></div>
+        <div class="f6"><div class="label-small">Horas</div><input id="study-hours" class="input" type="number" step="0.25" placeholder="Ex: 1.5"></div>
+        <div class="f6"><div class="label-small">Área</div><input id="study-area" class="input" placeholder="Ex: Go, concurso, curso..."></div>
+        <div class="f12"><div class="label-small">Observação</div><textarea id="study-note" class="textarea" placeholder="O que foi estudado?"></textarea></div>
       </div>
-      <button class="btn" onclick="addStudy('${p}')">Registrar estudo</button>
-      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
-      ${(ST.study[p].sessions||[]).slice(-5).reverse().map(s=>`<div class="row-card"><div><strong>${s.hours}h</strong><div class="row-sub">${esc(s.note)} · ${s.date}</div></div></div>`).join("") || `<p style="color:var(--muted)">Sem sessões registradas.</p>`}
-    </div>`).join("")}
+      <button class="btn green" onclick="addStudy('${p}')">Registrar sessão</button>
+    </div>
+    <div class="card span-6"><h3>Resumo rápido</h3>
+      <div class="compare-grid">
+        <div class="compare-box"><div class="name">Sessões</div><div class="num">${ST.study[p].sessions.length}</div></div>
+        <div class="compare-box"><div class="name">Horas totais</div><div class="num green">${sumStudy(p).toFixed(1)}h</div></div>
+        <div class="compare-box"><div class="name">Semana</div><div class="num">${sumStudyWeek(p).toFixed(1)}h</div></div>
+        <div class="compare-box"><div class="name">Hoje</div><div class="num orange">${sumStudyToday(p).toFixed(1)}h</div></div>
+      </div>
+    </div>
   </div>`;
 }
-function sumStudy(p){return (ST.study[p].sessions||[]).reduce((a,s)=>a+Number(s.hours||0),0)}
+function renderStudyGoals(p){
+  const goals=ST.study[p].goals || [];
+  return `<div class="grid">
+    <div class="card span-7"><h3>Metas de estudo — ${p==='gus'?'Gus':'Maria'}</h3>
+      ${goals.length?goals.map(g=>`<div class="row-card">
+        <button class="task-check ${g.done?'done':''}" onclick="toggleStudyGoal('${p}',${g.id})">${g.done?'✓':''}</button>
+        <div style="flex:1"><div class="row-title" style="${g.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(g.text)}</div></div>
+        <button class="btn ghost" onclick="removeStudyGoal('${p}',${g.id})">×</button>
+      </div>`).join(""):`<p style="color:var(--muted)">Nenhuma meta cadastrada.</p>`}
+    </div>
+    <div class="card span-5"><h3>Nova meta</h3>
+      <div class="form-grid"><div class="f12"><input id="study-goal-text" class="input" placeholder="Ex: 30 questões de Go"></div></div>
+      <button class="btn green" onclick="addStudyGoal('${p}')">Adicionar meta</button>
+    </div>
+  </div>`;
+}
+function renderStudyHistory(p){
+  const sessions=[...(ST.study[p].sessions||[])].reverse();
+  return `<div class="grid"><div class="card span-12"><h3>Histórico — ${p==='gus'?'Gus':'Maria'}</h3>
+    ${sessions.length?sessions.map(s=>`<div class="row-card">
+      <div><div class="row-title">${Number(s.hours).toFixed(1)}h · ${esc(s.area||'Estudo')}</div><div class="row-sub">${esc(s.note||'Sem observação')} · ${s.date}</div></div>
+      <button class="btn ghost" onclick="removeStudySession('${p}',${s.id})">×</button>
+    </div>`).join(""):`<p style="color:var(--muted)">Sem sessões registradas.</p>`}
+  </div></div>`;
+}
+function sumStudy(p){ return (ST.study[p]?.sessions||[]).reduce((a,s)=>a+Number(s.hours||0),0); }
+function sumStudyToday(p){
+  const today=new Date().toISOString().slice(0,10);
+  return (ST.study[p]?.sessions||[]).filter(s=>s.date===today).reduce((a,s)=>a+Number(s.hours||0),0);
+}
+function weekStartKey(){
+  const d=new Date();
+  const day=d.getDay();
+  d.setDate(d.getDate()-((day+6)%7));
+  return d.toISOString().slice(0,10);
+}
+function sumStudyWeek(p){
+  const wk=weekStartKey();
+  return (ST.study[p]?.sessions||[]).filter(s=>s.date>=wk).reduce((a,s)=>a+Number(s.hours||0),0);
+}
 function addStudy(p){
-  const h=Number(document.getElementById("study-hours-"+p).value)||0;
-  const note=document.getElementById("study-note-"+p).value.trim();
-  if(!h){toast("Informe as horas.");return}
-  ST.study[p].sessions.push({date:new Date().toISOString().slice(0,10),hours:h,note});
+  const hours=Number(document.getElementById("study-hours").value)||0;
+  const area=document.getElementById("study-area").value.trim() || "Estudo";
+  const note=document.getElementById("study-note").value.trim();
+  if(!hours){toast("Informe as horas de estudo.");return;}
+  ST.study[p].sessions.push({id:Date.now(),date:new Date().toISOString().slice(0,10),hours,area,note});
+  save();toast("Estudo registrado.");render();
+}
+function addStudyGoal(p){
+  const text=document.getElementById("study-goal-text").value.trim();
+  if(!text){toast("Digite a meta.");return;}
+  ST.study[p].goals.push({id:Date.now(),text,done:false});
+  save();render();
+}
+function toggleStudyGoal(p,id){
+  ST.study[p].goals=ST.study[p].goals.map(g=>g.id===id?{...g,done:!g.done}:g);
+  save();render();
+}
+function removeStudyGoal(p,id){
+  ST.study[p].goals=ST.study[p].goals.filter(g=>g.id!==id);
+  save();render();
+}
+function removeStudySession(p,id){
+  ST.study[p].sessions=ST.study[p].sessions.filter(s=>s.id!==id);
   save();render();
 }
 
-
+function renderSettings(){
+  const hasToken = ghToken().trim().length > 10;
+  return `<section class="hero">
+    <div class="section-label">Configurações</div>
+    <div class="metric"><div class="value">GitHub DB</div><div class="label">Informe o token pela tela. Ele fica salvo somente neste navegador e será usado para criar/atualizar o data.json.</div></div>
+  </section>
+  <div class="grid">
+    <div class="card span-6"><h3>Token do GitHub</h3>
+      <div class="form-grid"><div class="f12"><div class="label-small">Token</div><input id="github-token-input" class="input" type="password" placeholder="github_pat_xxx ou ghp_xxx" value="${hasToken ? esc(ghToken()) : ''}"></div></div>
+      <div class="footer-actions"><button class="btn green" onclick="saveGithubToken()">Salvar token e sincronizar</button><button class="btn ghost" onclick="removeGithubToken()">Remover token</button></div>
+      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">O token precisa ter permissão de leitura e escrita no repositório configurado no HTML.</p>
+    </div>
+    <div class="card span-6"><h3>Status</h3>
+      <p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p>
+      <div class="footer-actions"><button class="btn" onclick="ghLoad()">Carregar do GitHub</button><button class="btn ghost" onclick="ghSave()">Salvar agora</button></div>
+      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">Repositório: <strong>${GH_OWNER}/${GH_REPO}</strong><br>Arquivo da base: <strong>${GH_FILE}</strong><br>Branch: <strong>${GH_BRANCH}</strong></p>
+    </div>
+  </div>`;
+}
 function saveGithubToken(){
   const inp=document.getElementById("github-token-input");
   const val=(inp?.value||"").trim();
@@ -797,53 +784,10 @@ function saveGithubToken(){
 }
 function removeGithubToken(){
   localStorage.removeItem(GH_TOKEN_KEY);
-  GH_SHA=null;
-  GH_READY=false;
+  GH_SHA=null; GH_READY=false;
   setSyncStatus("error","Token removido.");
   toast("Token removido.");
   render();
-}
-function renderSettings(){
-  const hasToken = ghToken().trim().length > 10;
-  return `<section class="hero">
-    <div class="section-label">Configurações</div>
-    <div class="metric">
-      <div class="value">GitHub DB</div>
-      <div class="label">Informe o token pela tela. Ele fica salvo somente neste navegador e será usado para criar/atualizar o <strong>data.json</strong>.</div>
-    </div>
-  </section>
-  <div class="grid">
-    <div class="card span-6">
-      <h3>Token do GitHub</h3>
-      <div class="form-grid">
-        <div class="f12">
-          <div class="label-small">Token</div>
-          <input id="github-token-input" class="input" type="password" placeholder="github_pat_xxx ou ghp_xxx" value="${hasToken ? ghToken() : ''}">
-        </div>
-      </div>
-      <div class="footer-actions">
-        <button class="btn green" onclick="saveGithubToken()">Salvar token e sincronizar</button>
-        <button class="btn ghost" onclick="removeGithubToken()">Remover token</button>
-      </div>
-      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">
-        O token precisa ter permissão de leitura e escrita no repositório configurado no HTML.
-      </p>
-    </div>
-
-    <div class="card span-6">
-      <h3>Status</h3>
-      <p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p>
-      <div class="footer-actions">
-        <button class="btn" onclick="ghLoad()">Carregar do GitHub</button>
-        <button class="btn ghost" onclick="ghSave()">Salvar agora</button>
-      </div>
-      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">
-        Repositório: <strong>${GH_OWNER}/${GH_REPO}</strong><br>
-        Arquivo da base: <strong>${GH_FILE}</strong><br>
-        Branch: <strong>${GH_BRANCH}</strong>
-      </p>
-    </div>
-  </div>`;
 }
 
 function openMonthEdit(k){
@@ -856,22 +800,10 @@ function openMonthEdit(k){
       <div class="f6"><div class="label-small">Receita realizada</div><input id="m-income" class="input" type="number" value="${s.incomeActual||s.salaryProjected}"></div>
       <div class="f6"><div class="label-small">Observação</div><input id="m-note" class="input" value="${esc(ST.monthActuals?.[k]?.note||'')}"></div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead>
-        <tbody>
-          ${ST.entries.filter(e=>e.month===k).map(e=>`<tr>
-            <td>${esc(e.name)}</td>
-            <td>${fmt(e.projected)}</td>
-            <td><input class="input actual-entry" data-id="${e.id}" type="number" value="${e.actual||0}"></td>
-          </tr>`).join("")}
-        </tbody>
-      </table>
-    </div>
-    <div class="footer-actions">
-      <button class="btn green" onclick="saveMonthActual('${k}')">Salvar realizado</button>
-      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
-    </div>`;
+    <div class="table-wrap"><table><thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead><tbody>
+      ${ST.entries.filter(e=>e.month===k).map(e=>`<tr><td>${esc(e.name)}</td><td>${fmt(e.projected)}</td><td><input class="input actual-entry" data-id="${e.id}" type="number" value="${e.actual||0}"></td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="footer-actions"><button class="btn green" onclick="saveMonthActual('${k}')">Salvar realizado</button><button class="btn ghost" onclick="closeModal()">Cancelar</button></div>`;
   modal.classList.add("show");
 }
 function saveMonthActual(k){
@@ -883,7 +815,7 @@ function saveMonthActual(k){
   });
   save();closeModal();financeTab="compare";toast("Realizado salvo.");render();
 }
-function closeModal(){document.getElementById("modal").classList.remove("show")}
+function closeModal(){ document.getElementById("modal").classList.remove("show"); }
 document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 
 function openGoalEdit(id){
@@ -896,23 +828,24 @@ function openGoalEdit(id){
       <div class="f6"><div class="label-small">Atual</div><input id="goal-current" class="input" type="number" value="${g.current}"></div>
       <div class="f6"><div class="label-small">Objetivo</div><input id="goal-target" class="input" type="number" value="${g.target}"></div>
     </div>
-    <div class="footer-actions">
-      <button class="btn green" onclick="saveGoal(${id})">Salvar</button>
-      <button class="btn red" onclick="deleteGoal(${id})">Excluir</button>
-      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
-    </div>`;
+    <div class="footer-actions"><button class="btn green" onclick="saveGoal(${id})">Salvar</button><button class="btn red" onclick="deleteGoal(${id})">Excluir</button><button class="btn ghost" onclick="closeModal()">Cancelar</button></div>`;
   modal.classList.add("show");
 }
 function saveGoal(id){
   ST.goals=ST.goals.map(g=>g.id===id?{...g,name:document.getElementById("goal-name").value,current:Number(document.getElementById("goal-current").value)||0,target:Number(document.getElementById("goal-target").value)||0}:g);
   save();closeModal();render();
 }
-function deleteGoal(id){ST.goals=ST.goals.filter(g=>g.id!==id);save();closeModal();render();}
+function deleteGoal(id){ ST.goals=ST.goals.filter(g=>g.id!==id);save();closeModal();render(); }
 
 function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
 render();
-setSyncStatus("sync","iniciando...");
-ghLoad();
+if(ghConfigured()){
+  setSyncStatus("sync","iniciando...");
+  ghLoad();
+}else{
+  setSyncStatus("error","Informe o token em Config.");
+}
 </script>
 </body>
 </html>
