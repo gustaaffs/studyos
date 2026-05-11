@@ -280,6 +280,45 @@ button{cursor:pointer}
 </head>
 <body>
 
+<!-- Settings Modal -->
+<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:300;background:#000a;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px">
+    <div style="font-family:var(--display);font-size:18px;font-weight:800;margin-bottom:4px">⚙️ Configurações</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:18px">GitHub como banco de dados</div>
+
+    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:6px">SEU TOKEN DO GITHUB</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input id="token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;"
+        value="">
+      <button onclick="saveToken()" style="background:var(--blue);border:none;color:#000;border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+      Como gerar o token:<br>
+      1. github.com → foto → <b style="color:var(--text)">Settings</b><br>
+      2. <b style="color:var(--text)">Developer settings</b> → Personal access tokens → <b style="color:var(--text)">Tokens (classic)</b><br>
+      3. <b style="color:var(--text)">Generate new token</b> → marque <b style="color:var(--text)">repo</b><br>
+      4. Copie e cole aqui
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">SYNC MANUAL</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="ghLoad()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;cursor:pointer">⬇️ Carregar do GitHub</button>
+      <button onclick="saveST()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;cursor:pointer">⬆️ Salvar no GitHub</button>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">DADOS LOCAIS</div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button onclick="exportJSON()" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:11px;cursor:pointer">📥 Exportar JSON</button>
+      <label style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:11px;cursor:pointer;text-align:center">
+        📤 Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none">
+      </label>
+    </div>
+
+    <button onclick="closeSettings()" style="width:100%;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:8px;padding:11px;font-family:var(--mono);font-size:12px;cursor:pointer">Fechar</button>
+  </div>
+</div>
+
 <div id="ach-popup">
   <div id="ach-icon" style="font-size:32px;margin-bottom:4px"></div>
   <div style="font-size:11px;color:var(--green);letter-spacing:2px;font-weight:700">CONQUISTA!</div>
@@ -299,6 +338,10 @@ button{cursor:pointer}
 <!-- MODULE NAV -->
 <div id="module-nav">
   <div class="module-logo">LIFE OS</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <div id="sync-status" style="font-size:10px;color:var(--muted)">☁️ salvo</div>
+    <button onclick="openSettings()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 9px;font-family:var(--mono);font-size:10px;cursor:pointer">⚙️ config</button>
+  </div>
   <div class="module-tabs">
     <button class="mod-tab active" onclick="setModule('study')"><span class="tab-icon">🎓</span>ESTUDOS</button>
     <button class="mod-tab" onclick="setModule('finance')"><span class="tab-icon">💰</span>FINANÇAS</button>
@@ -377,11 +420,75 @@ let newFut = {name:"",value:"",yearMonth:"",type:"avulso"};
 let showAddFut = false;
 let newTask = {name:"",days:[],who:"Ambos",color:"#4ade80"};
 
+// ════════════════════════════════════════════════════════
+// GITHUB DB CONFIG
+// ════════════════════════════════════════════════════════
+const GH_OWNER = "gustaaffs";
+const GH_REPO  = "studyos";
+const GH_FILE  = "data.json";
+const GH_BRANCH= "main";
+
+function ghToken(){ return localStorage.getItem("gh_token")||""; }
+function ghHeaders(){ return {"Authorization":"token "+ghToken(),"Content-Type":"application/json","Accept":"application/vnd.github+json"}; }
+
+let _ghSha = null; // current SHA of data.json, needed to update it
+
+// Load from GitHub, fall back to localStorage while loading
 function loadST(){
   try{const r=localStorage.getItem("lifeos_v2");return r?{...defaultState(),...JSON.parse(r)}:defaultState();}
   catch(e){return defaultState();}
 }
-function saveST(){try{localStorage.setItem("lifeos_v2",JSON.stringify(ST));}catch(e){}}
+
+async function ghLoad(){
+  if(!ghToken()) return;
+  setSyncStatus("syncing");
+  try{
+    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders()});
+    if(res.status===404){
+      // file doesn't exist yet, will be created on first save
+      setSyncStatus("ok"); return;
+    }
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const json=await res.json();
+    _ghSha=json.sha;
+    const data=JSON.parse(atob(json.content.replace(/
+/g,"")));
+    ST={...defaultState(),...data};
+    localStorage.setItem("lifeos_v2",JSON.stringify(ST));
+    setSyncStatus("ok");
+    render();
+  }catch(e){
+    console.error("ghLoad",e);
+    setSyncStatus("error");
+  }
+}
+
+async function saveST(){
+  // always update localStorage immediately
+  try{localStorage.setItem("lifeos_v2",JSON.stringify(ST));}catch(e){}
+  if(!ghToken()){setSyncStatus("notoken");return;}
+  setSyncStatus("syncing");
+  try{
+    const body={message:"update data",content:btoa(unescape(encodeURIComponent(JSON.stringify(ST,null,2)))),branch:GH_BRANCH};
+    if(_ghSha) body.sha=_ghSha;
+    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+    if(!res.ok){const t=await res.text();throw new Error(t);}
+    const json=await res.json();
+    _ghSha=json.content.sha;
+    setSyncStatus("ok");
+  }catch(e){
+    console.error("saveST",e);
+    setSyncStatus("error");
+  }
+}
+
+function setSyncStatus(s){
+  const el=document.getElementById("sync-status");
+  if(!el)return;
+  const map={syncing:["⏳","syncing...","#fbbf24"],ok:["☁️","salvo","#4ade80"],error:["⚠️","erro","#f87171"],notoken:["🔑","sem token","#fb923c"]};
+  const [icon,label,color]=map[s]||map.ok;
+  el.innerHTML=`<span style="color:${color}">${icon} ${label}</span>`;
+}
 
 // ════════════════════════════════════════════════════════
 // HELPERS
@@ -1272,9 +1379,47 @@ if("serviceWorker" in navigator){
 }
 
 // ════════════════════════════════════════════════════════
+// SETTINGS MODAL
+// ════════════════════════════════════════════════════════
+function openSettings(){
+  const m=document.getElementById("settings-modal");
+  m.style.display="flex";
+  const inp=document.getElementById("token-input");
+  if(inp) inp.value=ghToken()||"";
+}
+function closeSettings(){ document.getElementById("settings-modal").style.display="none"; }
+function saveToken(){
+  const val=(document.getElementById("token-input")||{}).value||"";
+  if(!val){toast("Cole o token primeiro!");return;}
+  localStorage.setItem("gh_token",val.trim());
+  toast("Token salvo! Sincronizando...");
+  closeSettings();
+  ghLoad();
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(ST,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="lifeos-backup.json";a.click();
+}
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      ST={...defaultState(),...data};
+      saveST();render();toast("Dados importados!");closeSettings();
+    }catch(err){toast("Arquivo inválido!");}
+  };
+  reader.readAsText(file);
+}
+
+// ════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════
 render();
+// Load from GitHub on start (if token exists)
+if(ghToken()) ghLoad(); else setSyncStatus("notoken");
 </script>
 </body>
 </html>
