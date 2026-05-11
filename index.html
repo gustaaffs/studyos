@@ -224,7 +224,11 @@ const days = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 // Coloque seu token aqui. O token precisa ter permissão de escrita no repositório.
 // Recomendo criar um Fine-grained token apenas para este repositório.
 // ======================================================
-const GH_TOKEN  = ""; // cole aqui: github_pat_xxx ou ghp_xxx
+const GH_TOKEN_KEY = "lifeos_github_token";
+
+function ghToken(){
+  return localStorage.getItem(GH_TOKEN_KEY) || "";
+}
 const GH_OWNER  = "gustaaffs";
 const GH_REPO   = "studyos";
 const GH_FILE   = "data.json";
@@ -234,11 +238,11 @@ let GH_SHA = null;
 let GH_READY = false;
 
 function ghConfigured(){
-  return GH_TOKEN && GH_TOKEN.trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH;
+  return ghToken().trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH;
 }
 function ghHeaders(){
   return {
-    "Authorization": "Bearer " + GH_TOKEN.trim(),
+    "Authorization": "Bearer " + ghToken().trim(),
     "Accept": "application/vnd.github+json",
     "Content-Type": "application/json",
     "X-GitHub-Api-Version": "2022-11-28"
@@ -781,11 +785,64 @@ function addStudy(p){
   save();render();
 }
 
+
+function saveGithubToken(){
+  const inp=document.getElementById("github-token-input");
+  const val=(inp?.value||"").trim();
+  if(!val){toast("Cole o token primeiro.");return;}
+  localStorage.setItem(GH_TOKEN_KEY,val);
+  toast("Token salvo.");
+  ghLoad();
+  render();
+}
+function removeGithubToken(){
+  localStorage.removeItem(GH_TOKEN_KEY);
+  GH_SHA=null;
+  GH_READY=false;
+  setSyncStatus("error","Token removido.");
+  toast("Token removido.");
+  render();
+}
 function renderSettings(){
-  return `<section class="hero"><div class="section-label">Configurações</div><div class="metric"><div class="value">GitHub DB</div><div class="label">A base é carregada e salva automaticamente no arquivo <strong>data.json</strong> do repositório configurado no topo do HTML.</div></div></section>
+  const hasToken = ghToken().trim().length > 10;
+  return `<section class="hero">
+    <div class="section-label">Configurações</div>
+    <div class="metric">
+      <div class="value">GitHub DB</div>
+      <div class="label">Informe o token pela tela. Ele fica salvo somente neste navegador e será usado para criar/atualizar o <strong>data.json</strong>.</div>
+    </div>
+  </section>
   <div class="grid">
-    <div class="card span-6"><h3>Status da sincronização</h3><p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p><button class="btn" onclick="ghLoad()">Carregar do GitHub</button> <button class="btn ghost" onclick="ghSave()">Salvar agora</button></div>
-    <div class="card span-6"><h3>Configuração</h3><p style="color:var(--muted);line-height:1.6">Edite as variáveis <strong>GH_TOKEN</strong>, <strong>GH_OWNER</strong>, <strong>GH_REPO</strong>, <strong>GH_FILE</strong> e <strong>GH_BRANCH</strong> diretamente no HTML.</p></div>
+    <div class="card span-6">
+      <h3>Token do GitHub</h3>
+      <div class="form-grid">
+        <div class="f12">
+          <div class="label-small">Token</div>
+          <input id="github-token-input" class="input" type="password" placeholder="github_pat_xxx ou ghp_xxx" value="${hasToken ? ghToken() : ''}">
+        </div>
+      </div>
+      <div class="footer-actions">
+        <button class="btn green" onclick="saveGithubToken()">Salvar token e sincronizar</button>
+        <button class="btn ghost" onclick="removeGithubToken()">Remover token</button>
+      </div>
+      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">
+        O token precisa ter permissão de leitura e escrita no repositório configurado no HTML.
+      </p>
+    </div>
+
+    <div class="card span-6">
+      <h3>Status</h3>
+      <p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p>
+      <div class="footer-actions">
+        <button class="btn" onclick="ghLoad()">Carregar do GitHub</button>
+        <button class="btn ghost" onclick="ghSave()">Salvar agora</button>
+      </div>
+      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">
+        Repositório: <strong>${GH_OWNER}/${GH_REPO}</strong><br>
+        Arquivo da base: <strong>${GH_FILE}</strong><br>
+        Branch: <strong>${GH_BRANCH}</strong>
+      </p>
+    </div>
   </div>`;
 }
 
