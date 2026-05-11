@@ -97,6 +97,15 @@
       ],
       "owner": "Ambos",
       "time": "Manhã"
+    },
+    {
+      "id": 1778529652553,
+      "name": "Passar pano",
+      "days": [
+        6
+      ],
+      "owner": "Gus",
+      "time": "Manhã"
     }
   ],
   "taskChecks": {},
