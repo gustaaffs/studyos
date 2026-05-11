@@ -30,7 +30,7 @@
     "faculdade": [
       {
         "id": 1,
-        "text": "c",
+        "text": "",
         "done": false
       },
       {
@@ -71,13 +71,6 @@
       "value": 8000,
       "yearMonth": "2026-05",
       "type": "avulso"
-    },
-    {
-      "id": 1778086761104,
-      "name": "Mercado pago",
-      "value": 536.22,
-      "yearMonth": "2026-06",
-      "type": "fatura"
     }
   ],
   "routineTasks": [],
