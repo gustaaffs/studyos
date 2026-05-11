@@ -1,0 +1,87 @@
+{
+  "xp": 250,
+  "streak": 1,
+  "lastStudyDate": "2026-05-11",
+  "sessions": [
+    {
+      "date": "2026-05-11",
+      "area": "faculdade",
+      "hours": 1,
+      "note": ""
+    },
+    {
+      "date": "2026-05-11",
+      "area": "faculdade",
+      "hours": 1,
+      "note": "Tópicos especiais de tecnologia da informação"
+    },
+    {
+      "date": "2026-05-11",
+      "area": "sre",
+      "hours": 0.5,
+      "note": ""
+    }
+  ],
+  "unlockedAchievements": [
+    "budget_set",
+    "first_hour"
+  ],
+  "goals": {
+    "faculdade": [
+      {
+        "id": 1,
+        "text": "",
+        "done": false
+      },
+      {
+        "id": 2,
+        "text": "",
+        "done": false
+      },
+      {
+        "id": 3,
+        "text": "",
+        "done": false
+      }
+    ],
+    "sre": [
+      {
+        "id": 10,
+        "text": "",
+        "done": false
+      },
+      {
+        "id": 11,
+        "text": "",
+        "done": false
+      },
+      {
+        "id": 12,
+        "text": "",
+        "done": false
+      }
+    ]
+  },
+  "salary": 8000,
+  "expenses": [],
+  "futureExpenses": [
+    {
+      "id": 1778086702117,
+      "name": "Gastos do mês",
+      "value": 8000,
+      "yearMonth": "2026-05",
+      "type": "avulso"
+    },
+    {
+      "id": 1778086761104,
+      "name": "Mercado pago",
+      "value": 536.22,
+      "yearMonth": "2026-06",
+      "type": "fatura"
+    }
+  ],
+  "routineTasks": [],
+  "taskChecks": {},
+  "myName": "Eu",
+  "partnerName": "Parceiro(a)"
+}
