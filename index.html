@@ -451,8 +451,7 @@ async function ghLoad(){
     if(!res.ok) throw new Error("HTTP "+res.status);
     const json=await res.json();
     _ghSha=json.sha;
-    const data=JSON.parse(atob(json.content.replace(/
-/g,"")));
+    const data = JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g, "")))));
     ST={...defaultState(),...data};
     localStorage.setItem("lifeos_v2",JSON.stringify(ST));
     setSyncStatus("ok");
