@@ -1,363 +1,758 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life OS Couple Edition</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Life OS — Casal</title>
 <style>
 :root{
---bg:#0b0f14;
---card:#121922;
---card2:#18222d;
---border:#263241;
---text:#edf2f7;
---muted:#8fa1b3;
---green:#4ade80;
---blue:#38bdf8;
---orange:#fb923c;
---purple:#a78bfa;
---red:#f87171;
+  --bg:#070b10;
+  --bg2:#0b1118;
+  --panel:#101923;
+  --panel2:#15212d;
+  --panel3:#1a2734;
+  --border:#243445;
+  --border2:#365066;
+  --text:#f2f7fb;
+  --muted:#93a8ba;
+  --dim:#5e7182;
+  --blue:#38bdf8;
+  --green:#4ade80;
+  --orange:#fb923c;
+  --purple:#a78bfa;
+  --red:#f87171;
+  --yellow:#fbbf24;
+  --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
 body{
-margin:0;
-font-family:Inter,Arial,sans-serif;
-background:linear-gradient(180deg,#081018,#0b0f14);
-color:var(--text);
+  background:
+    radial-gradient(circle at 75% -10%,rgba(56,189,248,.12),transparent 30rem),
+    radial-gradient(circle at 10% 110%,rgba(74,222,128,.08),transparent 28rem),
+    var(--bg);
 }
+.app-shell{display:flex;min-height:100vh}
 .sidebar{
-position:fixed;
-left:0;
-top:0;
-bottom:0;
-width:260px;
-background:#0d141c;
-border-right:1px solid var(--border);
-padding:24px 18px;
+  width:290px;flex:0 0 290px;position:fixed;inset:0 auto 0 0;
+  background:rgba(10,17,24,.96);border-right:1px solid var(--border);
+  padding:28px 18px;overflow-y:auto;
 }
 .logo{
-font-size:30px;
-font-weight:800;
-margin-bottom:26px;
-background:linear-gradient(90deg,var(--blue),var(--green));
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+  font-size:31px;font-weight:900;letter-spacing:.5px;margin:0 0 28px;
+  background:linear-gradient(90deg,var(--blue),var(--green));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
-.nav button{
-width:100%;
-margin-bottom:10px;
-padding:14px;
-border:none;
-border-radius:14px;
-background:var(--card);
-color:var(--text);
-font-weight:700;
-cursor:pointer;
+.nav{display:grid;gap:10px;margin-bottom:18px}
+.nav-btn{
+  border:1px solid transparent;background:var(--panel);color:var(--text);
+  border-radius:16px;padding:15px 16px;font-weight:800;text-align:left;
+  display:flex;align-items:center;gap:10px;transition:.18s;
 }
-.content{
-margin-left:260px;
-padding:28px;
+.nav-btn:hover{border-color:var(--border2);transform:translateY(-1px)}
+.nav-btn.active{border-color:var(--blue);background:rgba(56,189,248,.11);box-shadow:0 0 0 1px rgba(56,189,248,.06)}
+.side-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px}
+.side-label,.section-label{font-size:12px;letter-spacing:3px;color:#9ec3df;text-transform:uppercase;margin-bottom:12px}
+.profile-row{display:flex;gap:8px;flex-wrap:wrap}
+.pill{
+  border:none;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900;
+  background:var(--panel2);color:var(--muted)
 }
+.pill.blue{color:var(--blue);background:rgba(56,189,248,.12)}
+.pill.purple{color:var(--purple);background:rgba(167,139,250,.12)}
+.pill.green{color:var(--green);background:rgba(74,222,128,.12)}
+.pill.orange{color:var(--orange);background:rgba(251,146,60,.12)}
+.pill.red{color:var(--red);background:rgba(248,113,113,.12)}
+.main{margin-left:290px;padding:26px 34px 60px;width:calc(100% - 290px)}
 .hero{
-background:linear-gradient(135deg,#122031,#0d1721);
-border:1px solid var(--border);
-border-radius:24px;
-padding:26px;
-margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(18,32,48,.96),rgba(10,17,24,.96));
+  border:1px solid var(--border);border-radius:26px;padding:26px 30px;margin-bottom:22px;
+  box-shadow:0 18px 40px rgba(0,0,0,.16);
 }
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:16px;
-}
+.hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.metric .label{font-size:14px;color:#9ab3c8;margin-top:3px}
+.metric .value{font-size:34px;font-weight:950;line-height:1.05;letter-spacing:-1px}
+.value.green{color:var(--green)}.value.red{color:var(--red)}.value.orange{color:var(--orange)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;align-items:stretch}
 .card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:18px;
-padding:18px;
+  background:rgba(16,25,35,.92);border:1px solid var(--border);border-radius:22px;
+  padding:20px;min-width:0;overflow:hidden;
 }
-.title{
-font-size:12px;
-letter-spacing:2px;
-color:var(--muted);
-margin-bottom:10px;
-text-transform:uppercase;
+.card h3{margin:0 0 14px;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#a8c7df;font-weight:800}
+.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab-btn{
+  border:1px solid var(--border);background:var(--panel);color:var(--muted);
+  border-radius:14px;padding:10px 14px;font-weight:900
 }
-.big{
-font-size:30px;
-font-weight:800;
+.tab-btn.active{color:var(--text);border-color:var(--blue);background:rgba(56,189,248,.12)}
+.btn{
+  border:none;border-radius:13px;padding:11px 14px;font-weight:900;background:var(--blue);color:#001018
 }
-.bar{
-height:10px;
-background:#0b0f14;
-border-radius:999px;
-overflow:hidden;
-margin-top:10px;
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}.btn.red{background:var(--red)}
+.input,.select{
+  width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:13px;color:var(--text);
+  padding:11px 12px;font-size:14px;outline:none
 }
-.fill{
-height:100%;
-background:linear-gradient(90deg,var(--blue),var(--green));
+.input:focus,.select:focus{border-color:var(--blue)}
+.form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:12px}
+.f3{grid-column:span 3}.f4{grid-column:span 4}.f5{grid-column:span 5}.f6{grid-column:span 6}.f8{grid-column:span 8}.f12{grid-column:span 12}
+.label-small{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.table-wrap{overflow:auto;max-width:100%}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{border-bottom:1px solid var(--border);padding:12px;text-align:left;vertical-align:middle}
+th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
+td{font-size:15px}
+.money{font-weight:950;white-space:nowrap}
+.money.green{color:var(--green)}.money.red{color:var(--red)}.money.orange{color:var(--orange)}
+.bar{height:10px;background:#060a0e;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green))}
+.row-card{
+  background:var(--panel2);border:1px solid rgba(255,255,255,.03);border-radius:17px;
+  padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px
 }
-.table{
-width:100%;
-border-collapse:collapse;
-margin-top:12px;
+.row-card:hover{border-color:var(--border2)}
+.row-title{font-weight:950;font-size:16px}
+.row-sub{color:var(--muted);font-size:13px;margin-top:3px}
+.month-list{display:grid;gap:12px}
+.month-card{
+  background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:18px;
+  display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:14px;align-items:center
 }
-.table td,.table th{
-padding:10px;
-border-bottom:1px solid var(--border);
-text-align:left;
+.month-card.active{border-color:var(--blue);background:rgba(56,189,248,.08)}
+.month-title{font-size:20px;font-weight:950}
+.month-kpis{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.kpi-mini{font-size:12px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted)}
+.compare-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.compare-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px}
+.compare-box .name{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
+.compare-box .num{font-size:23px;font-weight:950;margin-top:4px}
+.task-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--border2);background:transparent;color:#001018;font-weight:950}
+.task-check.done{background:var(--green);border-color:var(--green)}
+.footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hidden{display:none!important}
+.toast{
+  position:fixed;right:24px;bottom:24px;background:var(--panel2);border:1px solid var(--border2);
+  border-radius:999px;padding:12px 18px;color:var(--green);font-weight:900;opacity:0;transform:translateY(8px);
+  pointer-events:none;transition:.2s;z-index:99
 }
-.tag{
-display:inline-block;
-padding:6px 10px;
-border-radius:999px;
-font-size:12px;
-font-weight:700;
+.toast.show{opacity:1;transform:translateY(0)}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;
+  padding:20px;z-index:90
 }
-.green{background:#12301f;color:var(--green)}
-.orange{background:#37210f;color:var(--orange)}
-.blue{background:#102736;color:var(--blue)}
-.purple{background:#241736;color:var(--purple)}
-.task{
-display:flex;
-justify-content:space-between;
-padding:12px;
-border-radius:14px;
-background:var(--card2);
-margin-bottom:10px;
+.modal.show{display:flex}
+.modal-card{background:var(--panel);border:1px solid var(--border2);border-radius:24px;padding:22px;width:100%;max-width:720px;max-height:88vh;overflow:auto}
+.modal-title{font-size:22px;font-weight:950;margin-bottom:14px}
+@media(max-width:1180px){
+  .hero-grid{grid-template-columns:repeat(2,1fr)}
+  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 6}
+  .month-card{grid-template-columns:1fr 1fr}
 }
-@media(max-width:900px){
-.sidebar{
-position:relative;
-width:100%;
-height:auto;
-border-right:none;
-border-bottom:1px solid var(--border);
-}
-.content{
-margin-left:0;
-padding:18px;
-}
+@media(max-width:820px){
+  .app-shell{display:block}
+  .sidebar{position:sticky;top:0;width:100%;height:auto;z-index:20;border-right:none;border-bottom:1px solid var(--border);padding:14px 14px 10px}
+  .logo{font-size:24px;margin-bottom:10px}
+  .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .nav-btn{padding:10px 6px;justify-content:center;text-align:center;border-radius:13px;font-size:12px;gap:4px;flex-direction:column}
+  .side-card{display:none}
+  .main{margin-left:0;width:100%;padding:14px 12px calc(48px + var(--safe-b))}
+  .hero{padding:18px;border-radius:20px}
+  .hero-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .metric .value{font-size:24px}
+  .metric .label{font-size:12px}
+  .grid{grid-template-columns:1fr;gap:12px}
+  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-12{grid-column:span 1}
+  .card{padding:16px;border-radius:18px}
+  .month-card{grid-template-columns:1fr;gap:10px}
+  .compare-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .f3,.f4,.f5,.f6,.f8,.f12{grid-column:span 1}
+  .footer-actions .btn{width:100%}
+  .toast{left:12px;right:12px;bottom:12px;text-align:center}
 }
 </style>
 </head>
 <body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="logo">LIFE OS</div>
+    <nav class="nav">
+      <button class="nav-btn active" data-module="finance" onclick="setModule('finance')">💰 <span>Finanças</span></button>
+      <button class="nav-btn" data-module="home" onclick="setModule('home')">🏠 <span>Casa</span></button>
+      <button class="nav-btn" data-module="study" onclick="setModule('study')">📚 <span>Estudos</span></button>
+      <button class="nav-btn" data-module="settings" onclick="setModule('settings')">⚙️ <span>Config</span></button>
+    </nav>
+    <div class="side-card">
+      <div class="side-label">Perfis</div>
+      <div class="profile-row">
+        <span class="pill blue">Gus</span>
+        <span class="pill purple">Maria</span>
+        <span class="pill green">Casal</span>
+      </div>
+    </div>
+    <div class="side-card">
+      <div class="side-label">Dados</div>
+      <button class="btn ghost" style="width:100%" onclick="exportData()">Exportar JSON</button>
+      <label class="btn ghost" style="display:block;text-align:center;margin-top:8px">
+        Importar JSON
+        <input type="file" accept=".json" style="display:none" onchange="importData(event)">
+      </label>
+    </div>
+  </aside>
 
-<div class="sidebar">
-<div class="logo">LIFE OS</div>
-
-<div class="nav">
-<button>📚 Estudos</button>
-<button>💰 Finanças</button>
-<button>🏠 Casa</button>
-<button>📅 Planejamento</button>
-</div>
-
-<div class="card">
-<div class="title">Perfis</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<span class="tag blue">Gus</span>
-<span class="tag purple">Maria</span>
-</div>
-</div>
-
-</div>
-
-<div class="content">
-
-<div class="hero">
-<div class="title">Visão Geral do Casal</div>
-<div class="grid">
-<div>
-<div class="big">R$ 13.400</div>
-<div style="color:var(--muted)">Receita Total Projetada</div>
-</div>
-<div>
-<div class="big">R$ 10.240</div>
-<div style="color:var(--muted)">Gastos Projetados</div>
-</div>
-<div>
-<div class="big" style="color:var(--green)">R$ 3.160</div>
-<div style="color:var(--muted)">Sobra Prevista</div>
-</div>
-</div>
+  <main class="main">
+    <div id="app"></div>
+  </main>
 </div>
 
-<div class="grid">
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <div id="modal-content"></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
 
-<div class="card">
-<div class="title">Distribuição Financeira Inteligente</div>
+<script>
+const BRL = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const fmt = n => BRL.format(Number(n)||0);
+const monthsPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const fullMonths = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const days = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Essenciais</span>
-<strong>50%</strong>
-</div>
-<div class="bar"><div class="fill" style="width:50%"></div></div>
-</div>
+const defaultState = () => ({
+  salaries:{gus:7000,maria:6400},
+  rules:[
+    {id:"essenciais",name:"Essenciais",pct:50,color:"blue"},
+    {id:"investimentos",name:"Investimentos",pct:20,color:"green"},
+    {id:"lazer",name:"Lazer",pct:10,color:"orange"},
+    {id:"reserva",name:"Reserva/Metas",pct:20,color:"purple"}
+  ],
+  monthActuals:{},
+  entries:[
+    {id:1,month:ym(0),type:"expense",category:"essenciais",name:"Aluguel/Condomínio",projected:2500,actual:0,owner:"casal"},
+    {id:2,month:ym(0),type:"expense",category:"essenciais",name:"Mercado",projected:1600,actual:0,owner:"casal"},
+    {id:3,month:ym(0),type:"expense",category:"lazer",name:"Lazer/restaurantes",projected:800,actual:0,owner:"casal"},
+    {id:4,month:ym(0),type:"investment",category:"investimentos",name:"Investimentos",projected:2000,actual:0,owner:"casal"},
+    {id:5,month:ym(1),type:"expense",category:"essenciais",name:"Contas fixas",projected:3900,actual:0,owner:"casal"},
+    {id:6,month:ym(1),type:"investment",category:"investimentos",name:"Investimentos",projected:2200,actual:0,owner:"casal"},
+    {id:7,month:ym(2),type:"expense",category:"lazer",name:"Viagem",projected:3200,actual:0,owner:"casal"},
+  ],
+  goals:[
+    {id:1,name:"Reserva de emergência",target:30000,current:18000},
+    {id:2,name:"Viagem",target:8000,current:4200},
+    {id:3,name:"Investimentos 2026",target:20000,current:11300},
+  ],
+  tasks:[
+    {id:1,name:"Lavar roupa",days:[2,4],owner:"Maria",time:"Noite"},
+    {id:2,name:"Louça",days:[0,1,2,3,4,5,6],owner:"Gus",time:"Após jantar"},
+    {id:3,name:"Mercado",days:[6],owner:"Ambos",time:"Manhã"},
+    {id:4,name:"Faxina",days:[0],owner:"Ambos",time:"Manhã"},
+  ],
+  taskChecks:{},
+  study:{
+    gus:{sessions:[],goals:["Go","Zabbix","Concurso"]},
+    maria:{sessions:[],goals:["Estudo pessoal","Leitura","Curso"]}
+  }
+});
 
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Investimentos</span>
-<strong>20%</strong>
-</div>
-<div class="bar"><div class="fill" style="width:20%;background:var(--green)"></div></div>
-</div>
+function ym(offset=0){
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth()+offset);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+function ymLabel(key){
+  const [y,m]=key.split("-").map(Number);
+  return fullMonths[m-1]+" "+y;
+}
+function shortYm(key){
+  const [y,m]=key.split("-").map(Number);
+  return monthsPT[m-1]+"/"+String(y).slice(2);
+}
+let ST = load();
+let module = "finance";
+let financeTab = "months";
+let selectedMonth = ym(0);
 
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Lazer</span>
-<strong>10%</strong>
-</div>
-<div class="bar"><div class="fill" style="width:10%;background:var(--orange)"></div></div>
-</div>
+function load(){
+  try{
+    const raw = localStorage.getItem("lifeos_casal_v3");
+    return raw ? {...defaultState(),...JSON.parse(raw)} : defaultState();
+  }catch(e){ return defaultState(); }
+}
+function save(){
+  localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));
+}
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),2200);
+}
+function setModule(m){
+  module=m;
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.module===m));
+  render();
+}
+function setFinanceTab(t){
+  financeTab=t; render();
+}
+function monthKeys(){
+  const set = new Set([ym(0),ym(1),ym(2),ym(3),ym(4),ym(5)]);
+  ST.entries.forEach(e=>set.add(e.month));
+  Object.keys(ST.monthActuals||{}).forEach(k=>set.add(k));
+  return [...set].sort();
+}
+function monthSummary(key){
+  const salaryProjected = (Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
+  const actualOverride = ST.monthActuals?.[key]?.incomeActual;
+  const incomeActual = Number(actualOverride)||0;
 
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Reserva</span>
-<strong>20%</strong>
-</div>
-<div class="bar"><div class="fill" style="width:20%;background:var(--purple)"></div></div>
-</div>
+  const entries = ST.entries.filter(e=>e.month===key);
+  const expenseProjected = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.projected||0),0);
+  const expenseActual = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.actual||0),0);
+  const invProjected = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.projected||0),0);
+  const invActual = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.actual||0),0);
+  return {
+    salaryProjected,
+    incomeActual,
+    expenseProjected,
+    expenseActual,
+    invProjected,
+    invActual,
+    balanceProjected: salaryProjected - expenseProjected - invProjected,
+    balanceActual: (incomeActual||salaryProjected) - expenseActual - invActual
+  };
+}
+function currentSummary(){return monthSummary(selectedMonth)}
 
-</div>
+function render(){
+  const app=document.getElementById("app");
+  if(module==="finance") app.innerHTML=renderFinance();
+  if(module==="home") app.innerHTML=renderHome();
+  if(module==="study") app.innerHTML=renderStudy();
+  if(module==="settings") app.innerHTML=renderSettings();
+}
 
-<div class="card">
-<div class="title">Comparativo — Maio 2026</div>
+function renderHero(s){
+  return `
+  <section class="hero">
+    <div class="section-label">Visão geral — ${ymLabel(selectedMonth)}</div>
+    <div class="hero-grid">
+      <div class="metric"><div class="value">${fmt(s.salaryProjected)}</div><div class="label">Receita projetada</div></div>
+      <div class="metric"><div class="value">${fmt(s.expenseProjected)}</div><div class="label">Gastos projetados</div></div>
+      <div class="metric"><div class="value green">${fmt(s.invProjected)}</div><div class="label">Investimento projetado</div></div>
+      <div class="metric"><div class="value ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div><div class="label">Sobra projetada</div></div>
+    </div>
+  </section>`;
+}
 
-<table class="table">
-<tr>
-<th></th>
-<th>Projetado</th>
-<th>Realizado</th>
-</tr>
+function renderFinance(){
+  const s=currentSummary();
+  return `
+  ${renderHero(s)}
+  <div class="tabs">
+    <button class="tab-btn ${financeTab==='months'?'active':''}" onclick="setFinanceTab('months')">📅 Meses</button>
+    <button class="tab-btn ${financeTab==='compare'?'active':''}" onclick="setFinanceTab('compare')">📊 Projetado x Realizado</button>
+    <button class="tab-btn ${financeTab==='rules'?'active':''}" onclick="setFinanceTab('rules')">🧠 Percentuais</button>
+    <button class="tab-btn ${financeTab==='entries'?'active':''}" onclick="setFinanceTab('entries')">💸 Lançamentos</button>
+    <button class="tab-btn ${financeTab==='goals'?'active':''}" onclick="setFinanceTab('goals')">🎯 Metas</button>
+  </div>
+  ${financeTab==='months'?renderMonths():''}
+  ${financeTab==='compare'?renderCompare():''}
+  ${financeTab==='rules'?renderRules():''}
+  ${financeTab==='entries'?renderEntries():''}
+  ${financeTab==='goals'?renderGoals():''}`;
+}
 
-<tr>
-<td>Receitas</td>
-<td>R$ 13.400</td>
-<td>R$ 13.120</td>
-</tr>
+function renderMonths(){
+  const keys=monthKeys();
+  return `<div class="grid">
+    <div class="card span-12">
+      <h3>Timeline financeira mensal</h3>
+      <div class="month-list">
+        ${keys.map(k=>{
+          const s=monthSummary(k);
+          const active=k===selectedMonth;
+          return `<div class="month-card ${active?'active':''}">
+            <div>
+              <div class="month-title">${ymLabel(k)}</div>
+              <div class="month-kpis">
+                <span class="kpi-mini">Receita ${fmt(s.salaryProjected)}</span>
+                <span class="kpi-mini">Gastos ${fmt(s.expenseProjected)}</span>
+                <span class="kpi-mini">Invest. ${fmt(s.invProjected)}</span>
+              </div>
+            </div>
+            <div>
+              <div class="label-small">Saldo projetado</div>
+              <div class="money ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div>
+            </div>
+            <div>
+              <div class="label-small">Saldo realizado</div>
+              <div class="money ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div>
+            </div>
+            <div class="footer-actions" style="margin:0">
+              <button class="btn ghost" onclick="selectedMonth='${k}';financeTab='compare';render()">Abrir</button>
+              <button class="btn" onclick="openMonthEdit('${k}')">Realizado</button>
+            </div>
+          </div>`
+        }).join("")}
+      </div>
+    </div>
+  </div>`;
+}
 
-<tr>
-<td>Gastos</td>
-<td>R$ 10.240</td>
-<td>R$ 10.880</td>
-</tr>
+function renderCompare(){
+  const s=currentSummary();
+  const diffIncome=(s.incomeActual||s.salaryProjected)-s.salaryProjected;
+  const diffExpenses=s.expenseActual-s.expenseProjected;
+  const diffInv=s.invActual-s.invProjected;
+  const diffBalance=s.balanceActual-s.balanceProjected;
+  return `<div class="grid">
+    <div class="card span-7">
+      <h3>Comparativo — ${ymLabel(selectedMonth)}</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead>
+          <tbody>
+            ${compareRow("Receitas",s.salaryProjected,s.incomeActual||s.salaryProjected,diffIncome)}
+            ${compareRow("Gastos",s.expenseProjected,s.expenseActual,diffExpenses,true)}
+            ${compareRow("Investimentos",s.invProjected,s.invActual,diffInv)}
+            ${compareRow("Sobra",s.balanceProjected,s.balanceActual,diffBalance)}
+          </tbody>
+        </table>
+      </div>
+      <div class="footer-actions">
+        <button class="btn" onclick="openMonthEdit('${selectedMonth}')">Editar realizado do mês</button>
+        <button class="btn ghost" onclick="financeTab='entries';render()">Ver lançamentos</button>
+      </div>
+    </div>
 
-<tr>
-<td>Investimentos</td>
-<td>R$ 2.000</td>
-<td>R$ 1.700</td>
-</tr>
+    <div class="card span-5">
+      <h3>Leitura rápida</h3>
+      <div class="compare-grid">
+        <div class="compare-box"><div class="name">Receita real</div><div class="num">${fmt(s.incomeActual||s.salaryProjected)}</div></div>
+        <div class="compare-box"><div class="name">Gasto real</div><div class="num">${fmt(s.expenseActual)}</div></div>
+        <div class="compare-box"><div class="name">Investido real</div><div class="num green">${fmt(s.invActual)}</div></div>
+        <div class="compare-box"><div class="name">Sobra real</div><div class="num ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
+      </div>
+      <p style="color:var(--muted);line-height:1.5;margin-bottom:0">
+        Use essa tela para planejar o mês antes e depois preencher o que realmente aconteceu.
+        Assim vocês enxergam se o mês saiu melhor ou pior do que o combinado.
+      </p>
+    </div>
+  </div>`;
+}
+function compareRow(name,proj,real,diff,invert=false){
+  const ok = invert ? diff<=0 : diff>=0;
+  return `<tr>
+    <td><strong>${name}</strong></td>
+    <td>${fmt(proj)}</td>
+    <td>${fmt(real)}</td>
+    <td class="money ${ok?'green':'red'}">${diff>=0?'+ ':''}${fmt(diff)}</td>
+  </tr>`;
+}
 
-<tr>
-<td>Sobra</td>
-<td style="color:#4ade80">R$ 3.160</td>
-<td style="color:#f87171">R$ 2.240</td>
-</tr>
-</table>
+function renderRules(){
+  const income=(Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
+  const entries=ST.entries.filter(e=>e.month===selectedMonth);
+  return `<div class="grid">
+    <div class="card span-6">
+      <h3>Regra percentual da renda</h3>
+      ${ST.rules.map(r=>{
+        const target=income*(Number(r.pct)||0)/100;
+        const used=entries.filter(e=>e.category===r.id).reduce((a,e)=>a+Number(e.projected||0),0);
+        const pct=target ? Math.min(140,used/target*100) : 0;
+        return `<div style="margin-bottom:18px">
+          <div style="display:flex;justify-content:space-between;gap:12px">
+            <strong>${r.name}</strong>
+            <span>${r.pct}% · alvo ${fmt(target)}</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:${Math.min(100,pct)}%;background:var(--${r.color})"></div></div>
+          <div style="font-size:13px;color:${used>target?'var(--red)':'var(--muted)'}">Projetado no mês: ${fmt(used)} ${used>target?'— acima do alvo':''}</div>
+        </div>`
+      }).join("")}
+    </div>
+    <div class="card span-6">
+      <h3>Editar salários e percentuais</h3>
+      <div class="form-grid">
+        <div class="f6"><div class="label-small">Salário Gus</div><input class="input" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
+        <div class="f6"><div class="label-small">Salário Maria</div><input class="input" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div>
+      </div>
+      ${ST.rules.map(r=>`
+        <div class="form-grid">
+          <div class="f8"><input class="input" value="${esc(r.name)}" onchange="updateRule('${r.id}','name',this.value)"></div>
+          <div class="f4"><input class="input" type="number" value="${r.pct}" onchange="updateRule('${r.id}','pct',this.value)"></div>
+        </div>`).join("")}
+    </div>
+  </div>`;
+}
+function updateRule(id,field,val){
+  ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);
+  save();render();
+}
 
-</div>
+function renderEntries(){
+  const entries=ST.entries.filter(e=>e.month===selectedMonth);
+  return `<div class="grid">
+    <div class="card span-7">
+      <h3>Lançamentos — ${ymLabel(selectedMonth)}</h3>
+      ${entries.length?entries.map(e=>{
+        const typeLabel=e.type==="expense"?"Gasto":e.type==="investment"?"Investimento":"Receita";
+        return `<div class="row-card">
+          <div>
+            <div class="row-title">${esc(e.name)}</div>
+            <div class="row-sub">${typeLabel} · ${categoryName(e.category)} · ${e.owner}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="money">${fmt(e.projected)}</div>
+            <div class="row-sub">real: ${fmt(e.actual||0)}</div>
+          </div>
+          <button class="btn ghost" onclick="removeEntry(${e.id})">×</button>
+        </div>`
+      }).join(""):`<p style="color:var(--muted)">Nenhum lançamento neste mês.</p>`}
+    </div>
+    <div class="card span-5">
+      <h3>Novo lançamento</h3>
+      <div class="form-grid">
+        <div class="f12"><div class="label-small">Descrição</div><input id="e-name" class="input" placeholder="Ex: Mercado, aluguel, investimento..."></div>
+        <div class="f6"><div class="label-small">Tipo</div><select id="e-type" class="select"><option value="expense">Gasto</option><option value="investment">Investimento</option></select></div>
+        <div class="f6"><div class="label-small">Categoria</div><select id="e-cat" class="select">${ST.rules.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join("")}</select></div>
+        <div class="f6"><div class="label-small">Projetado</div><input id="e-proj" class="input" type="number" placeholder="0"></div>
+        <div class="f6"><div class="label-small">Realizado</div><input id="e-real" class="input" type="number" placeholder="0"></div>
+        <div class="f12"><div class="label-small">Responsável</div><select id="e-owner" class="select"><option>Casal</option><option>Gus</option><option>Maria</option></select></div>
+      </div>
+      <button class="btn green" style="width:100%" onclick="addEntry()">Adicionar lançamento</button>
+    </div>
+  </div>`;
+}
+function categoryName(id){ return ST.rules.find(r=>r.id===id)?.name || id; }
+function addEntry(){
+  const name=document.getElementById("e-name").value.trim();
+  if(!name){toast("Digite a descrição.");return}
+  ST.entries.push({
+    id:Date.now(), month:selectedMonth, name,
+    type:document.getElementById("e-type").value,
+    category:document.getElementById("e-cat").value,
+    projected:Number(document.getElementById("e-proj").value)||0,
+    actual:Number(document.getElementById("e-real").value)||0,
+    owner:document.getElementById("e-owner").value
+  });
+  save();toast("Lançamento adicionado.");render();
+}
+function removeEntry(id){
+  ST.entries=ST.entries.filter(e=>e.id!==id);save();render();
+}
 
-<div class="card">
-<div class="title">Timeline Financeira</div>
+function renderGoals(){
+  return `<div class="grid">
+    <div class="card span-7">
+      <h3>Metas financeiras do casal</h3>
+      ${ST.goals.map(g=>{
+        const pct=g.target?Math.min(100,Number(g.current)/Number(g.target)*100):0;
+        return `<div class="row-card">
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;gap:12px"><strong>${esc(g.name)}</strong><span>${fmt(g.current)} / ${fmt(g.target)}</span></div>
+            <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+          </div>
+          <button class="btn ghost" onclick="openGoalEdit(${g.id})">Editar</button>
+        </div>`
+      }).join("")}
+    </div>
+    <div class="card span-5">
+      <h3>Nova meta</h3>
+      <div class="form-grid">
+        <div class="f12"><input id="g-name" class="input" placeholder="Nome da meta"></div>
+        <div class="f6"><input id="g-current" class="input" type="number" placeholder="Atual"></div>
+        <div class="f6"><input id="g-target" class="input" type="number" placeholder="Objetivo"></div>
+      </div>
+      <button class="btn green" style="width:100%" onclick="addGoal()">Adicionar meta</button>
+    </div>
+  </div>`;
+}
+function addGoal(){
+  const name=document.getElementById("g-name").value.trim();
+  if(!name){toast("Digite a meta.");return}
+  ST.goals.push({id:Date.now(),name,current:Number(document.getElementById("g-current").value)||0,target:Number(document.getElementById("g-target").value)||0});
+  save();render();
+}
 
-<div class="task">
-<div>
-<strong>Junho</strong><br>
-<small style="color:var(--muted)">Saldo previsto</small>
-</div>
-<div style="color:var(--green)">+ R$ 3.480</div>
-</div>
+function renderHome(){
+  const today=new Date().getDay();
+  const todayKey=new Date().toISOString().slice(0,10);
+  const todayTasks=ST.tasks.filter(t=>t.days.includes(today));
+  return `<section class="hero">
+    <div class="section-label">Casa — rotina do casal</div>
+    <div class="hero-grid">
+      <div class="metric"><div class="value">${todayTasks.length}</div><div class="label">Tarefas hoje</div></div>
+      <div class="metric"><div class="value green">${todayTasks.filter(t=>ST.taskChecks[todayKey+"_"+t.id]).length}</div><div class="label">Concluídas</div></div>
+      <div class="metric"><div class="value">${ST.tasks.filter(t=>t.owner==="Gus").length}</div><div class="label">Responsáveis Gus</div></div>
+      <div class="metric"><div class="value">${ST.tasks.filter(t=>t.owner==="Maria").length}</div><div class="label">Responsáveis Maria</div></div>
+    </div>
+  </section>
+  <div class="grid">
+    <div class="card span-7">
+      <h3>Tarefas de hoje</h3>
+      ${todayTasks.map(t=>{
+        const key=todayKey+"_"+t.id; const done=!!ST.taskChecks[key];
+        return `<div class="row-card">
+          <button class="task-check ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button>
+          <div style="flex:1"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.owner} · ${t.time}</div></div>
+          <span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span>
+        </div>`
+      }).join("") || `<p style="color:var(--muted)">Sem tarefas hoje.</p>`}
+    </div>
+    <div class="card span-5">
+      <h3>Nova tarefa fixa</h3>
+      <div class="form-grid">
+        <div class="f12"><input id="t-name" class="input" placeholder="Ex: Passar pano"></div>
+        <div class="f6"><select id="t-owner" class="select"><option>Gus</option><option>Maria</option><option>Ambos</option></select></div>
+        <div class="f6"><input id="t-time" class="input" placeholder="Horário ideal"></div>
+        <div class="f12"><div class="label-small">Dias</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${days.map((d,i)=>`<label class="pill"><input type="checkbox" class="day-check" value="${i}"> ${d}</label>`).join("")}</div>
+        </div>
+      </div>
+      <button class="btn green" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
+    </div>
+    <div class="card span-12">
+      <h3>Rotina completa</h3>
+      ${ST.tasks.map(t=>`<div class="row-card">
+        <div><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.days.map(d=>days[d]).join(", ")} · ${t.time}</div></div>
+        <span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span>
+        <button class="btn ghost" onclick="ST.tasks=ST.tasks.filter(x=>x.id!==${t.id});save();render()">×</button>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+function addTask(){
+  const name=document.getElementById("t-name").value.trim();
+  const selected=[...document.querySelectorAll(".day-check:checked")].map(x=>Number(x.value));
+  if(!name||!selected.length){toast("Preencha nome e dias.");return}
+  ST.tasks.push({id:Date.now(),name,days:selected,owner:document.getElementById("t-owner").value,time:document.getElementById("t-time").value||"Livre"});
+  save();render();
+}
 
-<div class="task">
-<div>
-<strong>Julho</strong><br>
-<small style="color:var(--muted)">Viagem + IPVA</small>
-</div>
-<div style="color:var(--orange)">+ R$ 1.220</div>
-</div>
+function renderStudy(){
+  return `<section class="hero">
+    <div class="section-label">Estudos individuais</div>
+    <div class="hero-grid">
+      <div class="metric"><div class="value">${ST.study.gus.sessions.length}</div><div class="label">Sessões Gus</div></div>
+      <div class="metric"><div class="value">${ST.study.maria.sessions.length}</div><div class="label">Sessões Maria</div></div>
+      <div class="metric"><div class="value green">${sumStudy('gus')}h</div><div class="label">Horas Gus</div></div>
+      <div class="metric"><div class="value green">${sumStudy('maria')}h</div><div class="label">Horas Maria</div></div>
+    </div>
+  </section>
+  <div class="grid">
+    ${["gus","maria"].map(p=>`<div class="card span-6">
+      <h3>${p==="gus"?"Gus":"Maria"}</h3>
+      <div class="form-grid">
+        <div class="f8"><input id="study-note-${p}" class="input" placeholder="O que estudou?"></div>
+        <div class="f4"><input id="study-hours-${p}" class="input" type="number" placeholder="Horas"></div>
+      </div>
+      <button class="btn" onclick="addStudy('${p}')">Registrar estudo</button>
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+      ${(ST.study[p].sessions||[]).slice(-5).reverse().map(s=>`<div class="row-card"><div><strong>${s.hours}h</strong><div class="row-sub">${esc(s.note)} · ${s.date}</div></div></div>`).join("") || `<p style="color:var(--muted)">Sem sessões registradas.</p>`}
+    </div>`).join("")}
+  </div>`;
+}
+function sumStudy(p){return (ST.study[p].sessions||[]).reduce((a,s)=>a+Number(s.hours||0),0)}
+function addStudy(p){
+  const h=Number(document.getElementById("study-hours-"+p).value)||0;
+  const note=document.getElementById("study-note-"+p).value.trim();
+  if(!h){toast("Informe as horas.");return}
+  ST.study[p].sessions.push({date:new Date().toISOString().slice(0,10),hours:h,note});
+  save();render();
+}
 
-<div class="task">
-<div>
-<strong>Agosto</strong><br>
-<small style="color:var(--muted)">Compra planejada</small>
-</div>
-<div style="color:var(--red)">- R$ 640</div>
-</div>
+function renderSettings(){
+  return `<section class="hero"><div class="section-label">Configurações</div><div class="metric"><div class="value">Life OS</div><div class="label">Dados salvos no navegador via localStorage. Use exportar/importar para backup.</div></div></section>
+  <div class="grid">
+    <div class="card span-6"><h3>Backup</h3><button class="btn" onclick="exportData()">Exportar JSON</button></div>
+    <div class="card span-6"><h3>Limpar dados</h3><button class="btn red" onclick="if(confirm('Limpar tudo?')){localStorage.removeItem('lifeos_casal_v3');ST=defaultState();save();render()}">Resetar</button></div>
+  </div>`;
+}
 
-</div>
+function openMonthEdit(k){
+  selectedMonth=k;
+  const s=monthSummary(k);
+  const modal=document.getElementById("modal");
+  document.getElementById("modal-content").innerHTML=`
+    <div class="modal-title">Realizado — ${ymLabel(k)}</div>
+    <div class="form-grid">
+      <div class="f6"><div class="label-small">Receita realizada</div><input id="m-income" class="input" type="number" value="${s.incomeActual||s.salaryProjected}"></div>
+      <div class="f6"><div class="label-small">Observação</div><input id="m-note" class="input" value="${esc(ST.monthActuals?.[k]?.note||'')}"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead>
+        <tbody>
+          ${ST.entries.filter(e=>e.month===k).map(e=>`<tr>
+            <td>${esc(e.name)}</td>
+            <td>${fmt(e.projected)}</td>
+            <td><input class="input actual-entry" data-id="${e.id}" type="number" value="${e.actual||0}"></td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="footer-actions">
+      <button class="btn green" onclick="saveMonthActual('${k}')">Salvar realizado</button>
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+    </div>`;
+  modal.classList.add("show");
+}
+function saveMonthActual(k){
+  ST.monthActuals=ST.monthActuals||{};
+  ST.monthActuals[k]={incomeActual:Number(document.getElementById("m-income").value)||0,note:document.getElementById("m-note").value||""};
+  document.querySelectorAll(".actual-entry").forEach(inp=>{
+    const id=Number(inp.dataset.id);
+    ST.entries=ST.entries.map(e=>e.id===id?{...e,actual:Number(inp.value)||0}:e);
+  });
+  save();closeModal();financeTab="compare";toast("Realizado salvo.");render();
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 
-<div class="card">
-<div class="title">Responsabilidades da Casa</div>
+function openGoalEdit(id){
+  const g=ST.goals.find(x=>x.id===id); if(!g)return;
+  const modal=document.getElementById("modal");
+  document.getElementById("modal-content").innerHTML=`
+    <div class="modal-title">Editar meta</div>
+    <div class="form-grid">
+      <div class="f12"><div class="label-small">Nome</div><input id="goal-name" class="input" value="${esc(g.name)}"></div>
+      <div class="f6"><div class="label-small">Atual</div><input id="goal-current" class="input" type="number" value="${g.current}"></div>
+      <div class="f6"><div class="label-small">Objetivo</div><input id="goal-target" class="input" type="number" value="${g.target}"></div>
+    </div>
+    <div class="footer-actions">
+      <button class="btn green" onclick="saveGoal(${id})">Salvar</button>
+      <button class="btn red" onclick="deleteGoal(${id})">Excluir</button>
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+    </div>`;
+  modal.classList.add("show");
+}
+function saveGoal(id){
+  ST.goals=ST.goals.map(g=>g.id===id?{...g,name:document.getElementById("goal-name").value,current:Number(document.getElementById("goal-current").value)||0,target:Number(document.getElementById("goal-target").value)||0}:g);
+  save();closeModal();render();
+}
+function deleteGoal(id){ST.goals=ST.goals.filter(g=>g.id!==id);save();closeModal();render();}
 
-<div class="task">
-<div>
-<strong>Lavar roupa</strong><br>
-<small style="color:var(--muted)">Terça e Quinta</small>
-</div>
-<div><span class="tag purple">Maria</span></div>
-</div>
-
-<div class="task">
-<div>
-<strong>Louça</strong><br>
-<small style="color:var(--muted)">Diariamente</small>
-</div>
-<div><span class="tag blue">Gus</span></div>
-</div>
-
-<div class="task">
-<div>
-<strong>Mercado</strong><br>
-<small style="color:var(--muted)">Sábado</small>
-</div>
-<div><span class="tag green">Ambos</span></div>
-</div>
-
-<div class="task">
-<div>
-<strong>Faxina</strong><br>
-<small style="color:var(--muted)">Domingo</small>
-</div>
-<div><span class="tag green">Ambos</span></div>
-</div>
-
-</div>
-
-<div class="card">
-<div class="title">Metas do Casal</div>
-
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Reserva Emergência</span>
-<strong>R$ 18.000 / 30.000</strong>
-</div>
-<div class="bar"><div class="fill" style="width:60%"></div></div>
-</div>
-
-<div style="margin-bottom:14px">
-<div style="display:flex;justify-content:space-between">
-<span>Viagem</span>
-<strong>R$ 4.200 / 8.000</strong>
-</div>
-<div class="bar"><div class="fill" style="width:52%;background:var(--orange)"></div></div>
-</div>
-
-<div>
-<div style="display:flex;justify-content:space-between">
-<span>Investimentos</span>
-<strong>R$ 11.300 / 20.000</strong>
-</div>
-<div class="bar"><div class="fill" style="width:56%;background:var(--green)"></div></div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+function exportData(){
+  const blob=new Blob([JSON.stringify(ST,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="lifeos-casal-backup.json";a.click();
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{ST={...defaultState(),...JSON.parse(ev.target.result)};save();toast("Dados importados.");render()}
+    catch(err){toast("Arquivo inválido.")}
+  };
+  reader.readAsText(file);
+}
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+render();
+</script>
 </body>
 </html>
