@@ -21,7 +21,13 @@
           "topic": "Faculdade"
         }
       ],
-      "goals": []
+      "goals": [
+        {
+          "id": 1778515179691,
+          "text": "Faculdade",
+          "done": false
+        }
+      ]
     },
     "partner": {
       "xp": 0,
