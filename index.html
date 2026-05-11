@@ -195,12 +195,8 @@ td{font-size:15px}
       </div>
     </div>
     <div class="side-card">
-      <div class="side-label">Dados</div>
-      <button class="btn ghost" style="width:100%" onclick="exportData()">Exportar JSON</button>
-      <label class="btn ghost" style="display:block;text-align:center;margin-top:8px">
-        Importar JSON
-        <input type="file" accept=".json" style="display:none" onchange="importData(event)">
-      </label>
+      <div class="side-label">GitHub DB</div>
+      <div id="sync-status" style="font-size:13px;color:var(--muted);line-height:1.5">☁️ aguardando...</div>
     </div>
   </aside>
 
@@ -222,6 +218,123 @@ const fmt = n => BRL.format(Number(n)||0);
 const monthsPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const fullMonths = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const days = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+// ======================================================
+// GITHUB DB — CONFIGURAÇÃO NATIVA
+// Coloque seu token aqui. O token precisa ter permissão de escrita no repositório.
+// Recomendo criar um Fine-grained token apenas para este repositório.
+// ======================================================
+const GH_TOKEN  = ""; // cole aqui: github_pat_xxx ou ghp_xxx
+const GH_OWNER  = "gustaaffs";
+const GH_REPO   = "studyos";
+const GH_FILE   = "data.json";
+const GH_BRANCH = "main";
+
+let GH_SHA = null;
+let GH_READY = false;
+
+function ghConfigured(){
+  return GH_TOKEN && GH_TOKEN.trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH;
+}
+function ghHeaders(){
+  return {
+    "Authorization": "Bearer " + GH_TOKEN.trim(),
+    "Accept": "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+}
+function setSyncStatus(state,msg){
+  const color = state==="ok" ? "var(--green)" : state==="error" ? "var(--red)" : state==="sync" ? "var(--yellow)" : "var(--muted)";
+  const icon = state==="ok" ? "☁️" : state==="error" ? "⚠️" : state==="sync" ? "⏳" : "🔑";
+  const html = `<span style="color:${color}">${icon} ${msg}</span>`;
+  const a=document.getElementById("sync-status");
+  const b=document.getElementById("sync-status-main");
+  if(a)a.innerHTML=html;
+  if(b)b.innerHTML=html;
+}
+function encodeBase64Unicode(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function decodeBase64Unicode(str){
+  return decodeURIComponent(escape(atob(str.replace(/\n/g,""))));
+}
+async function ghLoad(){
+  if(!ghConfigured()){
+    setSyncStatus("error","Configure o GH_TOKEN no HTML.");
+    return false;
+  }
+  setSyncStatus("sync","carregando do GitHub...");
+  try{
+    const url=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`;
+    const res=await fetch(url,{headers:ghHeaders(),cache:"no-store"});
+    if(res.status===404){
+      GH_READY=true;
+      GH_SHA=null;
+      setSyncStatus("ok","data.json ainda não existe. Será criado no próximo salvamento.");
+      await ghSave();
+      return true;
+    }
+    if(!res.ok) throw new Error("GitHub GET HTTP "+res.status+" — "+await res.text());
+    const json=await res.json();
+    GH_SHA=json.sha;
+    const data=JSON.parse(decodeBase64Unicode(json.content));
+    ST={...defaultState(),...data};
+    localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));
+    GH_READY=true;
+    setSyncStatus("ok","sincronizado com GitHub.");
+    render();
+    return true;
+  }catch(err){
+    console.error("ghLoad",err);
+    setSyncStatus("error","erro ao carregar do GitHub. Veja o Console.");
+    return false;
+  }
+}
+let ghSaveTimer=null;
+function scheduleGhSave(){
+  clearTimeout(ghSaveTimer);
+  ghSaveTimer=setTimeout(()=>ghSave(),700);
+}
+async function ghSave(){
+  try{ localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST)); }catch(e){}
+  if(!ghConfigured()){
+    setSyncStatus("error","Configure o GH_TOKEN no HTML.");
+    return false;
+  }
+  setSyncStatus("sync","salvando no GitHub...");
+  try{
+    if(!GH_SHA){
+      const check=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders(),cache:"no-store"});
+      if(check.ok){
+        const current=await check.json();
+        GH_SHA=current.sha;
+      }
+    }
+    const body={
+      message:"update Life OS database",
+      content:encodeBase64Unicode(JSON.stringify(ST,null,2)),
+      branch:GH_BRANCH
+    };
+    if(GH_SHA) body.sha=GH_SHA;
+    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,{
+      method:"PUT",
+      headers:ghHeaders(),
+      body:JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error("GitHub PUT HTTP "+res.status+" — "+await res.text());
+    const json=await res.json();
+    GH_SHA=json.content.sha;
+    GH_READY=true;
+    setSyncStatus("ok","salvo no GitHub.");
+    return true;
+  }catch(err){
+    console.error("ghSave",err);
+    setSyncStatus("error","erro ao salvar no GitHub. Veja o Console.");
+    return false;
+  }
+}
+
 
 const defaultState = () => ({
   salaries:{gus:7000,maria:6400},
@@ -286,6 +399,7 @@ function load(){
 }
 function save(){
   localStorage.setItem("lifeos_casal_v3",JSON.stringify(ST));
+  scheduleGhSave();
 }
 function toast(msg){
   const el=document.getElementById("toast");
@@ -668,10 +782,10 @@ function addStudy(p){
 }
 
 function renderSettings(){
-  return `<section class="hero"><div class="section-label">Configurações</div><div class="metric"><div class="value">Life OS</div><div class="label">Dados salvos no navegador via localStorage. Use exportar/importar para backup.</div></div></section>
+  return `<section class="hero"><div class="section-label">Configurações</div><div class="metric"><div class="value">GitHub DB</div><div class="label">A base é carregada e salva automaticamente no arquivo <strong>data.json</strong> do repositório configurado no topo do HTML.</div></div></section>
   <div class="grid">
-    <div class="card span-6"><h3>Backup</h3><button class="btn" onclick="exportData()">Exportar JSON</button></div>
-    <div class="card span-6"><h3>Limpar dados</h3><button class="btn red" onclick="if(confirm('Limpar tudo?')){localStorage.removeItem('lifeos_casal_v3');ST=defaultState();save();render()}">Resetar</button></div>
+    <div class="card span-6"><h3>Status da sincronização</h3><p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p><button class="btn" onclick="ghLoad()">Carregar do GitHub</button> <button class="btn ghost" onclick="ghSave()">Salvar agora</button></div>
+    <div class="card span-6"><h3>Configuração</h3><p style="color:var(--muted);line-height:1.6">Edite as variáveis <strong>GH_TOKEN</strong>, <strong>GH_OWNER</strong>, <strong>GH_REPO</strong>, <strong>GH_FILE</strong> e <strong>GH_BRANCH</strong> diretamente no HTML.</p></div>
   </div>`;
 }
 
@@ -738,21 +852,10 @@ function saveGoal(id){
 }
 function deleteGoal(id){ST.goals=ST.goals.filter(g=>g.id!==id);save();closeModal();render();}
 
-function exportData(){
-  const blob=new Blob([JSON.stringify(ST,null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="lifeos-casal-backup.json";a.click();
-}
-function importData(e){
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{ST={...defaultState(),...JSON.parse(ev.target.result)};save();toast("Dados importados.");render()}
-    catch(err){toast("Arquivo inválido.")}
-  };
-  reader.readAsText(file);
-}
 function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 render();
+setSyncStatus("sync","iniciando...");
+ghLoad();
 </script>
 </body>
 </html>
