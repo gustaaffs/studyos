@@ -117,6 +117,21 @@
       ],
       "owner": "Gus",
       "time": "Noite"
+    },
+    {
+      "id": 1778529707642,
+      "name": "Lixo",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "owner": "Gus",
+      "time": "Noite"
     }
   ],
   "taskChecks": {},
