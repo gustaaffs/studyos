@@ -62,14 +62,7 @@
       "owner": "casal"
     }
   ],
-  "goals": [
-    {
-      "id": 3,
-      "name": "Investimentos 2026",
-      "target": 20000,
-      "current": 0
-    }
-  ],
+  "goals": [],
   "tasks": [
     {
       "id": 1,
