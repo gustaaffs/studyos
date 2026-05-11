@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "people": {
+    "me": {
+      "name": "Gus"
+    },
+    "partner": {
+      "name": "Maria"
+    }
+  },
+  "study": {
+    "me": {
+      "xp": 0,
+      "streak": 0,
+      "lastStudyDate": null,
+      "sessions": [],
+      "goals": []
+    },
+    "partner": {
+      "xp": 0,
+      "streak": 0,
+      "lastStudyDate": null,
+      "sessions": [],
+      "goals": []
+    }
+  },
+  "finance": {
+    "salaries": {
+      "me": 4000,
+      "partner": 4000
+    },
+    "buckets": {
+      "essenciais": 50,
+      "investimentos": 20,
+      "lifestyle": 20,
+      "dividas": 10
+    },
+    "expenses": [],
+    "goals": []
+  },
+  "home": {
+    "tasks": [],
+    "checks": {}
+  }
+}
