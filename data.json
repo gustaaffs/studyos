@@ -30,18 +30,7 @@
     }
   ],
   "monthActuals": {},
-  "entries": [
-    {
-      "id": 7,
-      "month": "2026-07",
-      "type": "expense",
-      "category": "lazer",
-      "name": "Viagem",
-      "projected": 3200,
-      "actual": 0,
-      "owner": "casal"
-    }
-  ],
+  "entries": [],
   "goals": [],
   "tasks": [
     {
