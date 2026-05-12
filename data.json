@@ -32,26 +32,6 @@
   "monthActuals": {},
   "entries": [
     {
-      "id": 5,
-      "month": "2026-06",
-      "type": "expense",
-      "category": "essenciais",
-      "name": "Contas fixas",
-      "projected": 3900,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
-      "id": 6,
-      "month": "2026-06",
-      "type": "investment",
-      "category": "investimentos",
-      "name": "Investimentos",
-      "projected": 2200,
-      "actual": 0,
-      "owner": "casal"
-    },
-    {
       "id": 7,
       "month": "2026-07",
       "type": "expense",
