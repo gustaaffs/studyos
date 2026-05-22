@@ -1122,41 +1122,140 @@ function addCard(){
 function removeCard(id){ST.cardExpenses=(ST.cardExpenses||[]).filter(c=>c.id!==id);save();render();}
 
 // ── Rules ─────────────────────────────────────────────────
+const RULE_COLORS=[
+  {id:'b',label:'Azul',val:'var(--blue)'},
+  {id:'g',label:'Verde',val:'var(--green)'},
+  {id:'o',label:'Laranja',val:'var(--orange)'},
+  {id:'p',label:'Roxo',val:'var(--purple)'},
+  {id:'r',label:'Vermelho',val:'var(--red)'},
+  {id:'y',label:'Amarelo',val:'var(--yellow)'},
+];
+
 function renderRules(s){
   const income=s.sal;
+  const totalPct=ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0);
+  const pctOk=totalPct===100;
   return `<div class="grid">
+  <!-- coluna esquerda: visualização -->
   <div class="card s6">
     <div class="card-title">Distribuição do orçamento — ${ymLabel(selMonth)}</div>
     ${ST.rules.map(r=>{
       const target=income*r.pct/100;
       const used=s.catTotals[r.id]||0;
       const pct2=target?Math.min(140,used/target*100):0;
-      const col=pct2>100?'var(--red)':pct2>90?'var(--orange)':'var(--'+r.color+')';
+      const barCol=pct2>100?'var(--red)':pct2>90?'var(--orange)':'var(--'+r.color+')';
       return `<div style="margin-bottom:18px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-          <strong>${esc(r.name)}</strong>
-          <span style="font-family:var(--font-mono);font-size:13px">${r.pct}% · alvo ${fmt(target)}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:10px;height:10px;border-radius:3px;background:var(--${r.color});flex-shrink:0"></div>
+            <strong>${esc(r.name)}</strong>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--muted);white-space:nowrap">${r.pct}% · alvo ${fmt(target)}</span>
         </div>
-        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct2)}%;background:${col}"></div></div>
-        <div style="font-size:12px;color:${used>target?'var(--red)':used>target*.9?'var(--orange)':'var(--muted)'}">
-          ${fmt(used)} usado ${pct2>100?'⚠️ acima do alvo':pct2>90?'🟡 quase no limite':''}
+        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct2)}%;background:${barCol}"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:3px">
+          <span style="color:${used>target?'var(--red)':used>target*.9?'var(--orange)':'var(--muted)'}">
+            ${fmt(used)} usado ${pct2>100?'⚠️ acima do alvo':pct2>90?'🟡 quase no limite':''}
+          </span>
+          <span style="color:var(--dim)">${Math.round(pct2)}%</span>
         </div>
       </div>`;}).join('')}
+    <!-- total geral -->
+    <div style="padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px;color:var(--muted)">Total alocado</span>
+      <span style="font-family:var(--font-mono);font-weight:800;font-size:15px;color:${pctOk?'var(--green)':'var(--red)'}">${totalPct}% ${pctOk?'✓':'⚠️'}</span>
+    </div>
+    ${!pctOk?`<div class="alert warn" style="margin-top:10px"><span class="alert-icon">⚠️</span>Os percentuais devem somar exatamente 100%. Faltam ${100-totalPct}% ou sobram ${totalPct-100}%.</div>`:''}
   </div>
+
+  <!-- coluna direita: edição completa -->
   <div class="card s6">
-    <div class="card-title">Editar salários e regras</div>
-    <div class="fg">
+    <div class="card-title">Salários</div>
+    <div class="fg" style="margin-bottom:20px">
       <div class="f6"><label class="label">Salário ${esc(ST.name1)}</label><input class="inp" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
       <div class="f6"><label class="label">Salário ${esc(ST.name2)}</label><input class="inp" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div>
     </div>
-    ${ST.rules.map(r=>`<div class="fg" style="margin-bottom:0;margin-top:8px">
-      <div class="f8"><input class="inp sm" value="${esc(r.name)}" onchange="updRule('${r.id}','name',this.value)"></div>
-      <div class="f3"><div style="display:flex;align-items:center;gap:4px"><input class="inp sm" type="number" value="${r.pct}" onchange="updRule('${r.id}','pct',this.value)"><span style="color:var(--muted);white-space:nowrap">%</span></div></div>
+
+    <div class="card-title">Categorias</div>
+    ${ST.rules.map(r=>`
+    <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;margin-bottom:8px">
+      <!-- cor -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <select class="sel sm" style="width:56px;padding:6px 4px;font-size:12px" onchange="updRule('${r.id}','color',this.value)">
+          ${RULE_COLORS.map(c=>`<option value="${c.id}" ${r.color===c.id?'selected':''}>${c.label}</option>`).join('')}
+        </select>
+        <input class="inp sm" style="flex:1" value="${esc(r.name)}" onchange="updRule('${r.id}','name',this.value)" placeholder="Nome da categoria">
+      </div>
+      <!-- percentual -->
+      <div style="display:flex;align-items:center;gap:4px">
+        <input class="inp sm" type="number" min="0" max="100" value="${r.pct}" style="width:58px;text-align:right" onchange="updRule('${r.id}','pct',this.value)">
+        <span style="color:var(--muted);font-size:13px">%</span>
+      </div>
+      <!-- distribuir restante -->
+      <button class="btn sm ghost" title="Distribuir % restante nesta categoria" onclick="autoFillPct('${r.id}')">↔</button>
+      <!-- remover -->
+      <button class="btn sm ghost" style="color:var(--red);border-color:rgba(248,113,113,.3)" onclick="removeRule('${r.id}')" title="Remover categoria">×</button>
     </div>`).join('')}
-    <p style="color:var(--muted);font-size:12px;margin-top:12px">Total: ${ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0)}% ${ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0)===100?'✓':'⚠️ deve somar 100%'}</p>
+
+    <!-- soma visual -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);margin-top:6px">
+      <span style="font-size:12px;color:var(--muted)">Soma total</span>
+      <span style="font-family:var(--font-mono);font-weight:800;color:${pctOk?'var(--green)':'var(--red)'}">${totalPct}%</span>
+    </div>
+
+    <!-- nova categoria -->
+    <div style="margin-top:14px;padding:14px;background:var(--panel2);border-radius:var(--r)">
+      <div class="card-title" style="margin-bottom:10px">Nova categoria</div>
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
+        <input id="rule-name" class="inp sm" placeholder="Nome (ex: Saúde)">
+        <div style="display:flex;align-items:center;gap:4px">
+          <input id="rule-pct" class="inp sm" type="number" min="0" max="100" placeholder="%" style="width:58px;text-align:right">
+          <span style="color:var(--muted);font-size:13px">%</span>
+        </div>
+        <select id="rule-color" class="sel sm" style="width:80px;padding:6px 4px;font-size:12px">
+          ${RULE_COLORS.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn g sm" style="width:100%;margin-top:10px" onclick="addRule()">+ Adicionar categoria</button>
+    </div>
   </div></div>`;
 }
-function updRule(id,field,val){ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);save();render();}
+function updRule(id,field,val){
+  ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);
+  save();render();
+}
+function removeRule(id){
+  if(ST.rules.length<=1){toast('Deve existir ao menos uma categoria','err');return;}
+  // warn if category has entries
+  const hasEntries=(ST.entries||[]).some(e=>e.category===id)||(ST.recurring||[]).some(r=>r.category===id)||(ST.cardExpenses||[]).some(c=>c.category===id);
+  if(hasEntries){
+    openModal(`<div class="modal-title">Remover categoria?</div>
+      <p style="color:var(--muted);margin-bottom:16px">Existem lançamentos usando esta categoria. Eles ficarão sem categoria até serem editados.</p>
+      <div class="btn-row">
+        <button class="btn r" onclick="doRemoveRule('${id}')">Remover mesmo assim</button>
+        <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+      </div>`);
+  } else {
+    ST.rules=ST.rules.filter(r=>r.id!==id);save();render();toast('Categoria removida');
+  }
+}
+function doRemoveRule(id){ST.rules=ST.rules.filter(r=>r.id!==id);save();closeModal();render();toast('Categoria removida');}
+function addRule(){
+  const name=(document.getElementById('rule-name')?.value||'').trim();
+  const pct=Number(document.getElementById('rule-pct')?.value)||0;
+  const color=document.getElementById('rule-color')?.value||'b';
+  if(!name){toast('Digite o nome da categoria','err');return;}
+  if(!pct){toast('Digite o percentual','err');return;}
+  const id='cat_'+Date.now();
+  ST.rules.push({id,name,pct,color});
+  save();toast('Categoria adicionada');render();
+}
+function autoFillPct(id){
+  const others=ST.rules.filter(r=>r.id!==id).reduce((a,r)=>a+(Number(r.pct)||0),0);
+  const fill=Math.max(0,100-others);
+  ST.rules=ST.rules.map(r=>r.id===id?{...r,pct:fill}:r);
+  save();render();toast(`% ajustado para ${fill}%`);
+}
 
 // ── Goals ─────────────────────────────────────────────────
 function renderGoals(){
@@ -1493,11 +1592,7 @@ function saveGoalEdit(id){
 // ══════════════════════════════════════════════════════════
 render();
 setSyncUI('syncing','iniciando...');
-if(!ST.onboarded){
-  showOnboarding();
-} else {
-  ghLoad();
-}
+ghLoad();
 </script>
 </body>
 </html>
