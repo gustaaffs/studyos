@@ -35,26 +35,7 @@
   ],
   "monthActuals": {},
   "entries": [],
-  "recurring": [
-    {
-      "id": 101,
-      "name": "Aluguel / Condomínio",
-      "value": 2500,
-      "category": "essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": 102,
-      "name": "Mercado",
-      "value": 1600,
-      "category": "essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    }
-  ],
+  "recurring": [],
   "cardExpenses": [],
   "goals": [],
   "tasks": [
