@@ -85,6 +85,15 @@
       "category": "essenciais",
       "owner": "casal",
       "active": true
+    },
+    {
+      "id": 1779474118110,
+      "name": "Luz",
+      "value": 300,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "casal",
+      "active": true
     }
   ],
   "cardExpenses": [],
