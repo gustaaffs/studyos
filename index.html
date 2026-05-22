@@ -553,30 +553,58 @@ function monthKeys(){
 }
 function monthSummary(key){
   const sal=(Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
-  const incomeActual=Number(ST.monthActuals?.[key]?.incomeActual)||0;
+  const actuals=ST.monthActuals?.[key]||{};
+  const incomeActual=Number(actuals.incomeActual)||0;
+  const recurOvr=actuals.recurOverrides||{};   // {recId: actualValue}
+  const cardOvr=actuals.cardOverrides||{};     // {cardEntryId: actualValue}
+
   const manual=(ST.entries||[]).filter(e=>e.month===key);
   const recur=recurringForMonth(key);
   const card=cardEntriesForMonth(key);
-  const allExp=[...manual,...recur.map(r=>({...r,projected:r.value,actual:0})),...card.map(c=>({...c,projected:c.value,actual:0}))];
-  const expProj=allExp.filter(e=>e.type!=='investment').reduce((a,e)=>a+Number(e.projected||e.value||0),0);
-  const invProj=allExp.filter(e=>e.type==='investment').reduce((a,e)=>a+Number(e.projected||e.value||0),0);
-  const expAct=manual.filter(e=>e.type==='expense').reduce((a,e)=>a+Number(e.actual||0),0);
-  const invAct=manual.filter(e=>e.type==='investment').reduce((a,e)=>a+Number(e.actual||0),0);
+
+  // projected rows (use declared value)
+  const allProj=[
+    ...manual.map(e=>({...e, projected:Number(e.projected||0)})),
+    ...recur.map(r=>({...r, projected:r.value})),
+    ...card.map(c=>({...c, projected:c.value})),
+  ];
+
+  // actual rows: manual uses e.actual; recurring/card use override OR fall back to projected
+  const allAct=[
+    ...manual.map(e=>({...e, actual:Number(e.actual??e.projected??0)})),
+    ...recur.map(r=>({...r, actual:Number(recurOvr[r.recId]??r.value)})),
+    ...card.map(c=>({...c, actual:Number(cardOvr[c.id]??c.value)})),
+  ];
+
+  const expProj=allProj.filter(e=>e.type!=='investment').reduce((a,e)=>a+e.projected,0);
+  const invProj=allProj.filter(e=>e.type==='investment').reduce((a,e)=>a+e.projected,0);
+  const expAct=allAct.filter(e=>e.type!=='investment').reduce((a,e)=>a+e.actual,0);
+  const invAct=allAct.filter(e=>e.type==='investment').reduce((a,e)=>a+e.actual,0);
+
+  // catTotals: projetado por categoria
   const catTotals={};
-  allExp.forEach(e=>{catTotals[e.category]=(catTotals[e.category]||0)+Number(e.projected||e.value||0);});
+  allProj.forEach(e=>{catTotals[e.category]=(catTotals[e.category]||0)+e.projected;});
+
+  // catActuals: realizado por categoria
+  const catActuals={};
+  allAct.forEach(e=>{catActuals[e.category]=(catActuals[e.category]||0)+e.actual;});
+
   const byOwner={p1:0,p2:0,casal:0};
-  allExp.filter(e=>e.type!=='investment').forEach(e=>{
-    const v=Number(e.projected||e.value||0);
+  allProj.filter(e=>e.type!=='investment').forEach(e=>{
+    const v=e.projected;
     if(e.owner==='p1'||e.owner===ST.name1?.toLowerCase()) byOwner.p1+=v;
     else if(e.owner==='p2'||e.owner===ST.name2?.toLowerCase()) byOwner.p2+=v;
     else byOwner.casal+=v;
   });
+
   return {
     sal, incomeActual,
     expProj, invProj, expAct, invAct,
     balProj:sal-expProj-invProj,
     balAct:(incomeActual||sal)-expAct-invAct,
-    catTotals, byOwner, manual, recur, card,
+    catTotals, catActuals, byOwner,
+    manual, recur, card,
+    allProj, allAct,
     cardTotal:card.reduce((a,c)=>a+c.value,0),
     recurTotal:recur.reduce((a,r)=>a+r.value,0),
     manualExpTotal:manual.filter(e=>e.type==='expense').reduce((a,e)=>a+Number(e.projected||0),0),
@@ -933,10 +961,16 @@ function renderMonths(){
 
 // ── Compare ───────────────────────────────────────────────
 function renderCompare(s){
+  // for actual: recurring/card use allAct values (which include overrides)
+  const recurActMap={};
+  s.allAct.filter(e=>e.isRecurring).forEach(e=>{ recurActMap[e.recId]=e.actual; });
+  const cardActMap={};
+  s.allAct.filter(e=>e.isCard).forEach(e=>{ cardActMap[e.id]=e.actual; });
+
   const allRows=[
-    ...s.recur.map(r=>({name:'🔁 '+r.name,proj:r.value,real:0,owner:r.owner,auto:true})),
-    ...s.card.map(c=>({name:'💳 '+c.name,proj:c.value,real:0,owner:c.owner,auto:true})),
-    ...s.manual.map(e=>({name:e.name,proj:Number(e.projected||0),real:Number(e.actual||0),owner:e.owner,auto:false,id:e.id})),
+    ...s.recur.map(r=>({name:'🔁 '+r.name,proj:r.value,real:recurActMap[r.recId]??r.value,owner:r.owner,auto:true})),
+    ...s.card.map(c=>({name:'💳 '+c.name,proj:c.value,real:cardActMap[c.id]??c.value,owner:c.owner,auto:true})),
+    ...s.manual.map(e=>({name:e.name,proj:Number(e.projected||0),real:Number(e.actual??e.projected??0),owner:e.owner,auto:false,id:e.id})),
   ];
   const diffBal=s.balAct-s.balProj;
   return `<div class="grid">
@@ -1135,16 +1169,31 @@ function renderRules(s){
   const income=s.sal;
   const totalPct=ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0);
   const pctOk=totalPct===100;
+  const view = window._rulesView || 'proj'; // 'proj' | 'real'
+  const catData = view==='real' ? s.catActuals : s.catTotals;
+  const viewIncome = view==='real' ? (s.incomeActual||s.sal) : s.sal;
+
   return `<div class="grid">
-  <!-- coluna esquerda: visualização -->
+  <!-- coluna esquerda: visualização com toggle -->
   <div class="card s6">
-    <div class="card-title">Distribuição do orçamento — ${ymLabel(selMonth)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:0">Distribuição — ${ymLabel(selMonth)}</div>
+      <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <button onclick="window._rulesView='proj';render()" style="padding:6px 14px;font-size:12px;font-weight:700;border:none;cursor:pointer;background:${view==='proj'?'var(--blue)':'var(--panel2)'};color:${view==='proj'?'#001622':'var(--muted)'}">Projetado</button>
+        <button onclick="window._rulesView='real';render()" style="padding:6px 14px;font-size:12px;font-weight:700;border:none;cursor:pointer;background:${view==='real'?'var(--green)':'var(--panel2)'};color:${view==='real'?'#001810':'var(--muted)'}">Realizado</button>
+      </div>
+    </div>
+    ${view==='real'?`<div class="alert info" style="margin-bottom:14px"><span class="alert-icon">💡</span>Realizado = projetado por padrão. Edite pelo botão <strong>"Real"</strong> na aba Meses.</div>`:''}
     ${ST.rules.map(r=>{
-      const target=income*r.pct/100;
-      const used=s.catTotals[r.id]||0;
+      const target=viewIncome*r.pct/100;
+      const used=catData[r.id]||0;
       const pct2=target?Math.min(140,used/target*100):0;
       const barCol=pct2>100?'var(--red)':pct2>90?'var(--orange)':'var(--'+r.color+')';
-      return `<div style="margin-bottom:18px">
+      // compare proj vs real
+      const projUsed=s.catTotals[r.id]||0;
+      const realUsed=s.catActuals[r.id]||0;
+      const diff=realUsed-projUsed;
+      return `<div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px">
           <div style="display:flex;align-items:center;gap:8px">
             <div style="width:10px;height:10px;border-radius:3px;background:var(--${r.color});flex-shrink:0"></div>
@@ -1152,23 +1201,41 @@ function renderRules(s){
           </div>
           <span style="font-family:var(--font-mono);font-size:12px;color:var(--muted);white-space:nowrap">${r.pct}% · alvo ${fmt(target)}</span>
         </div>
-        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct2)}%;background:${barCol}"></div></div>
+        <!-- barra principal -->
+        <div class="bar" style="height:10px"><div class="bar-fill" style="width:${Math.min(100,pct2)}%;background:${barCol}"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:3px">
           <span style="color:${used>target?'var(--red)':used>target*.9?'var(--orange)':'var(--muted)'}">
-            ${fmt(used)} usado ${pct2>100?'⚠️ acima do alvo':pct2>90?'🟡 quase no limite':''}
+            ${fmt(used)} ${pct2>100?'⚠️ acima do alvo':pct2>90?'🟡 quase no limite':''}
           </span>
           <span style="color:var(--dim)">${Math.round(pct2)}%</span>
         </div>
+        <!-- mini linha proj vs real quando no modo realizado -->
+        ${view==='real'?`<div style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:var(--muted)">
+          <span>Proj: ${fmt(projUsed)}</span>
+          <span>·</span>
+          <span>Real: ${fmt(realUsed)}</span>
+          <span style="margin-left:auto;font-weight:700;color:${diff>0?'var(--red)':diff<0?'var(--green)':'var(--dim)'}">${diff>0?'▲ +':'▼ '}${fmt(Math.abs(diff))}</span>
+        </div>`:''}
       </div>`;}).join('')}
-    <!-- total geral -->
+    <!-- total -->
     <div style="padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:13px;color:var(--muted)">Total alocado</span>
-      <span style="font-family:var(--font-mono);font-weight:800;font-size:15px;color:${pctOk?'var(--green)':'var(--red)'}">${totalPct}% ${pctOk?'✓':'⚠️'}</span>
+      <div>
+        <div style="font-size:13px;color:var(--muted)">Saldo do mês</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:1px">${view==='proj'?'projetado':'realizado'}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-mono);font-weight:800;font-size:18px;color:${view==='proj'?(s.balProj>=0?'var(--green)':'var(--red)'):(s.balAct>=0?'var(--green)':'var(--red)'}">
+          ${view==='proj'?fmt(s.balProj):fmt(s.balAct)}
+        </div>
+        ${view==='real'&&s.balAct!==s.balProj?`<div style="font-size:11px;color:${s.balAct>s.balProj?'var(--green)':'var(--red)'};margin-top:2px">
+          ${s.balAct>s.balProj?'▲':'▼'} ${fmt(Math.abs(s.balAct-s.balProj))} vs projetado
+        </div>`:''}
     </div>
-    ${!pctOk?`<div class="alert warn" style="margin-top:10px"><span class="alert-icon">⚠️</span>Os percentuais devem somar exatamente 100%. Faltam ${100-totalPct}% ou sobram ${totalPct-100}%.</div>`:''}
+    </div>
+    ${!pctOk?`<div class="alert warn" style="margin-top:10px"><span class="alert-icon">⚠️</span>Percentuais somam ${totalPct}%. Devem somar 100%.</div>`:''}
   </div>
 
-  <!-- coluna direita: edição completa -->
+  <!-- coluna direita: edição de categorias -->
   <div class="card s6">
     <div class="card-title">Salários</div>
     <div class="fg" style="margin-bottom:20px">
@@ -1179,31 +1246,25 @@ function renderRules(s){
     <div class="card-title">Categorias</div>
     ${ST.rules.map(r=>`
     <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;margin-bottom:8px">
-      <!-- cor -->
       <div style="display:flex;align-items:center;gap:8px">
         <select class="sel sm" style="width:56px;padding:6px 4px;font-size:12px" onchange="updRule('${r.id}','color',this.value)">
           ${RULE_COLORS.map(c=>`<option value="${c.id}" ${r.color===c.id?'selected':''}>${c.label}</option>`).join('')}
         </select>
-        <input class="inp sm" style="flex:1" value="${esc(r.name)}" onchange="updRule('${r.id}','name',this.value)" placeholder="Nome da categoria">
+        <input class="inp sm" style="flex:1" value="${esc(r.name)}" onchange="updRule('${r.id}','name',this.value)">
       </div>
-      <!-- percentual -->
       <div style="display:flex;align-items:center;gap:4px">
         <input class="inp sm" type="number" min="0" max="100" value="${r.pct}" style="width:58px;text-align:right" onchange="updRule('${r.id}','pct',this.value)">
         <span style="color:var(--muted);font-size:13px">%</span>
       </div>
-      <!-- distribuir restante -->
-      <button class="btn sm ghost" title="Distribuir % restante nesta categoria" onclick="autoFillPct('${r.id}')">↔</button>
-      <!-- remover -->
-      <button class="btn sm ghost" style="color:var(--red);border-color:rgba(248,113,113,.3)" onclick="removeRule('${r.id}')" title="Remover categoria">×</button>
+      <button class="btn sm ghost" title="Preencher % restante" onclick="autoFillPct('${r.id}')">↔</button>
+      <button class="btn sm ghost" style="color:var(--red);border-color:rgba(248,113,113,.3)" onclick="removeRule('${r.id}')">×</button>
     </div>`).join('')}
 
-    <!-- soma visual -->
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);margin-top:6px">
       <span style="font-size:12px;color:var(--muted)">Soma total</span>
       <span style="font-family:var(--font-mono);font-weight:800;color:${pctOk?'var(--green)':'var(--red)'}">${totalPct}%</span>
     </div>
 
-    <!-- nova categoria -->
     <div style="margin-top:14px;padding:14px;background:var(--panel2);border-radius:var(--r)">
       <div class="card-title" style="margin-bottom:10px">Nova categoria</div>
       <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
@@ -1339,12 +1400,91 @@ function exportCSV(){
 // ══════════════════════════════════════════════════════════
 // RENDER HOME
 // ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// HOME HELPERS
+// ══════════════════════════════════════════════════════════
+
+// freq types: 'weekly' | 'biweekly' | 'monthly' | 'once'
+// weekly:    {freq:'weekly', days:[0..6]}
+// biweekly:  {freq:'biweekly', days:[0..6], startDate:'YYYY-MM-DD'}
+// monthly:   {freq:'monthly', dayOfMonth:1..31}
+// once:      {freq:'once', date:'YYYY-MM-DD'}
+
+function taskDueToday(t, todayStr){
+  const d = new Date(todayStr+'T00:00:00');
+  const dow = d.getDay();
+  const dom = d.getDate();
+  const freq = t.freq || 'weekly';
+
+  if(freq === 'weekly'){
+    return (t.days||[]).includes(dow);
+  }
+  if(freq === 'biweekly'){
+    if(!(t.days||[]).includes(dow)) return false;
+    // count weeks from startDate
+    const start = new Date((t.startDate||todayStr)+'T00:00:00');
+    const diffDays = Math.round((d - start) / 86400000);
+    const diffWeeks = Math.floor(diffDays / 7);
+    return diffWeeks % 2 === 0;
+  }
+  if(freq === 'monthly'){
+    return dom === (Number(t.dayOfMonth)||1);
+  }
+  if(freq === 'once'){
+    return t.date === todayStr;
+  }
+  return false;
+}
+
+function taskFreqLabel(t){
+  const freq = t.freq || 'weekly';
+  const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  if(freq === 'weekly'){
+    return 'Semanal · ' + (t.days||[]).map(d=>DAY_NAMES[d]).join(', ');
+  }
+  if(freq === 'biweekly'){
+    return 'Quinzenal · ' + (t.days||[]).map(d=>DAY_NAMES[d]).join(', ');
+  }
+  if(freq === 'monthly'){
+    return `Mensal · dia ${t.dayOfMonth}`;
+  }
+  if(freq === 'once'){
+    return `Única · ${t.date||'—'}`;
+  }
+  return freq;
+}
+
+function taskFreqIcon(t){
+  const freq = t.freq || 'weekly';
+  if(freq==='weekly') return '📅';
+  if(freq==='biweekly') return '🗓';
+  if(freq==='monthly') return '📆';
+  if(freq==='once') return '📌';
+  return '📅';
+}
+
+let homeTab = 'today';
+let newTaskFreq = 'weekly';
+
 function renderHome(){
-  const todayDow=new Date().getDay();
-  const todayStr=today();
-  const todayTasks=(ST.tasks||[]).filter(t=>t.days.includes(todayDow));
-  const doneTasks=todayTasks.filter(t=>!!ST.taskChecks[todayStr+'_'+t.id]);
-  const pct=todayTasks.length?Math.round(doneTasks.length/todayTasks.length*100):0;
+  const todayStr = today();
+  const allTasks = ST.tasks || [];
+  const todayTasks = allTasks.filter(t => taskDueToday(t, todayStr));
+  const doneTasks = todayTasks.filter(t => !!ST.taskChecks[todayStr+'_'+t.id]);
+  const pct = todayTasks.length ? Math.round(doneTasks.length/todayTasks.length*100) : 0;
+
+  // upcoming: next 7 days
+  const upcoming = [];
+  for(let i=1;i<=7;i++){
+    const d = new Date(); d.setDate(d.getDate()+i);
+    const ds = d.toISOString().slice(0,10);
+    const due = allTasks.filter(t=>taskDueToday(t,ds));
+    if(due.length) upcoming.push({date:ds, label:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]+' '+d.getDate(), tasks:due});
+  }
+
+  const groups = {weekly:[], biweekly:[], monthly:[], once:[]};
+  allTasks.forEach(t=>{const f=t.freq||'weekly'; if(groups[f]) groups[f].push(t);});
+
   return `
   <div class="page-header">
     <div><div class="page-title">Casa</div><div class="page-sub">Rotina de ${ST.name1} & ${ST.name2}</div></div>
@@ -1352,54 +1492,229 @@ function renderHome(){
   <div class="hero-bar">
     <div class="hero-metric"><div class="lbl">Hoje</div><div class="val">${doneTasks.length}/${todayTasks.length}</div><div class="sub">tarefas</div></div>
     <div class="hero-metric"><div class="lbl">Progresso</div><div class="val ${pct===100?'g':'b'}">${pct}%</div><div class="sub">${pct===100?'tudo em dia! ✓':'do dia'}</div></div>
-    <div class="hero-metric"><div class="lbl">${esc(ST.name1)}</div><div class="val b">${(ST.tasks||[]).filter(t=>t.owner==='p1').length}</div><div class="sub">tarefas fixas</div></div>
-    <div class="hero-metric"><div class="lbl">${esc(ST.name2)}</div><div class="val p">${(ST.tasks||[]).filter(t=>t.owner==='p2').length}</div><div class="sub">tarefas fixas</div></div>
+    <div class="hero-metric"><div class="lbl">Total cadastradas</div><div class="val">${allTasks.length}</div><div class="sub">${groups.once.filter(t=>!ST.taskChecks[t.date+'_'+t.id]).length} únicas pendentes</div></div>
+    <div class="hero-metric"><div class="lbl">Próximos 7 dias</div><div class="val b">${upcoming.reduce((a,u)=>a+u.tasks.length,0)}</div><div class="sub">tarefas agendadas</div></div>
   </div>
-  <div class="grid">
-  <div class="card s7">
+
+  <div class="tabs">
+    <button class="tab ${homeTab==='today'?'on':''}" onclick="homeTab='today';render()">📋 Hoje</button>
+    <button class="tab ${homeTab==='upcoming'?'on':''}" onclick="homeTab='upcoming';render()">🗓 Próximos 7 dias</button>
+    <button class="tab ${homeTab==='all'?'on':''}" onclick="homeTab='all';render()">📚 Todas as tarefas</button>
+    <button class="tab ${homeTab==='add'?'on':''}" onclick="homeTab='add';render()">➕ Nova tarefa</button>
+  </div>
+
+  ${homeTab==='today' ? renderHomeToday(todayTasks, doneTasks, todayStr) : ''}
+  ${homeTab==='upcoming' ? renderHomeUpcoming(upcoming, todayStr) : ''}
+  ${homeTab==='all' ? renderHomeAll(groups) : ''}
+  ${homeTab==='add' ? renderHomeAdd() : ''}
+  `;
+}
+
+function renderHomeToday(todayTasks, doneTasks, todayStr){
+  if(!todayTasks.length) return `<div class="card s12" style="text-align:center;padding:32px">
+    <div style="font-size:40px;margin-bottom:10px">😌</div>
+    <div style="font-size:17px;font-weight:700;margin-bottom:6px">Nada por hoje!</div>
+    <div style="color:var(--muted);font-size:14px">Aproveite o dia. Sem tarefas agendadas.</div>
+  </div>`;
+
+  // group by owner
+  const byOwner = {};
+  todayTasks.forEach(t=>{
+    const o = t.owner||'ambos';
+    if(!byOwner[o]) byOwner[o]=[];
+    byOwner[o].push(t);
+  });
+
+  return `<div class="grid"><div class="card s12">
     <div class="card-title">Tarefas de hoje</div>
-    ${todayTasks.length?todayTasks.map(t=>{
-      const key=todayStr+'_'+t.id;const done=!!ST.taskChecks[key];
-      return `<div class="row" style="${done?'opacity:.5':''}">
-        <button class="task-chk ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button>
-        <div style="flex:1">
-          <div class="row-title" style="${done?'text-decoration:line-through':''}">${esc(t.name)}</div>
-          <div class="row-sub">${ownerLabel(t.owner)} · ${t.time}</div>
-        </div>
-        <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
-      </div>`;}).join(''):'<p style="color:var(--muted)">Sem tarefas hoje 😌</p>'}
-  </div>
-  <div class="card s5">
-    <div class="card-title">Nova tarefa recorrente</div>
-    <div class="fg">
-      <div class="f12"><label class="label">Nome</label><input id="tn" class="inp" placeholder="Ex: Passar pano"></div>
-      <div class="f6"><label class="label">Responsável</label><select id="to" class="sel"><option value="p1">${esc(ST.name1)}</option><option value="p2">${esc(ST.name2)}</option><option value="ambos">Ambos</option></select></div>
-      <div class="f6"><label class="label">Horário</label><input id="tt" class="inp" placeholder="Ex: Manhã"></div>
-      <div class="f12"><label class="label">Dias</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map((d,i)=>`<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" class="dc" value="${i}"> ${d}</label>`).join('')}</div>
-      </div>
-    </div>
-    <button class="btn g" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
-  </div>
-  <div class="card s12">
-    <div class="card-title">Rotina completa</div>
-    ${(ST.tasks||[]).length?(ST.tasks||[]).map(t=>`<div class="row">
-      <div style="flex:1">
-        <div class="row-title">${esc(t.name)}</div>
-        <div class="row-sub">${t.days.map(d=>['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d]).join(', ')} · ${t.time}</div>
-      </div>
-      <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
-      <button class="btn sm ghost" onclick="ST.tasks=(ST.tasks||[]).filter(x=>x.id!==${t.id});save();render()">×</button>
-    </div>`).join(''):'<p style="color:var(--muted)">Nenhuma tarefa cadastrada.</p>'}
+    ${Object.entries(byOwner).map(([owner, tasks])=>`
+      <div style="font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:14px 0 8px;font-family:var(--font-mono)">${ownerLabel(owner)}</div>
+      ${tasks.map(t=>{
+        const key=todayStr+'_'+t.id; const done=!!ST.taskChecks[key];
+        const freq=t.freq||'weekly';
+        const isOnce=freq==='once';
+        return `<div class="row" style="${done?'opacity:.45':''}">
+          <button class="task-chk ${done?'done':''}" onclick="checkTask('${key}',${isOnce},${t.id})">${done?'✓':''}</button>
+          <div style="flex:1">
+            <div class="row-title" style="${done?'text-decoration:line-through':''}">${taskFreqIcon(t)} ${esc(t.name)}</div>
+            <div class="row-sub">${t.time||'Livre'} · <span class="pill dim" style="font-size:10px">${taskFreqLabel(t)}</span></div>
+          </div>
+          <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
+        </div>`;}).join('')}
+    `).join('')}
   </div></div>`;
 }
+
+function checkTask(key, isOnce, taskId){
+  const current = !!ST.taskChecks[key];
+  ST.taskChecks[key] = !current;
+  // if 'once' and just marked done, optionally archive
+  save(); render();
+}
+
+function renderHomeUpcoming(upcoming, todayStr){
+  if(!upcoming.length) return `<div class="card s12" style="text-align:center;padding:32px;color:var(--muted)">Nenhuma tarefa agendada nos próximos 7 dias.</div>`;
+  return `<div class="grid"><div class="card s12">
+    <div class="card-title">Próximos 7 dias</div>
+    ${upcoming.map(u=>`
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:8px">
+          <span>${u.label}</span>
+          <span style="font-size:11px;color:var(--muted);font-weight:400">${u.tasks.length} tarefa${u.tasks.length!==1?'s':''}</span>
+        </div>
+        ${u.tasks.map(t=>`<div class="row">
+          <span style="font-size:18px">${taskFreqIcon(t)}</span>
+          <div style="flex:1">
+            <div class="row-title">${esc(t.name)}</div>
+            <div class="row-sub">${t.time||'Livre'}</div>
+          </div>
+          <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
+        </div>`).join('')}
+      </div>
+    `).join('')}
+  </div></div>`;
+}
+
+function renderHomeAll(groups){
+  const sections = [
+    {key:'weekly', label:'📅 Semanais', empty:'Nenhuma tarefa semanal.'},
+    {key:'biweekly', label:'🗓 Quinzenais', empty:'Nenhuma tarefa quinzenal.'},
+    {key:'monthly', label:'📆 Mensais', empty:'Nenhuma tarefa mensal.'},
+    {key:'once', label:'📌 Únicas', empty:'Nenhuma tarefa única pendente.'},
+  ];
+  return `<div class="grid"><div class="card s12">
+    <div class="card-title">Todas as tarefas cadastradas</div>
+    ${sections.map(sec=>`
+      <div style="margin-bottom:24px">
+        <div style="font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;font-family:var(--font-mono)">${sec.label} <span style="color:var(--dim)">(${groups[sec.key].length})</span></div>
+        ${groups[sec.key].length ? groups[sec.key].map(t=>`<div class="row">
+          <div style="flex:1">
+            <div class="row-title">${esc(t.name)}</div>
+            <div class="row-sub">${taskFreqLabel(t)} · ${t.time||'Livre'}</div>
+          </div>
+          <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
+          <button class="btn sm ghost" onclick="ST.tasks=ST.tasks.filter(x=>x.id!==${t.id});save();render()">×</button>
+        </div>`).join('') : `<p style="color:var(--dim);font-size:13px;padding:8px 0">${sec.empty}</p>`}
+      </div>
+    `).join('')}
+  </div></div>`;
+}
+
+function renderHomeAdd(){
+  const DAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const freq = newTaskFreq;
+  return `<div class="grid">
+  <div class="card s6">
+    <div class="card-title">Nova tarefa</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Nome</label><input id="tn" class="inp" placeholder="Ex: Lavar roupa, pagar conta..."></div>
+      <div class="f6"><label class="label">Responsável</label>
+        <select id="to" class="sel">
+          <option value="p1">${esc(ST.name1)}</option>
+          <option value="p2">${esc(ST.name2)}</option>
+          <option value="ambos">Ambos</option>
+        </select>
+      </div>
+      <div class="f6"><label class="label">Horário / turno</label><input id="tt" class="inp" placeholder="Ex: Manhã, Noite..."></div>
+    </div>
+
+    <label class="label">Frequência</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;margin-top:4px">
+      ${[['weekly','📅 Semanal'],['biweekly','🗓 Quinzenal'],['monthly','📆 Mensal'],['once','📌 Única']].map(([f,l])=>`
+      <button class="btn sm ${freq===f?'':'ghost'}" style="${freq===f?'':'border-color:var(--border2)'}" onclick="newTaskFreq='${f}';render()">${l}</button>`).join('')}
+    </div>
+
+    ${freq==='weekly'?`
+    <label class="label">Dias da semana</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;margin-bottom:16px">
+      ${DAYS_PT.map((d,i)=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:20px;border:1px solid var(--border);background:var(--panel2)"><input type="checkbox" class="dc" value="${i}"> ${d}</label>`).join('')}
+    </div>`:''}
+
+    ${freq==='biweekly'?`
+    <label class="label">Dias da semana</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;margin-bottom:14px">
+      ${DAYS_PT.map((d,i)=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:20px;border:1px solid var(--border);background:var(--panel2)"><input type="checkbox" class="dc" value="${i}"> ${d}</label>`).join('')}
+    </div>
+    <div class="fg">
+      <div class="f12"><label class="label">Data de início (referência)</label>
+        <input id="t-start" class="inp" type="date" value="${today()}">
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">A tarefa aparece neste dia e a cada 14 dias depois.</div>
+      </div>
+    </div>`:''}
+
+    ${freq==='monthly'?`
+    <div class="fg">
+      <div class="f12"><label class="label">Dia do mês</label>
+        <input id="t-dom" class="inp" type="number" min="1" max="31" placeholder="Ex: 15" value="1">
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">A tarefa aparece todo mês neste dia.</div>
+      </div>
+    </div>`:''}
+
+    ${freq==='once'?`
+    <div class="fg">
+      <div class="f12"><label class="label">Data</label>
+        <input id="t-date" class="inp" type="date" value="${today()}">
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Aparece só neste dia. Após concluída pode ser removida.</div>
+      </div>
+    </div>`:''}
+
+    <button class="btn g" style="width:100%;margin-top:6px" onclick="addTask()">Adicionar tarefa</button>
+  </div>
+
+  <div class="card s6" style="background:var(--panel2);border-style:dashed">
+    <div class="card-title">Sobre as frequências</div>
+    <div style="display:grid;gap:16px">
+      ${[
+        ['📅','Semanal','Repete em dias fixos toda semana. Ex: lavar roupa toda terça e quinta.'],
+        ['🗓','Quinzenal','Repete de 15 em 15 dias nos dias selecionados. Ex: faxina completa a cada duas semanas.'],
+        ['📆','Mensal','Repete todo mês num dia fixo. Ex: pagar contas no dia 10.'],
+        ['📌','Única','Aparece só na data escolhida. Ex: levar pet ao veterinário dia 28.'],
+      ].map(([icon,title,desc])=>`<div>
+        <div style="font-weight:700;margin-bottom:4px">${icon} ${title}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">${desc}</div>
+      </div>`).join('')}
+    </div>
+  </div>
+  </div>`;
+}
+
 function addTask(){
-  const name=document.getElementById('tn').value.trim();
-  const sel=[...document.querySelectorAll('.dc:checked')].map(x=>Number(x.value));
-  if(!name||!sel.length){toast('Preencha nome e dias','err');return;}
+  const name=(document.getElementById('tn')?.value||'').trim();
+  const freq = newTaskFreq;
+  if(!name){toast('Digite o nome da tarefa','err');return;}
   if(!ST.tasks) ST.tasks=[];
-  ST.tasks.push({id:Date.now(),name,days:sel,owner:document.getElementById('to').value,time:document.getElementById('tt').value||'Livre'});
-  save();render();
+
+  const base = {
+    id: Date.now(),
+    name,
+    freq,
+    owner: document.getElementById('to')?.value||'ambos',
+    time: document.getElementById('tt')?.value||'Livre',
+  };
+
+  if(freq==='weekly'){
+    const sel=[...document.querySelectorAll('.dc:checked')].map(x=>Number(x.value));
+    if(!sel.length){toast('Selecione pelo menos um dia','err');return;}
+    base.days=sel;
+  } else if(freq==='biweekly'){
+    const sel=[...document.querySelectorAll('.dc:checked')].map(x=>Number(x.value));
+    if(!sel.length){toast('Selecione pelo menos um dia','err');return;}
+    base.days=sel;
+    base.startDate=document.getElementById('t-start')?.value||today();
+  } else if(freq==='monthly'){
+    const dom=Number(document.getElementById('t-dom')?.value)||1;
+    if(dom<1||dom>31){toast('Dia do mês inválido','err');return;}
+    base.dayOfMonth=dom;
+  } else if(freq==='once'){
+    const date=document.getElementById('t-date')?.value||today();
+    base.date=date;
+  }
+
+  ST.tasks.push(base);
+  save();
+  toast('Tarefa adicionada!');
+  homeTab='all';
+  render();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1537,33 +1852,114 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='
 function openMonthEdit(k){
   selMonth=k;
   const s=monthSummary(k);
+  const actuals=ST.monthActuals?.[k]||{};
+  const recurOvr=actuals.recurOverrides||{};
+  const cardOvr=actuals.cardOverrides||{};
+
   openModal(`
-    <div class="modal-title">Realizado — ${ymLabel(k)}</div>
-    <div class="fg">
+    <div class="modal-title">Editar realizado — ${ymLabel(k)}</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.5">
+      Por padrão o realizado é igual ao projetado. Edite apenas os valores que foram diferentes.
+    </p>
+    <div class="fg" style="margin-bottom:16px">
       <div class="f6"><label class="label">Receita realizada</label><input id="mi" class="inp" type="number" value="${s.incomeActual||s.sal}"></div>
-      <div class="f6"><label class="label">Observação</label><input id="mn" class="inp" value="${esc(ST.monthActuals?.[k]?.note||'')}"></div>
+      <div class="f6"><label class="label">Observação</label><input id="mn" class="inp" value="${esc(actuals.note||'')}"></div>
     </div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead>
+
+    ${s.recur.length?`
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-family:var(--font-mono)">🔁 Recorrentes</div>
+    <div class="tbl-wrap" style="margin-bottom:16px"><table>
+      <thead><tr><th>Nome</th><th>Projetado</th><th>Realizado</th></tr></thead>
       <tbody>
-        ${s.manual.map(e=>`<tr>
-          <td>${esc(e.name)}</td><td class="num">${fmt(e.projected)}</td>
-          <td><input class="inp sm actual-e" data-id="${e.id}" type="number" value="${e.actual||0}"></td>
+        ${s.recur.map(r=>`<tr>
+          <td>${esc(r.name)}</td>
+          <td class="num">${fmt(r.value)}</td>
+          <td><input class="inp sm rec-ovr" data-recid="${r.recId}" type="number"
+            value="${recurOvr[r.recId]!==undefined?recurOvr[r.recId]:r.value}"
+            placeholder="${r.value}"></td>
         </tr>`).join('')}
       </tbody>
-    </table></div>
+    </table></div>`:''}
+
+    ${s.card.length?`
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-family:var(--font-mono)">💳 Parcelas de cartão</div>
+    <div class="tbl-wrap" style="margin-bottom:16px"><table>
+      <thead><tr><th>Nome</th><th>Projetado</th><th>Realizado</th></tr></thead>
+      <tbody>
+        ${s.card.map(c=>`<tr>
+          <td>${esc(c.name)}</td>
+          <td class="num">${fmt(c.value)}</td>
+          <td><input class="inp sm card-ovr" data-cardid="${c.id}" type="number"
+            value="${cardOvr[c.id]!==undefined?cardOvr[c.id]:c.value}"
+            placeholder="${c.value}"></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`:''}
+
+    ${s.manual.length?`
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-family:var(--font-mono)">➕ Lançamentos avulsos</div>
+    <div class="tbl-wrap" style="margin-bottom:16px"><table>
+      <thead><tr><th>Nome</th><th>Projetado</th><th>Realizado</th></tr></thead>
+      <tbody>
+        ${s.manual.map(e=>`<tr>
+          <td>${esc(e.name)}</td>
+          <td class="num">${fmt(e.projected)}</td>
+          <td><input class="inp sm actual-e" data-id="${e.id}" type="number"
+            value="${e.actual!==undefined&&e.actual!==null?e.actual:e.projected}"
+            placeholder="${e.projected}"></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`:''}
+
     <div class="btn-row">
-      <button class="btn g" onclick="saveMonthActual('${k}')">Salvar realizado</button>
+      <button class="btn g" onclick="saveMonthActual('${k}')">💾 Salvar realizado</button>
       <button class="btn ghost" onclick="closeModal()">Cancelar</button>
     </div>`);
 }
+
 function saveMonthActual(k){
   if(!ST.monthActuals) ST.monthActuals={};
-  ST.monthActuals[k]={incomeActual:Number(document.getElementById('mi').value)||0,note:document.getElementById('mn').value||''};
+  const prev=ST.monthActuals[k]||{};
+
+  // income + note
+  prev.incomeActual=Number(document.getElementById('mi').value)||0;
+  prev.note=document.getElementById('mn').value||'';
+
+  // recurring overrides
+  const recurOvr=prev.recurOverrides||{};
+  document.querySelectorAll('.rec-ovr').forEach(inp=>{
+    const recId=inp.dataset.recid;
+    const val=Number(inp.value);
+    // find projected value for this recurring
+    const rec=(ST.recurring||[]).find(r=>String(r.id)===String(recId));
+    const proj=rec?Number(rec.value):0;
+    if(val!==proj) recurOvr[recId]=val;
+    else delete recurOvr[recId]; // remove override if back to projected
+  });
+  prev.recurOverrides=recurOvr;
+
+  // card overrides
+  const cardOvr=prev.cardOverrides||{};
+  document.querySelectorAll('.card-ovr').forEach(inp=>{
+    const cardEntryId=inp.dataset.cardid;
+    // projected = total/parcels, stored in the card entry computation
+    // just store whatever they typed
+    const val=Number(inp.value);
+    const s=monthSummary(k);
+    const ce=s.card.find(c=>c.id===cardEntryId);
+    const proj=ce?ce.value:0;
+    if(val!==proj) cardOvr[cardEntryId]=val;
+    else delete cardOvr[cardEntryId];
+  });
+  prev.cardOverrides=cardOvr;
+
+  // manual entries
   document.querySelectorAll('.actual-e').forEach(inp=>{
     const id=Number(inp.dataset.id);
-    ST.entries=(ST.entries||[]).map(e=>e.id===id?{...e,actual:Number(inp.value)||0}:e);
+    ST.entries=(ST.entries||[]).map(e=>e.id===id?{...e,actual:Number(inp.value)}:e);
   });
+
+  ST.monthActuals[k]=prev;
   save();closeModal();finTab='compare';toast('Realizado salvo');render();
 }
 
