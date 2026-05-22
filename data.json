@@ -44,6 +44,15 @@
       "category": "essenciais",
       "owner": "casal",
       "active": true
+    },
+    {
+      "id": 1779450480630,
+      "name": "Tim",
+      "value": 120,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "p1",
+      "active": true
     }
   ],
   "cardExpenses": [],
