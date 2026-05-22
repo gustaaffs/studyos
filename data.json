@@ -144,6 +144,16 @@
       "category": "essenciais",
       "owner": "casal",
       "note": ""
+    },
+    {
+      "id": 1779476553627,
+      "name": "Mercado Pago",
+      "value": 201.12,
+      "totalParcels": 1,
+      "purchaseDate": "2026-06-02",
+      "category": "essenciais",
+      "owner": "casal",
+      "note": ""
     }
   ],
   "goals": [],
