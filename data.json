@@ -93,7 +93,7 @@
       "type": "expense",
       "category": "essenciais",
       "owner": "casal",
-      "active": false
+      "active": true
     },
     {
       "id": 1779474129781,
