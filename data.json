@@ -33,7 +33,12 @@
       "color": "purple"
     }
   ],
-  "monthActuals": {},
+  "monthActuals": {
+    "2026-05": {
+      "incomeActual": 5080,
+      "note": ""
+    }
+  },
   "entries": [],
   "recurring": [
     {
