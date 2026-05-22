@@ -103,6 +103,15 @@
       "category": "essenciais",
       "owner": "casal",
       "active": true
+    },
+    {
+      "id": 1779474147718,
+      "name": "Internet",
+      "value": 105,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "casal",
+      "active": true
     }
   ],
   "cardExpenses": [],
