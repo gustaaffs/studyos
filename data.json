@@ -29,7 +29,7 @@
     {
       "id": "reserva",
       "name": "Reserva/Metas",
-      "pct": 20,
+      "pct": 10,
       "color": "purple"
     }
   ],
