@@ -1224,7 +1224,7 @@ function renderRules(s){
         <div style="font-size:11px;color:var(--dim);margin-top:1px">${view==='proj'?'projetado':'realizado'}</div>
       </div>
       <div style="text-align:right">
-        <div style="font-family:var(--font-mono);font-weight:800;font-size:18px;color:${view==='proj'?(s.balProj>=0?'var(--green)':'var(--red)'):(s.balAct>=0?'var(--green)':'var(--red)'}">
+        <div style="font-family:var(--font-mono);font-weight:800;font-size:18px;color:${view==='proj'?(s.balProj>=0?'var(--green)':'var(--red)'):(s.balAct>=0?'var(--green)':'var(--red)')}">
           ${view==='proj'?fmt(s.balProj):fmt(s.balAct)}
         </div>
         ${view==='real'&&s.balAct!==s.balProj?`<div style="font-size:11px;color:${s.balAct>s.balProj?'var(--green)':'var(--red)'};margin-top:2px">
