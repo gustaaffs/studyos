@@ -35,7 +35,17 @@
   ],
   "monthActuals": {},
   "entries": [],
-  "recurring": [],
+  "recurring": [
+    {
+      "id": 1779441758761,
+      "name": "Aluguel / Condomínio",
+      "value": 1600,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "casal",
+      "active": true
+    }
+  ],
   "cardExpenses": [],
   "goals": [],
   "tasks": [
