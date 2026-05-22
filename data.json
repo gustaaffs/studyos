@@ -6,7 +6,7 @@
     "gus": 3000,
     "maria": 4000
   },
-  "cardClosingDay": 20,
+  "cardClosingDay": 10,
   "rules": [
     {
       "id": "essenciais",
