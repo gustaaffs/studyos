@@ -53,6 +53,15 @@
       "category": "essenciais",
       "owner": "p1",
       "active": true
+    },
+    {
+      "id": 1779450531022,
+      "name": "Faculdade",
+      "value": 200,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "p1",
+      "active": true
     }
   ],
   "cardExpenses": [],
