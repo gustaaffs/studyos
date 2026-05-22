@@ -1,8 +1,12 @@
 {
+  "onboarded": false,
+  "name1": "Gus",
+  "name2": "Maria",
   "salaries": {
-    "gus": 4000,
+    "gus": 3000,
     "maria": 4000
   },
+  "cardClosingDay": 20,
   "rules": [
     {
       "id": "essenciais",
@@ -31,6 +35,36 @@
   ],
   "monthActuals": {},
   "entries": [],
+  "recurring": [
+    {
+      "id": 101,
+      "name": "Aluguel / Condomínio",
+      "value": 2500,
+      "category": "essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": 102,
+      "name": "Mercado",
+      "value": 1600,
+      "category": "essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": 103,
+      "name": "Internet / Celular",
+      "value": 280,
+      "category": "essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    }
+  ],
+  "cardExpenses": [],
   "goals": [],
   "tasks": [
     {
