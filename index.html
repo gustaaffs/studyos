@@ -1,850 +1,1502 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#050810"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Life OS — Casal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
+/* ══ TOKENS ══════════════════════════════════════════════ */
 :root{
-  --bg:#070b10;--bg2:#0b1118;--panel:#101923;--panel2:#15212d;--panel3:#1a2734;
-  --border:#243445;--border2:#365066;--text:#f2f7fb;--muted:#93a8ba;--dim:#5e7182;
-  --blue:#38bdf8;--green:#4ade80;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--yellow:#fbbf24;
+  --bg:#050810;--bg2:#080d16;--bg3:#0c131f;
+  --panel:#101828;--panel2:#141e2d;--panel3:#192436;
+  --border:#1e2f44;--border2:#2d4560;--border3:#3d5a78;
+  --text:#eef4fb;--muted:#6a8aa8;--dim:#3d5368;
+  --blue:#38bdf8;--blue2:#0ea5e9;
+  --green:#34d399;--green2:#10b981;
+  --orange:#fb923c;--orange2:#f97316;
+  --purple:#a78bfa;--purple2:#8b5cf6;
+  --red:#f87171;--red2:#ef4444;
+  --yellow:#fbbf24;
+  --gold:#f59e0b;
+  --r:18px;--r2:24px;--r3:30px;
+  --sh:0 4px 24px rgba(0,0,0,.35);
+  --sh2:0 8px 40px rgba(0,0,0,.5);
   --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --font-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --font-body:'Bricolage Grotesque',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
 }
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select,textarea{font-family:inherit}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:var(--font-body);font-size:inherit}
 button{cursor:pointer}
-body{
-  background:
-    radial-gradient(circle at 75% -10%,rgba(56,189,248,.12),transparent 30rem),
-    radial-gradient(circle at 10% 110%,rgba(74,222,128,.08),transparent 28rem),
-    var(--bg);
-}
-.app-shell{display:flex;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+img{max-width:100%}
+
+/* ══ LAYOUT ══════════════════════════════════════════════ */
+.shell{display:flex;min-height:100vh}
 .sidebar{
-  width:290px;flex:0 0 290px;position:fixed;inset:0 auto 0 0;
-  background:rgba(10,17,24,.96);border-right:1px solid var(--border);
-  padding:28px 18px;overflow-y:auto;
+  width:260px;flex:0 0 260px;
+  position:fixed;inset:0 auto 0 0;
+  background:rgba(8,13,22,.97);
+  border-right:1px solid var(--border);
+  padding:calc(24px + var(--safe-t)) 16px 24px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:6px;
+  backdrop-filter:blur(20px);
 }
+.main{margin-left:260px;min-height:100vh;padding:28px 32px calc(40px + var(--safe-b));display:flex;flex-direction:column;gap:0}
+
+/* ══ LOGO ═════════════════════════════════════════════════ */
 .logo{
-  font-size:31px;font-weight:900;letter-spacing:.5px;margin:0 0 28px;
-  background:linear-gradient(90deg,var(--blue),var(--green));
+  font-family:var(--font-display);font-size:26px;font-weight:800;
+  letter-spacing:-1px;padding:0 6px 20px;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--green) 60%,var(--gold) 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
-.nav{display:grid;gap:10px;margin-bottom:18px}
+
+/* ══ NAV ══════════════════════════════════════════════════ */
+.nav-section{font-size:10px;letter-spacing:2.5px;color:var(--dim);text-transform:uppercase;padding:10px 8px 6px;font-family:var(--font-mono)}
 .nav-btn{
-  border:1px solid transparent;background:var(--panel);color:var(--text);
-  border-radius:16px;padding:15px 16px;font-weight:800;text-align:left;
-  display:flex;align-items:center;gap:10px;transition:.18s;
+  display:flex;align-items:center;gap:11px;width:100%;
+  background:transparent;border:1px solid transparent;
+  border-radius:var(--r);padding:11px 14px;
+  color:var(--muted);font-weight:600;font-size:14px;
+  transition:all .18s cubic-bezier(.4,0,.2,1);text-align:left;
 }
-.nav-btn:hover{border-color:var(--border2);transform:translateY(-1px)}
-.nav-btn.active{border-color:var(--blue);background:rgba(56,189,248,.11);box-shadow:0 0 0 1px rgba(56,189,248,.06)}
-.side-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px}
-.side-label,.section-label{font-size:12px;letter-spacing:3px;color:#9ec3df;text-transform:uppercase;margin-bottom:12px}
-.profile-row{display:flex;gap:8px;flex-wrap:wrap}
-.pill{
-  border:none;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900;
-  background:var(--panel2);color:var(--muted)
+.nav-btn:hover{color:var(--text);background:var(--panel);border-color:var(--border)}
+.nav-btn.active{color:var(--blue);background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.25)}
+.nav-btn .icon{font-size:18px;width:22px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;min-width:18px;text-align:center}
+
+.sync-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);padding:10px 12px;margin-top:auto;
+  font-size:12px;color:var(--muted);
 }
-.pill.blue{color:var(--blue);background:rgba(56,189,248,.12)}
-.pill.purple{color:var(--purple);background:rgba(167,139,250,.12)}
-.pill.green{color:var(--green);background:rgba(74,222,128,.12)}
-.pill.orange{color:var(--orange);background:rgba(251,146,60,.12)}
-.pill.red{color:var(--red);background:rgba(248,113,113,.12)}
-.main{margin-left:290px;padding:26px 34px 60px;width:calc(100% - 290px)}
-.hero{
-  background:linear-gradient(135deg,rgba(18,32,48,.96),rgba(10,17,24,.96));
-  border:1px solid var(--border);border-radius:26px;padding:26px 30px;margin-bottom:22px;
-  box-shadow:0 18px 40px rgba(0,0,0,.16);
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
+.sync-dot.err{background:var(--red)}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ══ PAGE HEADER ══════════════════════════════════════════ */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:24px;gap:16px;flex-wrap:wrap;
 }
-.hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
-.metric .label{font-size:14px;color:#9ab3c8;margin-top:3px}
-.metric .value{font-size:34px;font-weight:950;line-height:1.05;letter-spacing:-1px}
-.value.green{color:var(--green)}.value.red{color:var(--red)}.value.orange{color:var(--orange)}.value.blue{color:var(--blue)}.value.purple{color:var(--purple)}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;align-items:stretch}
-.card{
-  background:rgba(16,25,35,.92);border:1px solid var(--border);border-radius:22px;
-  padding:20px;min-width:0;overflow:hidden;
+.page-title{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.5px}
+.page-sub{font-size:14px;color:var(--muted);margin-top:3px}
+
+/* ══ HERO BAR ═════════════════════════════════════════════ */
+.hero-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px 24px;margin-bottom:22px;
+  box-shadow:var(--sh);
 }
-.card h3{margin:0 0 14px;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#a8c7df;font-weight:800}
-.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.tab-btn{
-  border:1px solid var(--border);background:var(--panel);color:var(--muted);
-  border-radius:14px;padding:10px 14px;font-weight:900
+.hero-metric .lbl{font-size:12px;color:var(--muted);letter-spacing:.5px;margin-bottom:5px}
+.hero-metric .val{font-size:26px;font-weight:800;font-family:var(--font-display);letter-spacing:-1px;line-height:1}
+.hero-metric .val.g{color:var(--green)}
+.hero-metric .val.r{color:var(--red)}
+.hero-metric .val.o{color:var(--orange)}
+.hero-metric .val.b{color:var(--blue)}
+.hero-metric .val.p{color:var(--purple)}
+.hero-metric .sub{font-size:12px;color:var(--dim);margin-top:3px}
+
+/* ══ CARDS / GRID ═════════════════════════════════════════ */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r2);padding:20px;min-width:0;overflow:hidden}
+.card-title{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-family:var(--font-mono);margin-bottom:16px;font-weight:500}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}
+.s7{grid-column:span 7}.s8{grid-column:span 8}.s9{grid-column:span 9}.s12{grid-column:span 12}
+
+/* ══ TABS ══════════════════════════════════════════════════ */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;padding:4px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);width:fit-content}
+.tab{
+  border:none;background:transparent;color:var(--muted);
+  border-radius:11px;padding:8px 14px;font-weight:600;font-size:13px;
+  transition:all .15s;white-space:nowrap;
 }
-.tab-btn.active{color:var(--text);border-color:var(--blue);background:rgba(56,189,248,.12)}
+.tab.on{background:var(--panel3);color:var(--text);box-shadow:var(--sh)}
+.tab:hover:not(.on){color:var(--text)}
+
+/* ══ BUTTONS ══════════════════════════════════════════════ */
 .btn{
-  border:none;border-radius:13px;padding:11px 14px;font-weight:900;background:var(--blue);color:#001018
+  border:none;border-radius:var(--r);padding:10px 18px;
+  font-weight:700;font-size:13px;background:var(--blue);color:#001622;
+  transition:all .15s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
 }
-.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.btn.green{background:var(--green)}.btn.orange{background:var(--orange)}.btn.red{background:var(--red)}.btn.purple{background:var(--purple)}
-.input,.select,.textarea{
-  width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:13px;color:var(--text);
-  padding:11px 12px;font-size:14px;outline:none
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn:active{transform:none;filter:brightness(.95)}
+.btn.sm{padding:7px 13px;font-size:12px;border-radius:11px}
+.btn.g{background:var(--green);color:#001810}
+.btn.o{background:var(--orange);color:#1a0800}
+.btn.r{background:var(--red);color:#1a0000}
+.btn.p{background:var(--purple);color:#0d0018}
+.btn.ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--border3);color:var(--text);background:var(--panel2)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* ══ FORMS ════════════════════════════════════════════════ */
+.fg{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:12px}
+.f3{grid-column:span 3}.f4{grid-column:span 4}.f6{grid-column:span 6}.f8{grid-column:span 8}.f12{grid-column:span 12}
+.label{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:block;font-family:var(--font-mono)}
+.inp,.sel{
+  width:100%;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text);padding:10px 13px;font-size:14px;
+  transition:border-color .15s;outline:none;
 }
-.textarea{min-height:82px;resize:vertical}
-.input:focus,.select:focus,.textarea:focus{border-color:var(--blue)}
-.form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:12px}
-.f3{grid-column:span 3}.f4{grid-column:span 4}.f5{grid-column:span 5}.f6{grid-column:span 6}.f8{grid-column:span 8}.f12{grid-column:span 12}
-.label-small{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
-.table-wrap{overflow:auto;max-width:100%}
-table{width:100%;border-collapse:collapse;min-width:520px}
-th,td{border-bottom:1px solid var(--border);padding:12px;text-align:left;vertical-align:middle}
-th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
-td{font-size:15px}
-.money{font-weight:950;white-space:nowrap}
-.money.green{color:var(--green)}.money.red{color:var(--red)}.money.orange{color:var(--orange)}
-.bar{height:10px;background:#060a0e;border-radius:99px;overflow:hidden;margin:8px 0 4px}
-.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green))}
-.row-card{
-  background:var(--panel2);border:1px solid rgba(255,255,255,.03);border-radius:17px;
-  padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px
+.inp:focus,.sel:focus{border-color:var(--blue)}
+.inp.sm{padding:7px 10px;font-size:13px}
+
+/* ══ ROW CARDS ════════════════════════════════════════════ */
+.row{
+  background:var(--panel2);border:1px solid rgba(255,255,255,.03);
+  border-radius:var(--r);padding:13px 15px;
+  display:flex;align-items:center;gap:12px;margin-bottom:8px;
+  transition:border-color .15s;
 }
-.row-card:hover{border-color:var(--border2)}
-.row-title{font-weight:950;font-size:16px}
-.row-sub{color:var(--muted);font-size:13px;margin-top:3px}
-.month-list{display:grid;gap:12px}
-.month-card{
-  background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:18px;
-  display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:14px;align-items:center
+.row:hover{border-color:var(--border)}
+.row-title{font-weight:700;font-size:15px}
+.row-sub{color:var(--muted);font-size:12px;margin-top:2px}
+.row-val{font-weight:800;font-size:16px;font-family:var(--font-mono);white-space:nowrap}
+
+/* ══ PILLS / BADGES ═══════════════════════════════════════ */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid;white-space:nowrap}
+.pill.b{color:var(--blue);border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.1)}
+.pill.g{color:var(--green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1)}
+.pill.o{color:var(--orange);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.1)}
+.pill.p{color:var(--purple);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)}
+.pill.r{color:var(--red);border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.1)}
+.pill.y{color:var(--yellow);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1)}
+.pill.dim{color:var(--muted);border-color:var(--border);background:var(--panel2)}
+
+/* ══ PROGRESS BAR ═════════════════════════════════════════ */
+.bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin:6px 0}
+.bar-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* ══ TABLE ════════════════════════════════════════════════ */
+.tbl-wrap{overflow:auto;max-width:100%;border-radius:var(--r);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th{background:var(--panel2);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:11px 14px;text-align:left;font-family:var(--font-mono);font-weight:500}
+td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:14px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+td.num{font-family:var(--font-mono);font-weight:700;white-space:nowrap}
+td.num.g{color:var(--green)}td.num.r{color:var(--red)}td.num.o{color:var(--orange)}
+
+/* ══ MONTH CARDS ══════════════════════════════════════════ */
+.month-grid{display:grid;gap:10px}
+.mcard{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:16px 20px;
+  display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;
+  align-items:center;gap:16px;cursor:pointer;transition:all .15s;
 }
-.month-card.active{border-color:var(--blue);background:rgba(56,189,248,.08)}
-.month-title{font-size:20px;font-weight:950}
-.month-kpis{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.kpi-mini{font-size:12px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted)}
-.compare-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.compare-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px}
-.compare-box .name{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
-.compare-box .num{font-size:23px;font-weight:950;margin-top:4px}
-.task-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--border2);background:transparent;color:#001018;font-weight:950}
-.task-check.done{background:var(--green);border-color:var(--green)}
-.footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.mcard:hover{border-color:var(--border2);transform:translateY(-1px)}
+.mcard.active{border-color:var(--blue);background:rgba(56,189,248,.06)}
+.mcard-title{font-size:17px;font-weight:800;font-family:var(--font-display)}
+.mcard-sub{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+.mkpi{font-size:11px;padding:3px 7px;border-radius:99px;background:rgba(255,255,255,.04);color:var(--muted)}
+.mcard-stat .lbl{font-size:11px;color:var(--muted);margin-bottom:2px}
+.mcard-stat .val{font-size:16px;font-weight:800;font-family:var(--font-mono)}
+.mcard-stat .val.g{color:var(--green)}.mcard-stat .val.r{color:var(--red)}
+
+/* ══ COMPARE GRID ═════════════════════════════════════════ */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmp-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.cmp-box .n{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-mono)}
+.cmp-box .v{font-size:22px;font-weight:800;font-family:var(--font-display);margin-top:4px;letter-spacing:-.5px}
+.cmp-box.hi{border-color:var(--green);background:rgba(52,211,153,.05)}
+.cmp-box.lo{border-color:var(--red);background:rgba(248,113,113,.05)}
+
+/* ══ ALERTS ═══════════════════════════════════════════════ */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--r);margin-bottom:8px;font-size:13px;border:1px solid}
+.alert.warn{background:rgba(251,146,60,.08);border-color:rgba(251,146,60,.25);color:var(--orange)}
+.alert.info{background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.25);color:var(--blue)}
+.alert.good{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25);color:var(--green)}
+.alert.bad{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.25);color:var(--red)}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ══ SVG CHART ════════════════════════════════════════════ */
+.chart-wrap{overflow-x:auto}
+svg.chart{display:block}
+
+/* ══ GOAL ROWS ════════════════════════════════════════════ */
+.goal-row{margin-bottom:18px}
+.goal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.goal-name{font-weight:700;font-size:15px}
+.goal-pct{font-size:13px;color:var(--muted);font-family:var(--font-mono)}
+.goal-meta{font-size:12px;color:var(--dim);margin-top:4px}
+
+/* ══ TOGGLE / SWITCH ══════════════════════════════════════ */
+.toggle{position:relative;display:inline-block;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:99px;transition:.25s;cursor:pointer}
+.toggle-slider:before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s}
+.toggle input:checked+.toggle-slider{background:var(--green)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px)}
+
+/* ══ TASK CHECK ═══════════════════════════════════════════ */
+.task-chk{
+  width:22px;height:22px;border-radius:7px;border:2px solid var(--border2);
+  background:transparent;color:#001810;font-weight:900;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+}
+.task-chk.done{background:var(--green);border-color:var(--green)}
+
+/* ══ MODAL ════════════════════════════════════════════════ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;z-index:200;backdrop-filter:blur(4px);
+}
+.modal-bg.open{display:flex}
+.modal-box{
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--r3);padding:26px;width:100%;
+  max-width:680px;max-height:88vh;overflow-y:auto;
+  box-shadow:var(--sh2);animation:mslide .22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes mslide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:18px;font-family:var(--font-display)}
+
+/* ══ ONBOARDING ═══════════════════════════════════════════ */
+.ob-wrap{
+  position:fixed;inset:0;background:var(--bg);z-index:300;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.ob-box{
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--r3);padding:36px;width:100%;max-width:560px;
+  box-shadow:var(--sh2);
+}
+.ob-step{font-size:11px;letter-spacing:2px;color:var(--muted);font-family:var(--font-mono);margin-bottom:8px}
+.ob-title{font-size:28px;font-weight:800;font-family:var(--font-display);letter-spacing:-.5px;margin-bottom:6px}
+.ob-sub{font-size:15px;color:var(--muted);margin-bottom:26px;line-height:1.5}
+.ob-steps{display:flex;gap:6px;margin-bottom:28px}
+.ob-dot{height:4px;border-radius:99px;flex:1;background:var(--border2);transition:background .3s}
+.ob-dot.done{background:var(--green)}.ob-dot.active{background:var(--blue)}
+
+/* ══ TOAST ════════════════════════════════════════════════ */
 .toast{
-  position:fixed;right:24px;bottom:24px;background:var(--panel2);border:1px solid var(--border2);
-  border-radius:999px;padding:12px 18px;color:var(--green);font-weight:900;opacity:0;transform:translateY(8px);
-  pointer-events:none;transition:.2s;z-index:99
+  position:fixed;bottom:calc(24px + var(--safe-b));right:24px;
+  background:var(--panel3);border:1px solid var(--border2);
+  border-radius:var(--r);padding:12px 18px;
+  font-size:13px;font-weight:600;
+  opacity:0;transform:translateY(8px);
+  pointer-events:none;transition:.22s;z-index:500;
+  max-width:320px;box-shadow:var(--sh2);
 }
-.toast.show{opacity:1;transform:translateY(0)}
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;
-  padding:20px;z-index:90
+.toast.show{opacity:1;transform:none}
+.toast.ok{border-color:rgba(52,211,153,.4);color:var(--green)}
+.toast.err{border-color:rgba(248,113,113,.4);color:var(--red)}
+
+/* ══ PRINT ════════════════════════════════════════════════ */
+@media print{
+  .sidebar,.tabs,.btn,.btn-row,.modal-bg,.toast,.ob-wrap{display:none!important}
+  .main{margin:0;padding:20px}
+  .card,.hero-bar{box-shadow:none;border:1px solid #ccc}
 }
-.modal.show{display:flex}
-.modal-card{background:var(--panel);border:1px solid var(--border2);border-radius:24px;padding:22px;width:100%;max-width:720px;max-height:88vh;overflow:auto}
-.modal-title{font-size:22px;font-weight:950;margin-bottom:14px}
-@media(max-width:1180px){
-  .hero-grid{grid-template-columns:repeat(2,1fr)}
-  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 6}
-  .month-card{grid-template-columns:1fr 1fr}
+
+/* ══ RESPONSIVE ═══════════════════════════════════════════ */
+@media(max-width:1200px){
+  .hero-bar{grid-template-columns:repeat(2,1fr)}
+  .s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 6}
+  .mcard{grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .mcard>:last-child{grid-column:span 3}
 }
 @media(max-width:820px){
-  .app-shell{display:block}
-  .sidebar{position:sticky;top:0;width:100%;height:auto;z-index:20;border-right:none;border-bottom:1px solid var(--border);padding:14px 14px 10px}
-  .logo{font-size:24px;margin-bottom:10px}
-  .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-  .nav-btn{padding:10px 6px;justify-content:center;text-align:center;border-radius:13px;font-size:12px;gap:4px;flex-direction:column}
-  .side-card{display:none}
-  .main{margin-left:0;width:100%;padding:14px 12px calc(48px + var(--safe-b))}
-  .hero{padding:18px;border-radius:20px}
-  .hero-grid{grid-template-columns:1fr 1fr;gap:12px}
-  .metric .value{font-size:24px}
-  .metric .label{font-size:12px}
+  .shell{display:block}
+  .sidebar{
+    position:sticky;top:0;width:100%;height:auto;
+    flex-direction:row;flex-wrap:wrap;align-items:center;
+    padding:calc(10px + var(--safe-t)) 12px 10px;
+    border-right:none;border-bottom:1px solid var(--border);
+    gap:0;z-index:50;
+  }
+  .logo{padding-bottom:0;margin-right:12px;font-size:20px}
+  .nav-section,.sync-pill{display:none}
+  .nav{display:flex;gap:6px;flex-wrap:wrap}
+  .nav-btn{padding:8px 12px;font-size:12px;border-radius:11px}
+  .nav-btn .icon{font-size:15px;width:auto}
+  .main{margin-left:0;padding:14px 12px calc(30px + var(--safe-b))}
+  .hero-bar{grid-template-columns:repeat(2,1fr);padding:14px;gap:12px}
+  .hero-metric .val{font-size:20px}
   .grid{grid-template-columns:1fr;gap:12px}
-  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-12{grid-column:span 1}
-  .card{padding:16px;border-radius:18px}
-  .month-card{grid-template-columns:1fr;gap:10px}
-  .compare-grid{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
-  .f3,.f4,.f5,.f6,.f8,.f12{grid-column:span 1}
-  .footer-actions .btn{width:100%}
-  .toast{left:12px;right:12px;bottom:12px;text-align:center}
+  .s3,.s4,.s5,.s6,.s7,.s8,.s9,.s12{grid-column:span 1}
+  .mcard{grid-template-columns:1fr;gap:8px}
+  .mcard>:last-child{grid-column:span 1}
+  .cmp-grid{grid-template-columns:1fr}
+  .fg{grid-template-columns:1fr}
+  .f3,.f4,.f6,.f8,.f12{grid-column:span 1}
+  .tabs{width:100%}
+  .btn-row .btn{flex:1}
+  .toast{left:12px;right:12px;text-align:center}
+  table{min-width:380px}
 }
 </style>
 </head>
 <body>
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="logo">LIFE OS</div>
-    <nav class="nav">
-      <button class="nav-btn active" data-module="finance" onclick="setModule('finance')">💰 <span>Finanças</span></button>
-      <button class="nav-btn" data-module="home" onclick="setModule('home')">🏠 <span>Casa</span></button>
-      <button class="nav-btn" data-module="study" onclick="setModule('study')">📚 <span>Estudos</span></button>
-      <button class="nav-btn" data-module="settings" onclick="setModule('settings')">⚙️ <span>Config</span></button>
-    </nav>
-    <div class="side-card">
-      <div class="side-label">Perfis</div>
-      <div class="profile-row">
-        <span class="pill blue">Gus</span>
-        <span class="pill purple">Maria</span>
-        <span class="pill green">Casal</span>
-      </div>
-    </div>
-    <div class="side-card">
-      <div class="side-label">GitHub DB</div>
-      <div id="sync-status" style="font-size:13px;color:var(--muted);line-height:1.5">☁️ aguardando...</div>
-    </div>
-  </aside>
 
-  <main class="main">
-    <div id="app"></div>
-  </main>
-</div>
-
-<div id="modal" class="modal">
-  <div class="modal-card">
-    <div id="modal-content"></div>
+<!-- ═══ ONBOARDING ═════════════════════════════════════════ -->
+<div id="ob" class="ob-wrap" style="display:none">
+  <div class="ob-box">
+    <div class="ob-steps" id="ob-dots"></div>
+    <div id="ob-body"></div>
   </div>
 </div>
+
+<!-- ═══ SHELL ══════════════════════════════════════════════ -->
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">Life OS</div>
+    <div class="nav-section">Principal</div>
+    <nav class="nav" id="nav">
+      <button class="nav-btn active" data-m="finance" onclick="go('finance')"><span class="icon">💰</span> Finanças</button>
+      <button class="nav-btn" data-m="home" onclick="go('home')"><span class="icon">🏠</span> Casa</button>
+      <button class="nav-btn" data-m="study" onclick="go('study')"><span class="icon">📚</span> Estudos</button>
+    </nav>
+    <div class="nav-section">Sistema</div>
+    <nav class="nav">
+      <button class="nav-btn" data-m="settings" onclick="go('settings')"><span class="icon">⚙️</span> Configurações</button>
+    </nav>
+    <div class="sync-pill" id="sync-pill">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-txt" style="font-size:12px;color:var(--muted)">aguardando...</span>
+    </div>
+  </aside>
+  <main class="main"><div id="app"></div></main>
+</div>
+
+<!-- ═══ MODALS ══════════════════════════════════════════════ -->
+<div class="modal-bg" id="modal"><div class="modal-box"><div id="modal-body"></div></div></div>
 <div id="toast" class="toast"></div>
 
 <script>
-const BRL = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+// ══════════════════════════════════════════════════════════
+// CONSTANTS & HELPERS
+// ══════════════════════════════════════════════════════════
+const BRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const fmt = n => BRL.format(Number(n)||0);
-const monthsPT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const fullMonths = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-const days = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-
-const GH_TOKEN_KEY = "lifeos_github_token";
-const GH_OWNER  = "gustaaffs";
-const GH_REPO   = "studyos";
-const GH_FILE   = "data.json";
-const GH_BRANCH = "main";
-let GH_SHA = null;
-let GH_READY = false;
-let ghSaveTimer = null;
-
-function ghToken(){ return localStorage.getItem(GH_TOKEN_KEY) || ""; }
-function ghConfigured(){ return ghToken().trim().length > 10 && GH_OWNER && GH_REPO && GH_FILE && GH_BRANCH; }
-function ghHeaders(){
-  return {
-    "Authorization": "Bearer " + ghToken().trim(),
-    "Accept": "application/vnd.github+json",
-    "Content-Type": "application/json",
-    "X-GitHub-Api-Version": "2022-11-28"
-  };
-}
-function setSyncStatus(state,msg){
-  const color = state==="ok" ? "var(--green)" : state==="error" ? "var(--red)" : state==="sync" ? "var(--yellow)" : "var(--muted)";
-  const icon = state==="ok" ? "☁️" : state==="error" ? "⚠️" : state==="sync" ? "⏳" : "🔑";
-  const html = `<span style="color:${color}">${icon} ${msg}</span>`;
-  const a=document.getElementById("sync-status");
-  const b=document.getElementById("sync-status-main");
-  if(a)a.innerHTML=html;
-  if(b)b.innerHTML=html;
-}
-function encodeBase64Unicode(str){ return btoa(unescape(encodeURIComponent(str))); }
-function decodeBase64Unicode(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,"")))); }
-
-async function ghLoad(){
-  if(!ghConfigured()){
-    setSyncStatus("error","Informe o token em Config.");
-    return false;
-  }
-  setSyncStatus("sync","carregando do GitHub...");
-  try{
-    const url=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`;
-    const res=await fetch(url,{headers:ghHeaders(),cache:"no-store"});
-    if(res.status===404){
-      GH_READY=true;
-      GH_SHA=null;
-      setSyncStatus("ok","data.json não existe. Será criado no próximo salvamento.");
-      await ghSave();
-      return true;
-    }
-    if(!res.ok) throw new Error("GitHub GET HTTP "+res.status+" — "+await res.text());
-    const json=await res.json();
-    GH_SHA=json.sha;
-    const data=JSON.parse(decodeBase64Unicode(json.content));
-    ST=mergeState(data);
-    localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST));
-    GH_READY=true;
-    setSyncStatus("ok","sincronizado com GitHub.");
-    render();
-    return true;
-  }catch(err){
-    console.error("ghLoad",err);
-    setSyncStatus("error","erro ao carregar do GitHub. Veja o Console.");
-    return false;
-  }
-}
-function scheduleGhSave(){
-  clearTimeout(ghSaveTimer);
-  ghSaveTimer=setTimeout(()=>ghSave(),700);
-}
-async function ghSave(){
-  try{ localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST)); }catch(e){}
-  if(!ghConfigured()){
-    setSyncStatus("error","Informe o token em Config.");
-    return false;
-  }
-  setSyncStatus("sync","salvando no GitHub...");
-  try{
-    if(!GH_SHA){
-      const check=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders(),cache:"no-store"});
-      if(check.ok){
-        const current=await check.json();
-        GH_SHA=current.sha;
-      }
-    }
-    const body={
-      message:"update Life OS database",
-      content:encodeBase64Unicode(JSON.stringify(ST,null,2)),
-      branch:GH_BRANCH
-    };
-    if(GH_SHA) body.sha=GH_SHA;
-    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,{
-      method:"PUT",
-      headers:ghHeaders(),
-      body:JSON.stringify(body)
-    });
-    if(!res.ok) throw new Error("GitHub PUT HTTP "+res.status+" — "+await res.text());
-    const json=await res.json();
-    GH_SHA=json.content.sha;
-    GH_READY=true;
-    setSyncStatus("ok","salvo no GitHub.");
-    return true;
-  }catch(err){
-    console.error("ghSave",err);
-    setSyncStatus("error","erro ao salvar no GitHub. Veja o Console.");
-    return false;
-  }
-}
+const fmtShort = n => {const v=Math.abs(Number(n)||0);return (n<0?'-':'')+( v>=1000?'R$'+(v/1000).toFixed(1)+'k':'R$'+v.toFixed(0));};
+const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const monthsPT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const fullMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
 function ym(offset=0){
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth()+offset);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 }
-function ymLabel(key){
-  const [y,m]=key.split("-").map(Number);
-  return fullMonths[m-1]+" "+y;
+function ymLabel(key){const [y,m]=key.split('-').map(Number);return fullMonths[m-1]+' '+y;}
+function shortYm(key){const [y,m]=key.split('-').map(Number);return monthsPT[m-1]+'/'+String(y).slice(2);}
+function ymFrom(year,month){const d=new Date(year,month-1,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function ymAdd(key,n){const [y,m]=key.split('-').map(Number);return ymFrom(y,m+n);}
+function today(){return new Date().toISOString().slice(0,10);}
+
+// ══════════════════════════════════════════════════════════
+// GITHUB DB
+// ══════════════════════════════════════════════════════════
+const GH_OWNER='gustaaffs', GH_REPO='studyos', GH_FILE='data.json', GH_BRANCH='main';
+const GH_TOKEN_KEY='lifeos_gh_token';
+let GH_SHA=null, GH_READY=false;
+const ghToken=()=>localStorage.getItem(GH_TOKEN_KEY)||'';
+const ghConfigured=()=>ghToken().length>10;
+const ghHeaders=()=>({'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'});
+function enc(s){return btoa(unescape(encodeURIComponent(s)));}
+function dec(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))));}
+
+function setSyncUI(state,msg){
+  const dot=document.getElementById('sync-dot');
+  const txt=document.getElementById('sync-txt');
+  const main=document.getElementById('sync-status-main');
+  if(dot){dot.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':state==='syncing'?'syncing':'');}
+  if(txt) txt.textContent=msg;
+  if(main) main.textContent=(state==='ok'?'☁️ ':state==='err'?'⚠️ ':state==='syncing'?'⏳ ':'🔑 ')+msg;
 }
-function shortYm(key){
-  const [y,m]=key.split("-").map(Number);
-  return monthsPT[m-1]+"/"+String(y).slice(2);
+async function ghLoad(){
+  if(!ghConfigured()){setSyncUI('err','Token não configurado');return false;}
+  setSyncUI('syncing','carregando...');
+  try{
+    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders(),cache:'no-store'});
+    if(res.status===404){GH_READY=true;GH_SHA=null;setSyncUI('ok','pronto (novo arquivo)');await ghSave();return true;}
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const j=await res.json(); GH_SHA=j.sha;
+    const data=JSON.parse(dec(j.content));
+    ST={...defaultState(),...data};
+    // ensure arrays
+    ['rules','entries','goals','tasks','recurring','cardExpenses'].forEach(k=>{if(!Array.isArray(ST[k]))ST[k]=defaultState()[k]||[];});
+    if(!ST.study?.gus) ST.study=defaultState().study;
+    if(!ST.monthActuals) ST.monthActuals={};
+    if(!ST.taskChecks) ST.taskChecks={};
+    localStorage.setItem('lifeos_v5',JSON.stringify(ST));
+    GH_READY=true; setSyncUI('ok','sincronizado'); render(); return true;
+  }catch(e){console.error(e);setSyncUI('err','erro ao carregar');return false;}
+}
+let ghTimer=null;
+function scheduleSave(){clearTimeout(ghTimer);ghTimer=setTimeout(ghSave,800);}
+async function ghSave(){
+  try{localStorage.setItem('lifeos_v5',JSON.stringify(ST));}catch(e){}
+  if(!ghConfigured()){setSyncUI('err','Token não configurado');return;}
+  setSyncUI('syncing','salvando...');
+  try{
+    if(!GH_SHA){
+      const c=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`,{headers:ghHeaders(),cache:'no-store'});
+      if(c.ok){const j=await c.json();GH_SHA=j.sha;}
+    }
+    const body={message:'update Life OS',content:enc(JSON.stringify(ST,null,2)),branch:GH_BRANCH};
+    if(GH_SHA) body.sha=GH_SHA;
+    const res=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`,{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
+    if(!res.ok) throw new Error('HTTP '+res.status+' '+await res.text());
+    const j=await res.json(); GH_SHA=j.content.sha;
+    setSyncUI('ok','salvo');
+  }catch(e){console.error(e);setSyncUI('err','erro ao salvar');}
 }
 
-const defaultState = () => ({
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+const defaultState=()=>({
+  onboarded:false,
+  name1:'Gus', name2:'Maria',
   salaries:{gus:7000,maria:6400},
+  cardClosingDay:20,
   rules:[
-    {id:"essenciais",name:"Essenciais",pct:50,color:"blue"},
-    {id:"investimentos",name:"Investimentos",pct:20,color:"green"},
-    {id:"lazer",name:"Lazer",pct:10,color:"orange"},
-    {id:"reserva",name:"Reserva/Metas",pct:20,color:"purple"}
+    {id:'essenciais',name:'Essenciais',pct:50,color:'b'},
+    {id:'investimentos',name:'Investimentos',pct:20,color:'g'},
+    {id:'lazer',name:'Lazer',pct:10,color:'o'},
+    {id:'reserva',name:'Reserva / Metas',pct:20,color:'p'},
   ],
   monthActuals:{},
-  entries:[
-    {id:1,month:ym(0),type:"expense",category:"essenciais",name:"Aluguel/Condomínio",projected:2500,actual:0,owner:"Casal"},
-    {id:2,month:ym(0),type:"expense",category:"essenciais",name:"Mercado",projected:1600,actual:0,owner:"Casal"},
-    {id:3,month:ym(0),type:"expense",category:"lazer",name:"Lazer/restaurantes",projected:800,actual:0,owner:"Casal"},
-    {id:4,month:ym(0),type:"investment",category:"investimentos",name:"Investimentos",projected:2000,actual:0,owner:"Casal"},
-    {id:5,month:ym(1),type:"expense",category:"essenciais",name:"Contas fixas",projected:3900,actual:0,owner:"Casal"},
-    {id:6,month:ym(1),type:"investment",category:"investimentos",name:"Investimentos",projected:2200,actual:0,owner:"Casal"},
-    {id:7,month:ym(2),type:"expense",category:"lazer",name:"Viagem",projected:3200,actual:0,owner:"Casal"}
+  entries:[],
+  recurring:[
+    {id:101,name:'Aluguel / Condomínio',value:2500,category:'essenciais',type:'expense',owner:'casal',active:true},
+    {id:102,name:'Mercado',value:1600,category:'essenciais',type:'expense',owner:'casal',active:true},
+    {id:103,name:'Internet / Celular',value:280,category:'essenciais',type:'expense',owner:'casal',active:true},
   ],
+  cardExpenses:[],
   goals:[
-    {id:1,name:"Reserva de emergência",target:30000,current:18000},
-    {id:2,name:"Viagem",target:8000,current:4200},
-    {id:3,name:"Investimentos 2026",target:20000,current:11300}
+    {id:1,name:'Reserva de emergência',target:30000,current:18000,completedAt:null},
+    {id:2,name:'Viagem',target:8000,current:4200,completedAt:null},
+    {id:3,name:'Investimentos 2026',target:20000,current:11300,completedAt:null},
   ],
   tasks:[
-    {id:1,name:"Lavar roupa",days:[2,4],owner:"Maria",time:"Noite"},
-    {id:2,name:"Louça",days:[0,1,2,3,4,5,6],owner:"Gus",time:"Após jantar"},
-    {id:3,name:"Mercado",days:[6],owner:"Ambos",time:"Manhã"},
-    {id:4,name:"Faxina",days:[0],owner:"Ambos",time:"Manhã"}
+    {id:1,name:'Lavar roupa',days:[2,4],owner:'P2',time:'Noite'},
+    {id:2,name:'Louça',days:[0,1,2,3,4,5,6],owner:'P1',time:'Após jantar'},
+    {id:3,name:'Mercado',days:[6],owner:'ambos',time:'Manhã'},
+    {id:4,name:'Faxina',days:[0],owner:'ambos',time:'Manhã'},
   ],
   taskChecks:{},
   study:{
-    gus:{sessions:[],goals:[
-      {id:1,text:"Estudar Go",done:false},
-      {id:2,text:"Revisar Zabbix",done:false},
-      {id:3,text:"Questões do concurso",done:false}
-    ]},
-    maria:{sessions:[],goals:[
-      {id:4,text:"Estudo pessoal",done:false},
-      {id:5,text:"Leitura",done:false},
-      {id:6,text:"Curso",done:false}
-    ]}
+    gus:{sessions:[],goals:['Go','Zabbix','Concurso']},
+    maria:{sessions:[],goals:['Estudo pessoal','Leitura','Curso']},
   }
 });
 
-function mergeState(data){
-  const base=defaultState();
-  const merged={...base,...data};
-  merged.salaries={...base.salaries,...(data?.salaries||{})};
-  merged.monthActuals={...(data?.monthActuals||{})};
-  merged.study={
-    gus:{...base.study.gus,...(data?.study?.gus||{})},
-    maria:{...base.study.maria,...(data?.study?.maria||{})}
-  };
-  if(!Array.isArray(merged.study.gus.sessions)) merged.study.gus.sessions=[];
-  if(!Array.isArray(merged.study.maria.sessions)) merged.study.maria.sessions=[];
-  if(!Array.isArray(merged.study.gus.goals)) merged.study.gus.goals=[];
-  if(!Array.isArray(merged.study.maria.goals)) merged.study.maria.goals=[];
-  if(!Array.isArray(merged.rules)) merged.rules=base.rules;
-  if(!Array.isArray(merged.entries)) merged.entries=base.entries;
-  if(!Array.isArray(merged.goals)) merged.goals=base.goals;
-  if(!Array.isArray(merged.tasks)) merged.tasks=base.tasks;
-  if(!merged.taskChecks) merged.taskChecks={};
-  return merged;
-}
-function load(){
-  try{
-    const raw = localStorage.getItem("lifeos_casal_v4") || localStorage.getItem("lifeos_casal_v3");
-    return raw ? mergeState(JSON.parse(raw)) : defaultState();
-  }catch(e){ return defaultState(); }
-}
-let ST = load();
-let module = "finance";
-let financeTab = "months";
-let selectedMonth = ym(0);
-let studyPerson = "gus";
-let studyTab = "log";
+let ST=(()=>{
+  try{const r=localStorage.getItem('lifeos_v5');return r?{...defaultState(),...JSON.parse(r)}:defaultState();}
+  catch{return defaultState();}
+})();
 
-function save(){
-  localStorage.setItem("lifeos_casal_v4",JSON.stringify(ST));
-  scheduleGhSave();
-}
-function toast(msg){
-  const el=document.getElementById("toast");
-  el.textContent=msg; el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"),2200);
-}
-function setModule(m){
-  module=m;
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.module===m));
-  render();
-}
-function setFinanceTab(t){ financeTab=t; render(); }
-function setStudyPerson(p){ studyPerson=p; render(); }
-function setStudyTab(t){ studyTab=t; render(); }
+function save(){localStorage.setItem('lifeos_v5',JSON.stringify(ST));scheduleSave();}
 
+// ══════════════════════════════════════════════════════════
+// FINANCE CALCULATIONS
+// ══════════════════════════════════════════════════════════
+function cardBillingMonth(purchaseDate,closingDay){
+  const [y,m,d]=purchaseDate.split('-').map(Number);
+  return d<=closingDay ? ymFrom(y,m) : ymFrom(y,m+1);
+}
+function cardEntriesForMonth(mk){
+  const cl=Number(ST.cardClosingDay)||20;
+  const res=[];
+  for(const c of (ST.cardExpenses||[])){
+    const total=Number(c.totalParcels)||1;
+    const billing0=cardBillingMonth(c.purchaseDate,cl);
+    for(let p=0;p<total;p++){
+      const parcelKey=ymAdd(billing0,p);
+      if(parcelKey===mk) res.push({
+        id:c.id+'_'+p, cardId:c.id,
+        name:c.name+(total>1?` (${p+1}/${total})`:''),
+        value:Number(c.value)/total,
+        category:c.category||'essenciais',
+        owner:c.owner||'casal',
+        type:'expense', isCard:true,
+        totalParcels:total, purchaseDate:c.purchaseDate
+      });
+    }
+  }
+  return res;
+}
+function recurringForMonth(mk){
+  return (ST.recurring||[]).filter(r=>r.active!==false).map(r=>({
+    id:'rec_'+r.id, recId:r.id, name:r.name,
+    value:Number(r.value)||0, category:r.category,
+    type:r.type||'expense', owner:r.owner||'casal',
+    isRecurring:true
+  }));
+}
 function monthKeys(){
-  const set = new Set([ym(0),ym(1),ym(2),ym(3),ym(4),ym(5)]);
-  ST.entries.forEach(e=>set.add(e.month));
+  const set=new Set([ym(0),ym(1),ym(2),ym(3),ym(4),ym(5)]);
+  (ST.entries||[]).forEach(e=>set.add(e.month));
   Object.keys(ST.monthActuals||{}).forEach(k=>set.add(k));
   return [...set].sort();
 }
 function monthSummary(key){
-  const salaryProjected = (Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
-  const actualOverride = ST.monthActuals?.[key]?.incomeActual;
-  const incomeActual = Number(actualOverride)||0;
-  const entries = ST.entries.filter(e=>e.month===key);
-  const expenseProjected = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.projected||0),0);
-  const expenseActual = entries.filter(e=>e.type==="expense").reduce((a,e)=>a+Number(e.actual||0),0);
-  const invProjected = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.projected||0),0);
-  const invActual = entries.filter(e=>e.type==="investment").reduce((a,e)=>a+Number(e.actual||0),0);
+  const sal=(Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
+  const incomeActual=Number(ST.monthActuals?.[key]?.incomeActual)||0;
+  const manual=(ST.entries||[]).filter(e=>e.month===key);
+  const recur=recurringForMonth(key);
+  const card=cardEntriesForMonth(key);
+  const allExp=[...manual,...recur.map(r=>({...r,projected:r.value,actual:0})),...card.map(c=>({...c,projected:c.value,actual:0}))];
+  const expProj=allExp.filter(e=>e.type!=='investment').reduce((a,e)=>a+Number(e.projected||e.value||0),0);
+  const invProj=allExp.filter(e=>e.type==='investment').reduce((a,e)=>a+Number(e.projected||e.value||0),0);
+  const expAct=manual.filter(e=>e.type==='expense').reduce((a,e)=>a+Number(e.actual||0),0);
+  const invAct=manual.filter(e=>e.type==='investment').reduce((a,e)=>a+Number(e.actual||0),0);
+  const catTotals={};
+  allExp.forEach(e=>{catTotals[e.category]=(catTotals[e.category]||0)+Number(e.projected||e.value||0);});
+  const byOwner={p1:0,p2:0,casal:0};
+  allExp.filter(e=>e.type!=='investment').forEach(e=>{
+    const v=Number(e.projected||e.value||0);
+    if(e.owner==='p1'||e.owner===ST.name1?.toLowerCase()) byOwner.p1+=v;
+    else if(e.owner==='p2'||e.owner===ST.name2?.toLowerCase()) byOwner.p2+=v;
+    else byOwner.casal+=v;
+  });
   return {
-    salaryProjected,incomeActual,expenseProjected,expenseActual,invProjected,invActual,
-    balanceProjected: salaryProjected - expenseProjected - invProjected,
-    balanceActual: (incomeActual||salaryProjected) - expenseActual - invActual
+    sal, incomeActual,
+    expProj, invProj, expAct, invAct,
+    balProj:sal-expProj-invProj,
+    balAct:(incomeActual||sal)-expAct-invAct,
+    catTotals, byOwner, manual, recur, card,
+    cardTotal:card.reduce((a,c)=>a+c.value,0),
+    recurTotal:recur.reduce((a,r)=>a+r.value,0),
+    manualExpTotal:manual.filter(e=>e.type==='expense').reduce((a,e)=>a+Number(e.projected||0),0),
   };
 }
-function currentSummary(){return monthSummary(selectedMonth)}
+
+// ══════════════════════════════════════════════════════════
+// ALERTS / INSIGHTS ENGINE
+// ══════════════════════════════════════════════════════════
+function generateInsights(){
+  const s=monthSummary(selMonth);
+  const insights=[];
+  const income=s.sal;
+  // categories over budget
+  ST.rules.forEach(r=>{
+    const target=income*r.pct/100;
+    const used=s.catTotals[r.id]||0;
+    if(used>target*1.05) insights.push({type:'bad',icon:'⚠️',text:`<strong>${r.name}</strong> ${fmtShort(used)} (${Math.round(used/target*100)}% do alvo de ${fmtShort(target)})`});
+    else if(used>target*0.9&&used<=target*1.05) insights.push({type:'warn',icon:'🟡',text:`<strong>${r.name}</strong> quase no limite: ${fmtShort(used)} de ${fmtShort(target)}`});
+  });
+  // balance
+  if(s.balProj<0) insights.push({type:'bad',icon:'🔴',text:`Déficit projetado de <strong>${fmt(Math.abs(s.balProj))}</strong> este mês`});
+  else if(s.balProj>0) insights.push({type:'good',icon:'💚',text:`Sobra projetada de <strong>${fmt(s.balProj)}</strong> — ótimo!`});
+  // card commitments next months
+  const futCard=[1,2,3].map(o=>{const mk=ym(o);const ce=cardEntriesForMonth(mk);return {label:shortYm(mk),total:ce.reduce((a,c)=>a+c.value,0)};}).filter(x=>x.total>0);
+  if(futCard.length) insights.push({type:'info',icon:'💳',text:`Parcelas futuras: ${futCard.map(f=>`${f.label} ${fmtShort(f.total)}`).join(' · ')}`});
+  // goals reachable
+  const avgSurplus=monthKeys().reduce((a,k)=>a+Math.max(0,monthSummary(k).balProj),0)/Math.max(1,monthKeys().length);
+  ST.goals.filter(g=>!g.completedAt).forEach(g=>{
+    const rem=Number(g.target)-Number(g.current);
+    if(rem>0&&avgSurplus>0){const mo=Math.ceil(rem/avgSurplus);if(mo<=24)insights.push({type:'info',icon:'🎯',text:`Meta <strong>${esc(g.name)}</strong>: ~${mo} meses para atingir (sobra média ${fmtShort(avgSurplus)}/mês)`});}
+  });
+  return insights;
+}
+
+// ══════════════════════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════════════════════
+let mod='finance', finTab='dashboard', selMonth=ym(0), obStep=0;
+
+function go(m){
+  mod=m;
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.m===m));
+  render();
+}
+function setFinTab(t){finTab=t;render();}
+
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show '+(type==='ok'?'ok':'err');
+  setTimeout(()=>el.classList.remove('show'),2400);
+}
 
 function render(){
-  const app=document.getElementById("app");
-  if(module==="finance") app.innerHTML=renderFinance();
-  if(module==="home") app.innerHTML=renderHome();
-  if(module==="study") app.innerHTML=renderStudy();
-  if(module==="settings") app.innerHTML=renderSettings();
-}
-function renderHero(s){
-  return `
-  <section class="hero">
-    <div class="section-label">Visão geral — ${ymLabel(selectedMonth)}</div>
-    <div class="hero-grid">
-      <div class="metric"><div class="value">${fmt(s.salaryProjected)}</div><div class="label">Receita projetada</div></div>
-      <div class="metric"><div class="value">${fmt(s.expenseProjected)}</div><div class="label">Gastos projetados</div></div>
-      <div class="metric"><div class="value green">${fmt(s.invProjected)}</div><div class="label">Investimento projetado</div></div>
-      <div class="metric"><div class="value ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div><div class="label">Sobra projetada</div></div>
-    </div>
-  </section>`;
+  const app=document.getElementById('app');
+  if(mod==='finance') app.innerHTML=renderFinance();
+  else if(mod==='home') app.innerHTML=renderHome();
+  else if(mod==='study') app.innerHTML=renderStudy();
+  else if(mod==='settings') app.innerHTML=renderSettings();
 }
 
-function renderFinance(){
-  const s=currentSummary();
-  return `
-  ${renderHero(s)}
-  <div class="tabs">
-    <button class="tab-btn ${financeTab==='months'?'active':''}" onclick="setFinanceTab('months')">📅 Meses</button>
-    <button class="tab-btn ${financeTab==='compare'?'active':''}" onclick="setFinanceTab('compare')">📊 Projetado x Realizado</button>
-    <button class="tab-btn ${financeTab==='rules'?'active':''}" onclick="setFinanceTab('rules')">🧠 Percentuais</button>
-    <button class="tab-btn ${financeTab==='entries'?'active':''}" onclick="setFinanceTab('entries')">💸 Lançamentos</button>
-    <button class="tab-btn ${financeTab==='goals'?'active':''}" onclick="setFinanceTab('goals')">🎯 Metas</button>
-  </div>
-  ${financeTab==='months'?renderMonths():''}
-  ${financeTab==='compare'?renderCompare():''}
-  ${financeTab==='rules'?renderRules():''}
-  ${financeTab==='entries'?renderEntries():''}
-  ${financeTab==='goals'?renderGoals():''}`;
+// ══════════════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════════════
+const OB_STEPS=[
+  {title:'Bem-vindos ao Life OS 👋',sub:'O painel financeiro do casal. Vamos configurar em 4 passos rápidos.'},
+  {title:'Quem usa o app?',sub:'Informe os nomes e salários de cada pessoa.'},
+  {title:'Gastos fixos mensais',sub:'Adicione os gastos que se repetem todo mês (aluguel, assinaturas, etc).'},
+  {title:'Cartão de crédito',sub:'Informe o dia de fechamento da fatura para calcular automaticamente.'},
+  {title:'Primeiras metas 🎯',sub:'Adicione uma meta financeira para começar.'},
+];
+function showOnboarding(){
+  obStep=0;
+  const el=document.getElementById('ob');
+  el.style.display='flex';
+  renderObStep();
 }
+function renderObStep(){
+  const total=OB_STEPS.length;
+  document.getElementById('ob-dots').innerHTML=Array.from({length:total},(_,i)=>`<div class="ob-dot ${i<obStep?'done':i===obStep?'active':''}"></div>`).join('');
+  const s=OB_STEPS[obStep];
+  let body=`<div class="ob-step">Passo ${obStep+1} de ${total}</div>
+    <div class="ob-title">${s.title}</div>
+    <div class="ob-sub">${s.sub}</div>`;
+  if(obStep===0){
+    body+=`<div class="btn-row"><button class="btn g" onclick="obNext()">Começar →</button></div>`;
+  } else if(obStep===1){
+    body+=`
+    <div class="fg">
+      <div class="f6"><label class="label">Nome da pessoa 1</label><input class="inp" id="ob-n1" value="${esc(ST.name1)}" placeholder="Ex: Gus"></div>
+      <div class="f6"><label class="label">Salário</label><input class="inp" id="ob-s1" type="number" value="${ST.salaries.gus}" placeholder="7000"></div>
+      <div class="f6"><label class="label">Nome da pessoa 2</label><input class="inp" id="ob-n2" value="${esc(ST.name2)}" placeholder="Ex: Maria"></div>
+      <div class="f6"><label class="label">Salário</label><input class="inp" id="ob-s2" type="number" value="${ST.salaries.maria}" placeholder="6400"></div>
+    </div>
+    <div class="btn-row"><button class="btn g" onclick="obSalaries()">Próximo →</button></div>`;
+  } else if(obStep===2){
+    const rec=ST.recurring||[];
+    body+=`
+    <div id="ob-rec-list">${rec.map((r,i)=>`<div class="row" style="margin-bottom:6px">
+      <span style="flex:1">${esc(r.name)}</span>
+      <span class="pill dim" style="font-family:var(--font-mono)">${fmt(r.value)}</span>
+      <button class="btn sm ghost" onclick="obRemoveRec(${i})">×</button>
+    </div>`).join('')}</div>
+    <div class="fg" style="margin-top:12px">
+      <div class="f6"><input class="inp sm" id="ob-rname" placeholder="Nome (ex: Netflix)"></div>
+      <div class="f3"><input class="inp sm" id="ob-rval" type="number" placeholder="Valor"></div>
+      <div class="f3"><button class="btn sm" onclick="obAddRec()">+</button></div>
+    </div>
+    <div class="btn-row"><button class="btn g" onclick="obNext()">Próximo →</button></div>`;
+  } else if(obStep===3){
+    body+=`
+    <div class="fg">
+      <div class="f12"><label class="label">Dia de fechamento da fatura</label>
+        <input class="inp" id="ob-closing" type="number" min="1" max="31" value="${ST.cardClosingDay}" placeholder="20">
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">Compras após este dia caem na fatura do mês seguinte</div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn g" onclick="obClosing()">Próximo →</button></div>`;
+  } else if(obStep===4){
+    body+=`
+    <div class="fg">
+      <div class="f8"><label class="label">Nome da meta</label><input class="inp" id="ob-gname" placeholder="Ex: Reserva de emergência"></div>
+      <div class="f4"><label class="label">Objetivo</label><input class="inp" id="ob-gtarget" type="number" placeholder="30000"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn g" onclick="obFinish()">Concluir configuração ✓</button>
+      <button class="btn ghost" onclick="obFinish()">Pular</button>
+    </div>`;
+  }
+  document.getElementById('ob-body').innerHTML=body;
+}
+function obNext(){obStep++;renderObStep();}
+function obSalaries(){
+  const n1=document.getElementById('ob-n1').value.trim()||'P1';
+  const n2=document.getElementById('ob-n2').value.trim()||'P2';
+  ST.name1=n1; ST.name2=n2;
+  ST.salaries.gus=Number(document.getElementById('ob-s1').value)||0;
+  ST.salaries.maria=Number(document.getElementById('ob-s2').value)||0;
+  save(); obNext();
+}
+function obAddRec(){
+  const name=document.getElementById('ob-rname').value.trim();
+  const val=Number(document.getElementById('ob-rval').value)||0;
+  if(!name||!val){toast('Preencha nome e valor','err');return;}
+  if(!ST.recurring) ST.recurring=[];
+  ST.recurring.push({id:Date.now(),name,value:val,category:'essenciais',type:'expense',owner:'casal',active:true});
+  save(); document.getElementById('ob-rname').value=''; document.getElementById('ob-rval').value='';
+  renderObStep();
+}
+function obRemoveRec(i){
+  ST.recurring.splice(i,1);save();renderObStep();
+}
+function obClosing(){
+  ST.cardClosingDay=Number(document.getElementById('ob-closing').value)||20;
+  save(); obNext();
+}
+function obFinish(){
+  const gn=document.getElementById('ob-gname')?.value.trim();
+  const gt=Number(document.getElementById('ob-gtarget')?.value)||0;
+  if(gn&&gt) ST.goals.push({id:Date.now(),name:gn,target:gt,current:0,completedAt:null});
+  ST.onboarded=true; save();
+  document.getElementById('ob').style.display='none';
+  render(); ghLoad();
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER FINANCE
+// ══════════════════════════════════════════════════════════
+function renderFinance(){
+  const s=monthSummary(selMonth);
+  const pct=s.sal?Math.min(100,Math.round((s.expProj+s.invProj)/s.sal*100)):0;
+  return `
+  <div class="page-header">
+    <div>
+      <div class="page-title">Finanças</div>
+      <div class="page-sub">${ST.name1} & ${ST.name2} · ${ymLabel(selMonth)}</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn ghost sm" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn ghost sm" onclick="window.print()">🖨 PDF</button>
+      <select class="sel" style="width:auto" onchange="selMonth=this.value;render()">${monthKeys().map(k=>`<option value="${k}" ${k===selMonth?'selected':''}>${ymLabel(k)}</option>`).join('')}</select>
+    </div>
+  </div>
+  <div class="hero-bar">
+    <div class="hero-metric"><div class="lbl">Receita total</div><div class="val">${fmtShort(s.sal)}</div><div class="sub">${ST.name1} ${fmtShort(ST.salaries.gus)} · ${ST.name2} ${fmtShort(ST.salaries.maria)}</div></div>
+    <div class="hero-metric"><div class="lbl">Gastos projetados</div><div class="val o">${fmtShort(s.expProj)}</div><div class="sub">${pct}% da receita</div></div>
+    <div class="hero-metric"><div class="lbl">Investimentos</div><div class="val g">${fmtShort(s.invProj)}</div><div class="sub">projetado</div></div>
+    <div class="hero-metric"><div class="lbl">Sobra projetada</div><div class="val ${s.balProj>=0?'g':'r'}">${fmtShort(s.balProj)}</div><div class="sub">${s.balProj>=0?'no azul ✓':'déficit ⚠'}</div></div>
+  </div>
+  <div class="tabs">
+    ${[['dashboard','🏠 Dashboard'],['months','📅 Meses'],['compare','📊 Proj × Real'],['entries','💸 Lançamentos'],['recurring','🔁 Recorrentes'],['card','💳 Cartão'],['rules','🧠 Percentuais'],['goals','🎯 Metas']].map(([id,label])=>`<button class="tab ${finTab===id?'on':''}" onclick="setFinTab('${id}')">${label}</button>`).join('')}
+  </div>
+  ${finTab==='dashboard'?renderDashboard(s):''}
+  ${finTab==='months'?renderMonths():''}
+  ${finTab==='compare'?renderCompare(s):''}
+  ${finTab==='entries'?renderEntries(s):''}
+  ${finTab==='recurring'?renderRecurring():''}
+  ${finTab==='card'?renderCard():''}
+  ${finTab==='rules'?renderRules(s):''}
+  ${finTab==='goals'?renderGoals():''}`;
+}
+
+// ── Dashboard ─────────────────────────────────────────────
+function renderDashboard(s){
+  const income=s.sal;
+  const pct=income?Math.min(100,Math.round((s.expProj+s.invProj)/income*100)):0;
+  const barCol=pct>90?'var(--red)':pct>75?'var(--orange)':'var(--green)';
+  const circ=2*Math.PI*52;
+  const insights=generateInsights();
+
+  // Chart: last 6 months
+  const chartMonths=monthKeys().slice(-6);
+  const chartMax=Math.max(...chartMonths.map(k=>{const ms=monthSummary(k);return ms.sal;}),1);
+  const bw=38,gap=14,chartW=chartMonths.length*(bw*2+gap+4)+gap,chartH=120;
+
+  const chartSvg=`<svg class="chart" width="${chartW}" height="${chartH+30}" viewBox="0 0 ${chartW} ${chartH+30}">
+    ${chartMonths.map((k,i)=>{
+      const ms=monthSummary(k);
+      const h1=Math.round(ms.sal/chartMax*chartH)||2;
+      const h2=Math.round((ms.expProj+ms.invProj)/chartMax*chartH)||2;
+      const h3=Math.round(Math.max(0,ms.balProj)/chartMax*chartH)||2;
+      const x=gap+i*(bw*2+gap+4);
+      const active=k===selMonth;
+      return `
+        <rect x="${x}" y="${chartH-h1}" width="${bw}" height="${h1}" rx="5" fill="${active?'var(--blue)':'rgba(56,189,248,.35)'}" style="cursor:pointer" onclick="selMonth='${k}';render()"/>
+        <rect x="${x+bw+2}" y="${chartH-h2}" width="${bw}" height="${h2}" rx="5" fill="${active?'var(--orange)':'rgba(251,146,60,.35)'}" style="cursor:pointer" onclick="selMonth='${k}';render()"/>
+        <text x="${x+bw+1}" y="${chartH+18}" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="var(--font-mono)">${shortYm(k)}</text>
+      `;
+    }).join('')}
+    <line x1="0" y1="${chartH}" x2="${chartW}" y2="${chartH}" stroke="var(--border)" stroke-width="1"/>
+  </svg>
+  <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--muted)">
+    <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--blue);margin-right:4px"></span>Receita</span>
+    <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--orange);margin-right:4px"></span>Gastos + Invest.</span>
+  </div>`;
+
+  return `<div class="grid">
+  <!-- ring + composição -->
+  <div class="card s4" style="display:flex;flex-direction:column;align-items:center;gap:16px">
+    <div class="card-title" style="margin-bottom:0;align-self:flex-start">Orçamento ${shortYm(selMonth)}</div>
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <circle cx="65" cy="65" r="52" fill="none" stroke="var(--panel3)" stroke-width="12"/>
+      <circle cx="65" cy="65" r="52" fill="none" stroke="${barCol}" stroke-width="12"
+        stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"
+        stroke-linecap="round" transform="rotate(-90 65 65)" style="transition:.6s"/>
+      <text x="65" y="60" text-anchor="middle" fill="var(--text)" font-size="26" font-weight="800" font-family="var(--font-display)">${pct}%</text>
+      <text x="65" y="78" text-anchor="middle" fill="var(--muted)" font-size="11">do salário</text>
+    </svg>
+    <div style="text-align:center">
+      <div style="font-size:22px;font-weight:800;color:${s.balProj>=0?'var(--green)':'var(--red)'};font-family:var(--font-display)">${fmt(s.balProj)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${s.balProj>=0?'sobra projetada':'déficit projetado'}</div>
+    </div>
+  </div>
+
+  <!-- composição -->
+  <div class="card s4">
+    <div class="card-title">Composição do mês</div>
+    ${[
+      {label:'🔁 Recorrentes',val:s.recurTotal,col:'var(--orange)'},
+      {label:'💳 Cartão',val:s.cardTotal,col:'var(--purple)'},
+      {label:'➕ Avulsos',val:s.manualExpTotal,col:'var(--muted)'},
+      {label:'📈 Investimentos',val:s.invProj,col:'var(--green)'},
+    ].map(x=>{const w=income?Math.min(100,x.val/income*100):0;return `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+        <span>${x.label}</span><span style="font-family:var(--font-mono);font-weight:700;color:${x.col}">${fmt(x.val)}</span>
+      </div>
+      <div class="bar"><div class="bar-fill" style="width:${w}%;background:${x.col}"></div></div>
+    </div>`;}).join('')}
+  </div>
+
+  <!-- pessoa × pessoa -->
+  <div class="card s4">
+    <div class="card-title">${ST.name1} × ${ST.name2}</div>
+    ${[
+      {name:ST.name1,val:s.byOwner.p1,sal:ST.salaries.gus,col:'var(--blue)'},
+      {name:ST.name2,val:s.byOwner.p2,sal:ST.salaries.maria,col:'var(--purple)'},
+      {name:'Casal (÷2)',val:s.byOwner.casal/2,sal:income/2,col:'var(--green)'},
+    ].map(p=>{
+      const p2=p.sal?Math.min(100,Math.round(p.val/p.sal*100)):0;
+      return `<div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-weight:700;color:${p.col}">${esc(p.name)}</span>
+          <span style="font-family:var(--font-mono);font-weight:700">${fmt(p.val)}</span>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width:${p2}%;background:${p.col}"></div></div>
+        <div style="font-size:11px;color:var(--muted)">${p2}% do salário individual</div>
+      </div>`;}).join('')}
+  </div>
+
+  <!-- chart -->
+  <div class="card s8">
+    <div class="card-title">Histórico — 6 meses</div>
+    <div class="chart-wrap">${chartSvg}</div>
+  </div>
+
+  <!-- próximos meses -->
+  <div class="card s4">
+    <div class="card-title">Próximos meses</div>
+    ${[1,2,3].map(o=>{
+      const mk=ym(o);const ms=monthSummary(mk);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-weight:700">${shortYm(mk)}</div>
+          <div style="font-size:11px;color:var(--muted)">💳 ${fmt(cardEntriesForMonth(mk).reduce((a,c)=>a+c.value,0))} parcelas</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono);font-weight:700;font-size:15px;text-align:right">${fmt(ms.expProj+ms.invProj)}</div>
+          <div style="font-size:11px;color:${ms.balProj>=0?'var(--green)':'var(--red)'};text-align:right">${ms.balProj>=0?'sobra ':'déficit '}${fmtShort(Math.abs(ms.balProj))}</div>
+        </div>
+      </div>`;}).join('')}
+  </div>
+
+  <!-- insights -->
+  <div class="card s12">
+    <div class="card-title">Insights automáticos</div>
+    ${insights.length?insights.map(i=>`<div class="alert ${i.type}"><span class="alert-icon">${i.icon}</span><span>${i.text}</span></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Tudo certo por aqui! Sem alertas no momento.</div>'}
+  </div>
+  </div>`;
+}
+
+// ── Months ────────────────────────────────────────────────
 function renderMonths(){
   const keys=monthKeys();
-  return `<div class="grid"><div class="card span-12"><h3>Timeline financeira mensal</h3><div class="month-list">
-  ${keys.map(k=>{
-    const s=monthSummary(k); const active=k===selectedMonth;
-    return `<div class="month-card ${active?'active':''}">
-      <div><div class="month-title">${ymLabel(k)}</div><div class="month-kpis">
-        <span class="kpi-mini">Receita ${fmt(s.salaryProjected)}</span>
-        <span class="kpi-mini">Gastos ${fmt(s.expenseProjected)}</span>
-        <span class="kpi-mini">Invest. ${fmt(s.invProjected)}</span>
-      </div></div>
-      <div><div class="label-small">Saldo projetado</div><div class="money ${s.balanceProjected>=0?'green':'red'}">${fmt(s.balanceProjected)}</div></div>
-      <div><div class="label-small">Saldo realizado</div><div class="money ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
-      <div class="footer-actions" style="margin:0">
-        <button class="btn ghost" onclick="selectedMonth='${k}';financeTab='compare';render()">Abrir</button>
-        <button class="btn" onclick="openMonthEdit('${k}')">Realizado</button>
-      </div>
-    </div>`;
-  }).join("")}</div></div></div>`;
-}
-function renderCompare(){
-  const s=currentSummary();
-  const diffIncome=(s.incomeActual||s.salaryProjected)-s.salaryProjected;
-  const diffExpenses=s.expenseActual-s.expenseProjected;
-  const diffInv=s.invActual-s.invProjected;
-  const diffBalance=s.balanceActual-s.balanceProjected;
-  return `<div class="grid">
-    <div class="card span-7"><h3>Comparativo — ${ymLabel(selectedMonth)}</h3><div class="table-wrap">
-      <table><thead><tr><th>Item</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>
-        ${compareRow("Receitas",s.salaryProjected,s.incomeActual||s.salaryProjected,diffIncome)}
-        ${compareRow("Gastos",s.expenseProjected,s.expenseActual,diffExpenses,true)}
-        ${compareRow("Investimentos",s.invProjected,s.invActual,diffInv)}
-        ${compareRow("Sobra",s.balanceProjected,s.balanceActual,diffBalance)}
-      </tbody></table></div>
-      <div class="footer-actions"><button class="btn" onclick="openMonthEdit('${selectedMonth}')">Editar realizado do mês</button><button class="btn ghost" onclick="financeTab='entries';render()">Ver lançamentos</button></div>
+  return `<div class="grid"><div class="card s12">
+    <div class="card-title">Timeline financeira</div>
+    <div class="month-grid">
+    ${keys.map(k=>{
+      const s=monthSummary(k);const active=k===selMonth;
+      const pct=s.sal?Math.min(100,Math.round((s.expProj+s.invProj)/s.sal*100)):0;
+      const col=pct>90?'var(--red)':pct>75?'var(--orange)':'var(--green)';
+      return `<div class="mcard ${active?'active':''}" onclick="selMonth='${k}';render()">
+        <div>
+          <div class="mcard-title">${ymLabel(k)}</div>
+          <div class="mcard-sub">
+            <span class="mkpi">🔁 ${s.recur.length} recorr.</span>
+            <span class="mkpi">💳 ${s.card.length} parcelas</span>
+            <span class="mkpi">➕ ${s.manual.length} avulsos</span>
+          </div>
+          <div class="bar" style="margin-top:8px"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        </div>
+        <div class="mcard-stat"><div class="lbl">Receita</div><div class="val b">${fmtShort(s.sal)}</div></div>
+        <div class="mcard-stat"><div class="lbl">Gastos proj.</div><div class="val o">${fmtShort(s.expProj)}</div></div>
+        <div class="mcard-stat"><div class="lbl">Saldo proj.</div><div class="val ${s.balProj>=0?'g':'r'}">${fmtShort(s.balProj)}</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn sm ghost" onclick="event.stopPropagation();selMonth='${k}';setFinTab('compare')">Ver</button>
+          <button class="btn sm" onclick="event.stopPropagation();openMonthEdit('${k}')">Real</button>
+        </div>
+      </div>`;
+    }).join('')}
     </div>
-    <div class="card span-5"><h3>Leitura rápida</h3><div class="compare-grid">
-      <div class="compare-box"><div class="name">Receita real</div><div class="num">${fmt(s.incomeActual||s.salaryProjected)}</div></div>
-      <div class="compare-box"><div class="name">Gasto real</div><div class="num">${fmt(s.expenseActual)}</div></div>
-      <div class="compare-box"><div class="name">Investido real</div><div class="num green">${fmt(s.invActual)}</div></div>
-      <div class="compare-box"><div class="name">Sobra real</div><div class="num ${s.balanceActual>=0?'green':'red'}">${fmt(s.balanceActual)}</div></div>
-    </div><p style="color:var(--muted);line-height:1.5;margin-bottom:0">Planejem o mês e depois preencham o realizado para comparar o que saiu do combinado.</p></div>
-  </div>`;
-}
-function compareRow(name,proj,real,diff,invert=false){
-  const ok = invert ? diff<=0 : diff>=0;
-  return `<tr><td><strong>${name}</strong></td><td>${fmt(proj)}</td><td>${fmt(real)}</td><td class="money ${ok?'green':'red'}">${diff>=0?'+ ':''}${fmt(diff)}</td></tr>`;
-}
-function renderRules(){
-  const income=(Number(ST.salaries.gus)||0)+(Number(ST.salaries.maria)||0);
-  const entries=ST.entries.filter(e=>e.month===selectedMonth);
-  return `<div class="grid">
-    <div class="card span-6"><h3>Regra percentual da renda</h3>
-      ${ST.rules.map(r=>{
-        const target=income*(Number(r.pct)||0)/100;
-        const used=entries.filter(e=>e.category===r.id).reduce((a,e)=>a+Number(e.projected||0),0);
-        const pct=target ? Math.min(140,used/target*100) : 0;
-        return `<div style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;gap:12px">
-          <strong>${esc(r.name)}</strong><span>${r.pct}% · alvo ${fmt(target)}</span></div>
-          <div class="bar"><div class="fill" style="width:${Math.min(100,pct)}%;background:var(--${r.color})"></div></div>
-          <div style="font-size:13px;color:${used>target?'var(--red)':'var(--muted)'}">Projetado no mês: ${fmt(used)} ${used>target?'— acima do alvo':''}</div></div>`;
-      }).join("")}
-    </div>
-    <div class="card span-6"><h3>Editar salários e percentuais</h3>
-      <div class="form-grid"><div class="f6"><div class="label-small">Salário Gus</div><input class="input" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
-      <div class="f6"><div class="label-small">Salário Maria</div><input class="input" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div></div>
-      ${ST.rules.map(r=>`<div class="form-grid"><div class="f8"><input class="input" value="${esc(r.name)}" onchange="updateRule('${r.id}','name',this.value)"></div><div class="f4"><input class="input" type="number" value="${r.pct}" onchange="updateRule('${r.id}','pct',this.value)"></div></div>`).join("")}
-    </div></div>`;
-}
-function updateRule(id,field,val){
-  ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);
-  save();render();
-}
-function renderEntries(){
-  const entries=ST.entries.filter(e=>e.month===selectedMonth);
-  return `<div class="grid">
-    <div class="card span-7"><h3>Lançamentos — ${ymLabel(selectedMonth)}</h3>
-      ${entries.length?entries.map(e=>`<div class="row-card">
-        <div><div class="row-title">${esc(e.name)}</div><div class="row-sub">${e.type==="expense"?"Gasto":"Investimento"} · ${categoryName(e.category)} · ${e.owner}</div></div>
-        <div style="text-align:right"><div class="money">${fmt(e.projected)}</div><div class="row-sub">real: ${fmt(e.actual||0)}</div></div>
-        <button class="btn ghost" onclick="removeEntry(${e.id})">×</button>
-      </div>`).join(""):`<p style="color:var(--muted)">Nenhum lançamento neste mês.</p>`}
-    </div>
-    <div class="card span-5"><h3>Novo lançamento</h3>
-      <div class="form-grid">
-        <div class="f12"><div class="label-small">Descrição</div><input id="e-name" class="input" placeholder="Ex: Mercado, aluguel, investimento..."></div>
-        <div class="f6"><div class="label-small">Tipo</div><select id="e-type" class="select"><option value="expense">Gasto</option><option value="investment">Investimento</option></select></div>
-        <div class="f6"><div class="label-small">Categoria</div><select id="e-cat" class="select">${ST.rules.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join("")}</select></div>
-        <div class="f6"><div class="label-small">Projetado</div><input id="e-proj" class="input" type="number" placeholder="0"></div>
-        <div class="f6"><div class="label-small">Realizado</div><input id="e-real" class="input" type="number" placeholder="0"></div>
-        <div class="f12"><div class="label-small">Responsável</div><select id="e-owner" class="select"><option>Casal</option><option>Gus</option><option>Maria</option></select></div>
-      </div><button class="btn green" style="width:100%" onclick="addEntry()">Adicionar lançamento</button>
-    </div></div>`;
-}
-function categoryName(id){ return ST.rules.find(r=>r.id===id)?.name || id; }
-function addEntry(){
-  const name=document.getElementById("e-name").value.trim();
-  if(!name){toast("Digite a descrição.");return}
-  ST.entries.push({id:Date.now(), month:selectedMonth, name, type:document.getElementById("e-type").value, category:document.getElementById("e-cat").value, projected:Number(document.getElementById("e-proj").value)||0, actual:Number(document.getElementById("e-real").value)||0, owner:document.getElementById("e-owner").value});
-  save();toast("Lançamento adicionado.");render();
-}
-function removeEntry(id){ ST.entries=ST.entries.filter(e=>e.id!==id);save();render(); }
-function renderGoals(){
-  return `<div class="grid"><div class="card span-7"><h3>Metas financeiras do casal</h3>
-    ${ST.goals.map(g=>{
-      const pct=g.target?Math.min(100,Number(g.current)/Number(g.target)*100):0;
-      return `<div class="row-card"><div style="flex:1"><div style="display:flex;justify-content:space-between;gap:12px"><strong>${esc(g.name)}</strong><span>${fmt(g.current)} / ${fmt(g.target)}</span></div><div class="bar"><div class="fill" style="width:${pct}%"></div></div></div><button class="btn ghost" onclick="openGoalEdit(${g.id})">Editar</button></div>`;
-    }).join("")}</div>
-    <div class="card span-5"><h3>Nova meta</h3><div class="form-grid">
-      <div class="f12"><input id="g-name" class="input" placeholder="Nome da meta"></div>
-      <div class="f6"><input id="g-current" class="input" type="number" placeholder="Atual"></div>
-      <div class="f6"><input id="g-target" class="input" type="number" placeholder="Objetivo"></div>
-    </div><button class="btn green" style="width:100%" onclick="addGoal()">Adicionar meta</button></div></div>`;
-}
-function addGoal(){
-  const name=document.getElementById("g-name").value.trim();
-  if(!name){toast("Digite a meta.");return}
-  ST.goals.push({id:Date.now(),name,current:Number(document.getElementById("g-current").value)||0,target:Number(document.getElementById("g-target").value)||0});
-  save();render();
-}
-
-function renderHome(){
-  const today=new Date().getDay();
-  const todayKey=new Date().toISOString().slice(0,10);
-  const todayTasks=ST.tasks.filter(t=>t.days.includes(today));
-  return `<section class="hero"><div class="section-label">Casa — rotina do casal</div><div class="hero-grid">
-    <div class="metric"><div class="value">${todayTasks.length}</div><div class="label">Tarefas hoje</div></div>
-    <div class="metric"><div class="value green">${todayTasks.filter(t=>ST.taskChecks[todayKey+"_"+t.id]).length}</div><div class="label">Concluídas</div></div>
-    <div class="metric"><div class="value blue">${ST.tasks.filter(t=>t.owner==="Gus").length}</div><div class="label">Responsáveis Gus</div></div>
-    <div class="metric"><div class="value purple">${ST.tasks.filter(t=>t.owner==="Maria").length}</div><div class="label">Responsáveis Maria</div></div>
-  </div></section>
-  <div class="grid">
-    <div class="card span-7"><h3>Tarefas de hoje</h3>
-      ${todayTasks.map(t=>{
-        const key=todayKey+"_"+t.id; const done=!!ST.taskChecks[key];
-        return `<div class="row-card"><button class="task-check ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button><div style="flex:1"><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.owner} · ${esc(t.time)}</div></div><span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span></div>`;
-      }).join("") || `<p style="color:var(--muted)">Sem tarefas hoje.</p>`}
-    </div>
-    <div class="card span-5"><h3>Nova tarefa fixa</h3>
-      <div class="form-grid">
-        <div class="f12"><input id="t-name" class="input" placeholder="Ex: Passar pano"></div>
-        <div class="f6"><select id="t-owner" class="select"><option>Gus</option><option>Maria</option><option>Ambos</option></select></div>
-        <div class="f6"><input id="t-time" class="input" placeholder="Horário ideal"></div>
-        <div class="f12"><div class="label-small">Dias</div><div style="display:flex;gap:6px;flex-wrap:wrap">${days.map((d,i)=>`<label class="pill"><input type="checkbox" class="day-check" value="${i}"> ${d}</label>`).join("")}</div></div>
-      </div><button class="btn green" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
-    </div>
-    <div class="card span-12"><h3>Rotina completa</h3>
-      ${ST.tasks.map(t=>`<div class="row-card"><div><div class="row-title">${esc(t.name)}</div><div class="row-sub">${t.days.map(d=>days[d]).join(", ")} · ${esc(t.time)}</div></div><span class="pill ${t.owner==='Maria'?'purple':t.owner==='Gus'?'blue':'green'}">${t.owner}</span><button class="btn ghost" onclick="ST.tasks=ST.tasks.filter(x=>x.id!==${t.id});save();render()">×</button></div>`).join("")}
-    </div>
-  </div>`;
-}
-function addTask(){
-  const name=document.getElementById("t-name").value.trim();
-  const selected=[...document.querySelectorAll(".day-check:checked")].map(x=>Number(x.value));
-  if(!name||!selected.length){toast("Preencha nome e dias.");return}
-  ST.tasks.push({id:Date.now(),name,days:selected,owner:document.getElementById("t-owner").value,time:document.getElementById("t-time").value||"Livre"});
-  save();render();
-}
-
-function renderStudy(){
-  const person = ST.study[studyPerson] || {sessions:[],goals:[]};
-  const totalHours = sumStudy(studyPerson);
-  const weekHours = sumStudyWeek(studyPerson);
-  const todayHours = sumStudyToday(studyPerson);
-  return `<section class="hero">
-    <div class="section-label">Estudos individuais</div>
-    <div class="hero-grid">
-      <div class="metric"><div class="value ${studyPerson==='gus'?'blue':'purple'}">${studyPerson==='gus'?'Gus':'Maria'}</div><div class="label">Perfil selecionado</div></div>
-      <div class="metric"><div class="value green">${totalHours.toFixed(1)}h</div><div class="label">Total estudado</div></div>
-      <div class="metric"><div class="value">${weekHours.toFixed(1)}h</div><div class="label">Esta semana</div></div>
-      <div class="metric"><div class="value orange">${todayHours.toFixed(1)}h</div><div class="label">Hoje</div></div>
-    </div>
-  </section>
-  <div class="tabs">
-    <button class="tab-btn ${studyPerson==='gus'?'active':''}" onclick="setStudyPerson('gus')">👤 Gus</button>
-    <button class="tab-btn ${studyPerson==='maria'?'active':''}" onclick="setStudyPerson('maria')">👤 Maria</button>
-    <button class="tab-btn ${studyTab==='log'?'active':''}" onclick="setStudyTab('log')">⏱ Registrar</button>
-    <button class="tab-btn ${studyTab==='goals'?'active':''}" onclick="setStudyTab('goals')">🎯 Metas</button>
-    <button class="tab-btn ${studyTab==='history'?'active':''}" onclick="setStudyTab('history')">📚 Histórico</button>
-  </div>
-  ${studyTab==='log'?renderStudyLog(studyPerson):''}
-  ${studyTab==='goals'?renderStudyGoals(studyPerson):''}
-  ${studyTab==='history'?renderStudyHistory(studyPerson):''}`;
-}
-function renderStudyLog(p){
-  const name=p==='gus'?'Gus':'Maria';
-  return `<div class="grid">
-    <div class="card span-6"><h3>Registrar estudo — ${name}</h3>
-      <div class="form-grid">
-        <div class="f6"><div class="label-small">Horas</div><input id="study-hours" class="input" type="number" step="0.25" placeholder="Ex: 1.5"></div>
-        <div class="f6"><div class="label-small">Área</div><input id="study-area" class="input" placeholder="Ex: Go, concurso, curso..."></div>
-        <div class="f12"><div class="label-small">Observação</div><textarea id="study-note" class="textarea" placeholder="O que foi estudado?"></textarea></div>
-      </div>
-      <button class="btn green" onclick="addStudy('${p}')">Registrar sessão</button>
-    </div>
-    <div class="card span-6"><h3>Resumo rápido</h3>
-      <div class="compare-grid">
-        <div class="compare-box"><div class="name">Sessões</div><div class="num">${ST.study[p].sessions.length}</div></div>
-        <div class="compare-box"><div class="name">Horas totais</div><div class="num green">${sumStudy(p).toFixed(1)}h</div></div>
-        <div class="compare-box"><div class="name">Semana</div><div class="num">${sumStudyWeek(p).toFixed(1)}h</div></div>
-        <div class="compare-box"><div class="name">Hoje</div><div class="num orange">${sumStudyToday(p).toFixed(1)}h</div></div>
-      </div>
-    </div>
-  </div>`;
-}
-function renderStudyGoals(p){
-  const goals=ST.study[p].goals || [];
-  return `<div class="grid">
-    <div class="card span-7"><h3>Metas de estudo — ${p==='gus'?'Gus':'Maria'}</h3>
-      ${goals.length?goals.map(g=>`<div class="row-card">
-        <button class="task-check ${g.done?'done':''}" onclick="toggleStudyGoal('${p}',${g.id})">${g.done?'✓':''}</button>
-        <div style="flex:1"><div class="row-title" style="${g.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(g.text)}</div></div>
-        <button class="btn ghost" onclick="removeStudyGoal('${p}',${g.id})">×</button>
-      </div>`).join(""):`<p style="color:var(--muted)">Nenhuma meta cadastrada.</p>`}
-    </div>
-    <div class="card span-5"><h3>Nova meta</h3>
-      <div class="form-grid"><div class="f12"><input id="study-goal-text" class="input" placeholder="Ex: 30 questões de Go"></div></div>
-      <button class="btn green" onclick="addStudyGoal('${p}')">Adicionar meta</button>
-    </div>
-  </div>`;
-}
-function renderStudyHistory(p){
-  const sessions=[...(ST.study[p].sessions||[])].reverse();
-  return `<div class="grid"><div class="card span-12"><h3>Histórico — ${p==='gus'?'Gus':'Maria'}</h3>
-    ${sessions.length?sessions.map(s=>`<div class="row-card">
-      <div><div class="row-title">${Number(s.hours).toFixed(1)}h · ${esc(s.area||'Estudo')}</div><div class="row-sub">${esc(s.note||'Sem observação')} · ${s.date}</div></div>
-      <button class="btn ghost" onclick="removeStudySession('${p}',${s.id})">×</button>
-    </div>`).join(""):`<p style="color:var(--muted)">Sem sessões registradas.</p>`}
   </div></div>`;
 }
-function sumStudy(p){ return (ST.study[p]?.sessions||[]).reduce((a,s)=>a+Number(s.hours||0),0); }
-function sumStudyToday(p){
-  const today=new Date().toISOString().slice(0,10);
-  return (ST.study[p]?.sessions||[]).filter(s=>s.date===today).reduce((a,s)=>a+Number(s.hours||0),0);
+
+// ── Compare ───────────────────────────────────────────────
+function renderCompare(s){
+  const allRows=[
+    ...s.recur.map(r=>({name:'🔁 '+r.name,proj:r.value,real:0,owner:r.owner,auto:true})),
+    ...s.card.map(c=>({name:'💳 '+c.name,proj:c.value,real:0,owner:c.owner,auto:true})),
+    ...s.manual.map(e=>({name:e.name,proj:Number(e.projected||0),real:Number(e.actual||0),owner:e.owner,auto:false,id:e.id})),
+  ];
+  const diffBal=s.balAct-s.balProj;
+  return `<div class="grid">
+  <div class="card s8">
+    <div class="card-title">Lançamentos — ${ymLabel(selMonth)}</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Item</th><th>Responsável</th><th>Projetado</th><th>Realizado</th><th>Δ</th></tr></thead>
+      <tbody>
+        ${allRows.map(r=>{
+          const diff=r.real-r.proj;
+          return `<tr>
+            <td>${esc(r.name)}${r.auto?'<span class="pill dim" style="margin-left:6px;font-size:10px">auto</span>':''}</td>
+            <td><span class="pill ${ownerPill(r.owner)}">${ownerLabel(r.owner)}</span></td>
+            <td class="num">${fmt(r.proj)}</td>
+            <td class="num">${fmt(r.real)}</td>
+            <td class="num ${diff===0?'':diff<0?'g':'r'}">${diff>=0?'+':''}${fmt(diff)}</td>
+          </tr>`;}).join('')}
+        <tr style="font-weight:900;border-top:2px solid var(--border2)">
+          <td colspan="2"><strong>SALDO FINAL</strong></td>
+          <td class="num">${fmt(s.balProj)}</td>
+          <td class="num ${s.balAct>=0?'g':'r'}">${fmt(s.balAct)}</td>
+          <td class="num ${diffBal>=0?'g':'r'}">${diffBal>=0?'+':''}${fmt(diffBal)}</td>
+        </tr>
+      </tbody>
+    </table></div>
+    <div class="btn-row"><button class="btn" onclick="openMonthEdit('${selMonth}')">Editar realizado</button></div>
+  </div>
+  <div class="card s4">
+    <div class="card-title">Resumo do mês</div>
+    <div class="cmp-grid">
+      <div class="cmp-box"><div class="n">Receita proj.</div><div class="v">${fmt(s.sal)}</div></div>
+      <div class="cmp-box"><div class="n">Receita real</div><div class="v">${fmt(s.incomeActual||s.sal)}</div></div>
+      <div class="cmp-box"><div class="n">Gastos proj.</div><div class="v" style="color:var(--orange)">${fmt(s.expProj)}</div></div>
+      <div class="cmp-box ${s.expAct>s.expProj?'lo':''}"><div class="n">Gastos reais</div><div class="v" style="color:${s.expAct>s.expProj?'var(--red)':'var(--green)'}">${fmt(s.expAct)}</div></div>
+      <div class="cmp-box"><div class="n">Invest. proj.</div><div class="v" style="color:var(--green)">${fmt(s.invProj)}</div></div>
+      <div class="cmp-box"><div class="n">Invest. real</div><div class="v" style="color:var(--green)">${fmt(s.invAct)}</div></div>
+      <div class="cmp-box ${s.balAct>=0?'hi':'lo'}" style="grid-column:span 2"><div class="n">Saldo final</div><div class="v" style="color:${s.balAct>=0?'var(--green)':'var(--red)'}">${fmt(s.balAct)}</div></div>
+    </div>
+  </div></div>`;
 }
-function weekStartKey(){
-  const d=new Date();
-  const day=d.getDay();
-  d.setDate(d.getDate()-((day+6)%7));
-  return d.toISOString().slice(0,10);
+
+// ── Entries (manual) ──────────────────────────────────────
+function renderEntries(s){
+  return `<div class="grid">
+  <div class="card s7">
+    <div class="card-title">Lançamentos avulsos — ${ymLabel(selMonth)}</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Para gastos fixos use <strong>Recorrentes</strong> · Para cartão use <strong>Cartão</strong></p>
+    ${s.manual.length?s.manual.map(e=>`<div class="row">
+      <div style="flex:1">
+        <div class="row-title">${esc(e.name)}</div>
+        <div class="row-sub">${e.type==='expense'?'Gasto':'Invest.'} · ${catName(e.category)} · <span class="pill ${ownerPill(e.owner)}">${ownerLabel(e.owner)}</span></div>
+        ${e.note?`<div style="font-size:12px;color:var(--dim);margin-top:3px">📝 ${esc(e.note)}</div>`:''}
+      </div>
+      <div style="text-align:right">
+        <div class="row-val">${fmt(e.projected)}</div>
+        <div style="font-size:12px;color:var(--muted)">real: ${fmt(e.actual||0)}</div>
+      </div>
+      <button class="btn sm ghost" onclick="removeEntry(${e.id})">×</button>
+    </div>`).join(''):'<p style="color:var(--muted)">Nenhum lançamento avulso este mês.</p>'}
+  </div>
+  <div class="card s5">
+    <div class="card-title">Novo lançamento</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Descrição</label><input id="en" class="inp" placeholder="Ex: IPVA, presente, jantar..."></div>
+      <div class="f6"><label class="label">Tipo</label><select id="et" class="sel"><option value="expense">Gasto</option><option value="investment">Investimento</option></select></div>
+      <div class="f6"><label class="label">Categoria</label><select id="ec" class="sel">${ST.rules.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></div>
+      <div class="f6"><label class="label">Projetado</label><input id="ep" class="inp" type="number" placeholder="0"></div>
+      <div class="f6"><label class="label">Realizado</label><input id="er" class="inp" type="number" placeholder="0"></div>
+      <div class="f12"><label class="label">Responsável</label><select id="eo" class="sel"><option value="casal">Casal</option><option value="p1">${esc(ST.name1)}</option><option value="p2">${esc(ST.name2)}</option></select></div>
+      <div class="f12"><label class="label">Nota (opcional)</label><input id="enote" class="inp" placeholder="Observação..."></div>
+    </div>
+    <button class="btn g" style="width:100%" onclick="addEntry()">Adicionar lançamento</button>
+  </div></div>`;
 }
-function sumStudyWeek(p){
-  const wk=weekStartKey();
-  return (ST.study[p]?.sessions||[]).filter(s=>s.date>=wk).reduce((a,s)=>a+Number(s.hours||0),0);
+function addEntry(){
+  const name=document.getElementById('en').value.trim();
+  if(!name){toast('Digite a descrição','err');return;}
+  (ST.entries||[]).push({id:Date.now(),month:selMonth,name,type:document.getElementById('et').value,category:document.getElementById('ec').value,projected:Number(document.getElementById('ep').value)||0,actual:Number(document.getElementById('er').value)||0,owner:document.getElementById('eo').value,note:document.getElementById('enote').value||''});
+  save();toast('Lançamento adicionado');render();
 }
-function addStudy(p){
-  const hours=Number(document.getElementById("study-hours").value)||0;
-  const area=document.getElementById("study-area").value.trim() || "Estudo";
-  const note=document.getElementById("study-note").value.trim();
-  if(!hours){toast("Informe as horas de estudo.");return;}
-  ST.study[p].sessions.push({id:Date.now(),date:new Date().toISOString().slice(0,10),hours,area,note});
-  save();toast("Estudo registrado.");render();
+function removeEntry(id){ST.entries=(ST.entries||[]).filter(e=>e.id!==id);save();render();}
+
+// ── Recurring ─────────────────────────────────────────────
+function renderRecurring(){
+  const total=(ST.recurring||[]).filter(r=>r.active!==false).reduce((a,r)=>a+Number(r.value||0),0);
+  return `<div class="grid">
+  <div class="card s7">
+    <div class="card-title">Gastos recorrentes mensais</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Somados automaticamente em <strong>todos os meses</strong>.</p>
+    ${(ST.recurring||[]).length?(ST.recurring||[]).map(r=>`<div class="row" style="opacity:${r.active!==false?1:.45}">
+      <label class="toggle"><input type="checkbox" ${r.active!==false?'checked':''} onchange="toggleRec(${r.id},this.checked)"><div class="toggle-slider"></div></label>
+      <div style="flex:1">
+        <div class="row-title">🔁 ${esc(r.name)}</div>
+        <div class="row-sub">${catName(r.category)} · ${ownerLabel(r.owner)} · ${r.type==='investment'?'Investimento':'Gasto'}</div>
+      </div>
+      <div class="row-val" style="color:var(--orange)">${fmt(r.value)}<span style="font-size:12px;color:var(--muted)">/mês</span></div>
+      <button class="btn sm ghost" onclick="removeRec(${r.id})">×</button>
+    </div>`).join(''):'<p style="color:var(--muted)">Nenhum recorrente cadastrado.</p>'}
+    <div style="margin-top:14px;padding:14px;background:var(--panel2);border-radius:var(--r);font-size:13px">
+      Total automático/mês: <strong style="color:var(--orange);font-size:16px;font-family:var(--font-mono)">${fmt(total)}</strong>
+    </div>
+  </div>
+  <div class="card s5">
+    <div class="card-title">Novo recorrente</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Descrição</label><input id="rn" class="inp" placeholder="Ex: Aluguel, Netflix..."></div>
+      <div class="f12"><label class="label">Valor mensal</label><input id="rv" class="inp" type="number" placeholder="0"></div>
+      <div class="f6"><label class="label">Tipo</label><select id="rt" class="sel"><option value="expense">Gasto</option><option value="investment">Investimento</option></select></div>
+      <div class="f6"><label class="label">Categoria</label><select id="rc" class="sel">${ST.rules.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></div>
+      <div class="f12"><label class="label">Responsável</label><select id="ro" class="sel"><option value="casal">Casal</option><option value="p1">${esc(ST.name1)}</option><option value="p2">${esc(ST.name2)}</option></select></div>
+    </div>
+    <button class="btn g" style="width:100%" onclick="addRec()">Adicionar recorrente</button>
+  </div></div>`;
 }
-function addStudyGoal(p){
-  const text=document.getElementById("study-goal-text").value.trim();
-  if(!text){toast("Digite a meta.");return;}
-  ST.study[p].goals.push({id:Date.now(),text,done:false});
+function addRec(){
+  const name=document.getElementById('rn').value.trim();
+  const val=Number(document.getElementById('rv').value)||0;
+  if(!name||!val){toast('Preencha nome e valor','err');return;}
+  if(!ST.recurring) ST.recurring=[];
+  ST.recurring.push({id:Date.now(),name,value:val,type:document.getElementById('rt').value,category:document.getElementById('rc').value,owner:document.getElementById('ro').value,active:true});
+  save();toast('Recorrente adicionado');render();
+}
+function removeRec(id){ST.recurring=(ST.recurring||[]).filter(r=>r.id!==id);save();render();}
+function toggleRec(id,val){ST.recurring=(ST.recurring||[]).map(r=>r.id===id?{...r,active:val}:r);save();render();}
+
+// ── Card ──────────────────────────────────────────────────
+function renderCard(){
+  const cl=Number(ST.cardClosingDay)||20;
+  const sorted=[...(ST.cardExpenses||[])].sort((a,b)=>b.purchaseDate.localeCompare(a.purchaseDate));
+  return `<div class="grid">
+  <div class="card s7">
+    <div class="card-title">Compras no cartão</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Parcelas distribuídas automaticamente (fechamento dia <strong>${cl}</strong>).</p>
+    ${sorted.length?sorted.map(c=>{
+      const total=Number(c.totalParcels)||1;
+      const billing0=cardBillingMonth(c.purchaseDate,cl);
+      const lastBilling=ymAdd(billing0,total-1);
+      return `<div class="row">
+        <div style="flex:1">
+          <div class="row-title">💳 ${esc(c.name)}</div>
+          <div class="row-sub">${c.purchaseDate} · <span class="pill ${ownerPill(c.owner)}">${ownerLabel(c.owner)}</span></div>
+          <div style="font-size:12px;color:var(--purple);margin-top:3px">${total}× de ${fmt(Number(c.value)/total)} · Fatura: ${shortYm(billing0)}${total>1?' → '+shortYm(lastBilling):''}</div>
+          ${c.note?`<div style="font-size:11px;color:var(--dim);margin-top:2px">📝 ${esc(c.note)}</div>`:''}
+        </div>
+        <div style="text-align:right">
+          <div class="row-val" style="color:var(--purple)">${fmt(c.value)}</div>
+          <div style="font-size:11px;color:var(--muted)">total</div>
+        </div>
+        <button class="btn sm ghost" onclick="removeCard(${c.id})">×</button>
+      </div>`;}).join(''):'<p style="color:var(--muted)">Nenhuma compra lançada.</p>'}
+  </div>
+  <div class="card s5">
+    <div class="card-title">Nova compra</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Descrição</label><input id="cn" class="inp" placeholder="Ex: Notebook, viagem..."></div>
+      <div class="f12"><label class="label">Valor total</label><input id="cv" class="inp" type="number" placeholder="0"></div>
+      <div class="f6"><label class="label">Parcelas</label><input id="cp" class="inp" type="number" min="1" max="60" value="1"></div>
+      <div class="f6"><label class="label">Data da compra</label><input id="cd" class="inp" type="date" value="${today()}"></div>
+      <div class="f6"><label class="label">Categoria</label><select id="cc" class="sel">${ST.rules.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select></div>
+      <div class="f6"><label class="label">Responsável</label><select id="co" class="sel"><option value="casal">Casal</option><option value="p1">${esc(ST.name1)}</option><option <option value="p2">${esc(ST.name2)}</option></select></div>
+      <div class="f12"><label class="label">Nota</label><input id="cnote" class="inp" placeholder="Opcional"></div>
+    </div>
+    <button class="btn p" style="width:100%;margin-bottom:12px" onclick="addCard()">💳 Lançar compra</button>
+    <div style="background:var(--panel2);border-radius:var(--r);padding:12px;font-size:12px;color:var(--muted)">
+      <strong style="color:var(--text)">📅 Fechamento dia ${cl}</strong><br>
+      Até dia ${cl} → fatura deste mês<br>
+      Após dia ${cl} → fatura do próximo mês<br>
+      <div style="margin-top:8px"><label class="label">Alterar fechamento</label>
+        <input class="inp" type="number" min="1" max="31" value="${cl}" style="margin-top:4px" onchange="ST.cardClosingDay=Number(this.value)||20;save();render()">
+      </div>
+    </div>
+  </div></div>`;
+}
+function addCard(){
+  const name=document.getElementById('cn').value.trim();
+  const val=Number(document.getElementById('cv').value)||0;
+  const date=document.getElementById('cd').value;
+  if(!name||!val||!date){toast('Preencha nome, valor e data','err');return;}
+  if(!ST.cardExpenses) ST.cardExpenses=[];
+  ST.cardExpenses.push({id:Date.now(),name,value:val,totalParcels:Number(document.getElementById('cp').value)||1,purchaseDate:date,category:document.getElementById('cc').value,owner:document.getElementById('co').value,note:document.getElementById('cnote').value||''});
+  save();toast('Compra lançada no cartão');render();
+}
+function removeCard(id){ST.cardExpenses=(ST.cardExpenses||[]).filter(c=>c.id!==id);save();render();}
+
+// ── Rules ─────────────────────────────────────────────────
+function renderRules(s){
+  const income=s.sal;
+  return `<div class="grid">
+  <div class="card s6">
+    <div class="card-title">Distribuição do orçamento — ${ymLabel(selMonth)}</div>
+    ${ST.rules.map(r=>{
+      const target=income*r.pct/100;
+      const used=s.catTotals[r.id]||0;
+      const pct2=target?Math.min(140,used/target*100):0;
+      const col=pct2>100?'var(--red)':pct2>90?'var(--orange)':'var(--'+r.color+')';
+      return `<div style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <strong>${esc(r.name)}</strong>
+          <span style="font-family:var(--font-mono);font-size:13px">${r.pct}% · alvo ${fmt(target)}</span>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width:${Math.min(100,pct2)}%;background:${col}"></div></div>
+        <div style="font-size:12px;color:${used>target?'var(--red)':used>target*.9?'var(--orange)':'var(--muted)'}">
+          ${fmt(used)} usado ${pct2>100?'⚠️ acima do alvo':pct2>90?'🟡 quase no limite':''}
+        </div>
+      </div>`;}).join('')}
+  </div>
+  <div class="card s6">
+    <div class="card-title">Editar salários e regras</div>
+    <div class="fg">
+      <div class="f6"><label class="label">Salário ${esc(ST.name1)}</label><input class="inp" type="number" value="${ST.salaries.gus}" onchange="ST.salaries.gus=Number(this.value)||0;save();render()"></div>
+      <div class="f6"><label class="label">Salário ${esc(ST.name2)}</label><input class="inp" type="number" value="${ST.salaries.maria}" onchange="ST.salaries.maria=Number(this.value)||0;save();render()"></div>
+    </div>
+    ${ST.rules.map(r=>`<div class="fg" style="margin-bottom:0;margin-top:8px">
+      <div class="f8"><input class="inp sm" value="${esc(r.name)}" onchange="updRule('${r.id}','name',this.value)"></div>
+      <div class="f3"><div style="display:flex;align-items:center;gap:4px"><input class="inp sm" type="number" value="${r.pct}" onchange="updRule('${r.id}','pct',this.value)"><span style="color:var(--muted);white-space:nowrap">%</span></div></div>
+    </div>`).join('')}
+    <p style="color:var(--muted);font-size:12px;margin-top:12px">Total: ${ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0)}% ${ST.rules.reduce((a,r)=>a+(Number(r.pct)||0),0)===100?'✓':'⚠️ deve somar 100%'}</p>
+  </div></div>`;
+}
+function updRule(id,field,val){ST.rules=ST.rules.map(r=>r.id===id?{...r,[field]:field==='pct'?Number(val)||0:val}:r);save();render();}
+
+// ── Goals ─────────────────────────────────────────────────
+function renderGoals(){
+  const keys=monthKeys();
+  const avgSurplus=keys.reduce((a,k)=>a+Math.max(0,monthSummary(k).balProj),0)/Math.max(1,keys.length);
+  const active=ST.goals.filter(g=>!g.completedAt);
+  const done=ST.goals.filter(g=>g.completedAt);
+  return `<div class="grid">
+  <div class="card s7">
+    <div class="card-title">Metas em andamento</div>
+    ${active.length?active.map(g=>{
+      const pct=g.target?Math.min(100,Number(g.current)/Number(g.target)*100):0;
+      const rem=Number(g.target)-Number(g.current);
+      const months=avgSurplus>0&&rem>0?Math.ceil(rem/avgSurplus):null;
+      return `<div class="goal-row">
+        <div class="goal-header">
+          <div>
+            <div class="goal-name">${esc(g.name)}</div>
+            ${months?`<div class="goal-meta">~${months} meses para atingir · sobra média ${fmtShort(avgSurplus)}/mês</div>`:''}
+          </div>
+          <div style="text-align:right">
+            <div class="goal-pct">${Math.round(pct)}%</div>
+            <div style="font-size:12px;color:var(--muted)">${fmt(g.current)} / ${fmt(g.target)}</div>
+          </div>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width:${pct}%;background:var(--green)"></div></div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn sm ghost" onclick="openGoalEdit(${g.id})">Editar</button>
+          ${pct>=100?`<button class="btn sm g" onclick="completeGoal(${g.id})">✓ Concluída!</button>`:''}
+        </div>
+      </div>`;}).join(''):'<p style="color:var(--muted)">Nenhuma meta cadastrada.</p>'}
+    ${done.length?`<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="card-title">🏆 Metas concluídas</div>
+      ${done.map(g=>`<div class="row" style="opacity:.6">
+        <span style="font-size:18px">🏆</span>
+        <div style="flex:1"><div class="row-title">${esc(g.name)}</div><div class="row-sub">Concluída em ${g.completedAt||'—'} · ${fmt(g.target)}</div></div>
+        <button class="btn sm ghost" onclick="ST.goals=ST.goals.filter(x=>x.id!==${g.id});save();render()">×</button>
+      </div>`).join('')}
+    </div>`:''}
+  </div>
+  <div class="card s5">
+    <div class="card-title">Nova meta</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Nome</label><input id="gn" class="inp" placeholder="Ex: Reserva de emergência"></div>
+      <div class="f6"><label class="label">Valor atual</label><input id="gc" class="inp" type="number" placeholder="0"></div>
+      <div class="f6"><label class="label">Objetivo</label><input id="gt" class="inp" type="number" placeholder="30000"></div>
+    </div>
+    <button class="btn g" style="width:100%" onclick="addGoal()">Adicionar meta</button>
+    ${avgSurplus>0?`<div style="margin-top:14px;padding:12px;background:var(--panel2);border-radius:var(--r);font-size:13px;color:var(--muted)">
+      💡 Sobra média projetada: <strong style="color:var(--green)">${fmt(avgSurplus)}/mês</strong>
+    </div>`:''}
+  </div></div>`;
+}
+function addGoal(){
+  const name=document.getElementById('gn').value.trim();
+  if(!name){toast('Digite a meta','err');return;}
+  ST.goals.push({id:Date.now(),name,current:Number(document.getElementById('gc').value)||0,target:Number(document.getElementById('gt').value)||0,completedAt:null});
   save();render();
 }
-function toggleStudyGoal(p,id){
-  ST.study[p].goals=ST.study[p].goals.map(g=>g.id===id?{...g,done:!g.done}:g);
-  save();render();
+function completeGoal(id){
+  ST.goals=ST.goals.map(g=>g.id===id?{...g,completedAt:today()}:g);
+  save();toast('🏆 Meta concluída! Parabéns!');render();
 }
-function removeStudyGoal(p,id){
-  ST.study[p].goals=ST.study[p].goals.filter(g=>g.id!==id);
-  save();render();
+
+// ── Helpers ───────────────────────────────────────────────
+function catName(id){return ST.rules.find(r=>r.id===id)?.name||id;}
+function ownerLabel(o){if(o==='p1')return ST.name1;if(o==='p2')return ST.name2;if(o==='casal')return 'Casal';return o;}
+function ownerPill(o){return o==='p1'?'b':o==='p2'?'p':'g';}
+
+function exportCSV(){
+  const s=monthSummary(selMonth);
+  const rows=[['Tipo','Nome','Projetado','Realizado','Categoria','Responsável']];
+  [...s.recur,...s.card,...s.manual].forEach(e=>{
+    rows.push([e.isRecurring?'Recorrente':e.isCard?'Cartão':'Manual',e.name,Number(e.projected||e.value||0).toFixed(2),Number(e.actual||0).toFixed(2),catName(e.category),ownerLabel(e.owner)]);
+  });
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifeos-'+selMonth+'.csv';a.click();
 }
-function removeStudySession(p,id){
-  ST.study[p].sessions=ST.study[p].sessions.filter(s=>s.id!==id);
+
+// ══════════════════════════════════════════════════════════
+// RENDER HOME
+// ══════════════════════════════════════════════════════════
+function renderHome(){
+  const todayDow=new Date().getDay();
+  const todayStr=today();
+  const todayTasks=(ST.tasks||[]).filter(t=>t.days.includes(todayDow));
+  const doneTasks=todayTasks.filter(t=>!!ST.taskChecks[todayStr+'_'+t.id]);
+  const pct=todayTasks.length?Math.round(doneTasks.length/todayTasks.length*100):0;
+  return `
+  <div class="page-header">
+    <div><div class="page-title">Casa</div><div class="page-sub">Rotina de ${ST.name1} & ${ST.name2}</div></div>
+  </div>
+  <div class="hero-bar">
+    <div class="hero-metric"><div class="lbl">Hoje</div><div class="val">${doneTasks.length}/${todayTasks.length}</div><div class="sub">tarefas</div></div>
+    <div class="hero-metric"><div class="lbl">Progresso</div><div class="val ${pct===100?'g':'b'}">${pct}%</div><div class="sub">${pct===100?'tudo em dia! ✓':'do dia'}</div></div>
+    <div class="hero-metric"><div class="lbl">${esc(ST.name1)}</div><div class="val b">${(ST.tasks||[]).filter(t=>t.owner==='p1').length}</div><div class="sub">tarefas fixas</div></div>
+    <div class="hero-metric"><div class="lbl">${esc(ST.name2)}</div><div class="val p">${(ST.tasks||[]).filter(t=>t.owner==='p2').length}</div><div class="sub">tarefas fixas</div></div>
+  </div>
+  <div class="grid">
+  <div class="card s7">
+    <div class="card-title">Tarefas de hoje</div>
+    ${todayTasks.length?todayTasks.map(t=>{
+      const key=todayStr+'_'+t.id;const done=!!ST.taskChecks[key];
+      return `<div class="row" style="${done?'opacity:.5':''}">
+        <button class="task-chk ${done?'done':''}" onclick="ST.taskChecks['${key}']=!ST.taskChecks['${key}'];save();render()">${done?'✓':''}</button>
+        <div style="flex:1">
+          <div class="row-title" style="${done?'text-decoration:line-through':''}">${esc(t.name)}</div>
+          <div class="row-sub">${ownerLabel(t.owner)} · ${t.time}</div>
+        </div>
+        <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
+      </div>`;}).join(''):'<p style="color:var(--muted)">Sem tarefas hoje 😌</p>'}
+  </div>
+  <div class="card s5">
+    <div class="card-title">Nova tarefa recorrente</div>
+    <div class="fg">
+      <div class="f12"><label class="label">Nome</label><input id="tn" class="inp" placeholder="Ex: Passar pano"></div>
+      <div class="f6"><label class="label">Responsável</label><select id="to" class="sel"><option value="p1">${esc(ST.name1)}</option><option value="p2">${esc(ST.name2)}</option><option value="ambos">Ambos</option></select></div>
+      <div class="f6"><label class="label">Horário</label><input id="tt" class="inp" placeholder="Ex: Manhã"></div>
+      <div class="f12"><label class="label">Dias</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map((d,i)=>`<label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer"><input type="checkbox" class="dc" value="${i}"> ${d}</label>`).join('')}</div>
+      </div>
+    </div>
+    <button class="btn g" style="width:100%" onclick="addTask()">Adicionar tarefa</button>
+  </div>
+  <div class="card s12">
+    <div class="card-title">Rotina completa</div>
+    ${(ST.tasks||[]).length?(ST.tasks||[]).map(t=>`<div class="row">
+      <div style="flex:1">
+        <div class="row-title">${esc(t.name)}</div>
+        <div class="row-sub">${t.days.map(d=>['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d]).join(', ')} · ${t.time}</div>
+      </div>
+      <span class="pill ${t.owner==='p1'?'b':t.owner==='p2'?'p':'g'}">${ownerLabel(t.owner)}</span>
+      <button class="btn sm ghost" onclick="ST.tasks=(ST.tasks||[]).filter(x=>x.id!==${t.id});save();render()">×</button>
+    </div>`).join(''):'<p style="color:var(--muted)">Nenhuma tarefa cadastrada.</p>'}
+  </div></div>`;
+}
+function addTask(){
+  const name=document.getElementById('tn').value.trim();
+  const sel=[...document.querySelectorAll('.dc:checked')].map(x=>Number(x.value));
+  if(!name||!sel.length){toast('Preencha nome e dias','err');return;}
+  if(!ST.tasks) ST.tasks=[];
+  ST.tasks.push({id:Date.now(),name,days:sel,owner:document.getElementById('to').value,time:document.getElementById('tt').value||'Livre'});
   save();render();
 }
 
-function renderSettings(){
-  const hasToken = ghToken().trim().length > 10;
-  return `<section class="hero">
-    <div class="section-label">Configurações</div>
-    <div class="metric"><div class="value">GitHub DB</div><div class="label">Informe o token pela tela. Ele fica salvo somente neste navegador e será usado para criar/atualizar o data.json.</div></div>
-  </section>
+// ══════════════════════════════════════════════════════════
+// RENDER STUDY
+// ══════════════════════════════════════════════════════════
+function sumH(p){return (ST.study[p]?.sessions||[]).reduce((a,s)=>a+Number(s.hours||0),0);}
+function renderStudy(){
+  return `
+  <div class="page-header"><div><div class="page-title">Estudos</div><div class="page-sub">Progresso individual</div></div></div>
+  <div class="hero-bar">
+    <div class="hero-metric"><div class="lbl">Sessões ${esc(ST.name1)}</div><div class="val b">${(ST.study.gus?.sessions||[]).length}</div></div>
+    <div class="hero-metric"><div class="lbl">Horas ${esc(ST.name1)}</div><div class="val g">${sumH('gus')}h</div></div>
+    <div class="hero-metric"><div class="lbl">Sessões ${esc(ST.name2)}</div><div class="val p">${(ST.study.maria?.sessions||[]).length}</div></div>
+    <div class="hero-metric"><div class="lbl">Horas ${esc(ST.name2)}</div><div class="val g">${sumH('maria')}h</div></div>
+  </div>
   <div class="grid">
-    <div class="card span-6"><h3>Token do GitHub</h3>
-      <div class="form-grid"><div class="f12"><div class="label-small">Token</div><input id="github-token-input" class="input" type="password" placeholder="github_pat_xxx ou ghp_xxx" value="${hasToken ? esc(ghToken()) : ''}"></div></div>
-      <div class="footer-actions"><button class="btn green" onclick="saveGithubToken()">Salvar token e sincronizar</button><button class="btn ghost" onclick="removeGithubToken()">Remover token</button></div>
-      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">O token precisa ter permissão de leitura e escrita no repositório configurado no HTML.</p>
-    </div>
-    <div class="card span-6"><h3>Status</h3>
-      <p id="sync-status-main" style="color:var(--muted);line-height:1.6">Verificando...</p>
-      <div class="footer-actions"><button class="btn" onclick="ghLoad()">Carregar do GitHub</button><button class="btn ghost" onclick="ghSave()">Salvar agora</button></div>
-      <p style="color:var(--muted);line-height:1.6;margin-bottom:0">Repositório: <strong>${GH_OWNER}/${GH_REPO}</strong><br>Arquivo da base: <strong>${GH_FILE}</strong><br>Branch: <strong>${GH_BRANCH}</strong></p>
-    </div>
+    ${['gus','maria'].map((p,i)=>{
+      const label=i===0?ST.name1:ST.name2;
+      const col=i===0?'var(--blue)':'var(--purple)';
+      const sessions=(ST.study[p]?.sessions||[]).slice(-5).reverse();
+      return `<div class="card s6">
+        <div class="card-title" style="color:${col}">${esc(label)}</div>
+        <div class="fg">
+          <div class="f8"><label class="label">O que estudou?</label><input id="sn-${p}" class="inp" placeholder="Ex: Kubernetes, inglês..."></div>
+          <div class="f4"><label class="label">Horas</label><input id="sh-${p}" class="inp" type="number" placeholder="1.5" step="0.5"></div>
+        </div>
+        <button class="btn sm" style="background:${col};color:#000;margin-bottom:16px;width:100%" onclick="addStudy('${p}')">Registrar sessão</button>
+        <div style="border-top:1px solid var(--border);padding-top:14px">
+          ${sessions.map(s=>`<div class="row">
+            <div style="flex:1"><div class="row-title">${esc(s.note||'Sessão de estudo')}</div><div class="row-sub">${s.date}</div></div>
+            <span class="pill g">${s.hours}h</span>
+          </div>`).join('') || '<p style="color:var(--muted);font-size:13px">Sem sessões ainda.</p>'}
+        </div>
+      </div>`;}).join('')}
   </div>`;
 }
-function saveGithubToken(){
-  const inp=document.getElementById("github-token-input");
-  const val=(inp?.value||"").trim();
-  if(!val){toast("Cole o token primeiro.");return;}
+function addStudy(p){
+  const h=Number(document.getElementById('sh-'+p).value)||0;
+  const note=document.getElementById('sn-'+p).value.trim();
+  if(!h){toast('Informe as horas','err');return;}
+  if(!ST.study[p]) ST.study[p]={sessions:[],goals:[]};
+  ST.study[p].sessions.push({date:today(),hours:h,note});
+  save();toast('Sessão registrada!');render();
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER SETTINGS
+// ══════════════════════════════════════════════════════════
+function renderSettings(){
+  const hasToken=ghToken().length>10;
+  return `
+  <div class="page-header"><div><div class="page-title">Configurações</div><div class="page-sub">Sistema e sincronização</div></div></div>
+  <div class="grid">
+  <div class="card s6">
+    <div class="card-title">GitHub — banco de dados</div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.5">
+      O token fica salvo apenas neste navegador. Gere em <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--blue)">github.com/settings/tokens</a> com permissão <strong>repo</strong>.
+    </p>
+    <div class="fg">
+      <div class="f12"><label class="label">Token do GitHub</label>
+        <input id="gh-tok" class="inp" type="password" placeholder="ghp_xxx" value="${hasToken?ghToken():''}">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn g" onclick="saveGhToken()">Salvar e sincronizar</button>
+      ${hasToken?'<button class="btn ghost" onclick="clearGhToken()">Remover token</button>':''}
+    </div>
+  </div>
+  <div class="card s6">
+    <div class="card-title">Status da sincronização</div>
+    <p id="sync-status-main" style="color:var(--muted);font-size:13px;margin-bottom:14px">Verificando...</p>
+    <div class="btn-row">
+      <button class="btn" onclick="ghLoad()">⬇ Carregar</button>
+      <button class="btn ghost" onclick="ghSave()">⬆ Salvar agora</button>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:var(--panel2);border-radius:var(--r);font-size:12px;color:var(--muted);line-height:1.7">
+      Repo: <strong>${GH_OWNER}/${GH_REPO}</strong> · Arquivo: <strong>${GH_FILE}</strong> · Branch: <strong>${GH_BRANCH}</strong>
+    </div>
+  </div>
+  <div class="card s6">
+    <div class="card-title">Dados locais</div>
+    <div class="btn-row">
+      <button class="btn ghost" onclick="exportJSON()">⬇ Exportar JSON</button>
+      <label class="btn ghost" style="cursor:pointer">⬆ Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+    </div>
+    <div class="btn-row"><button class="btn r" onclick="resetConfirm()">⚠️ Resetar dados</button></div>
+  </div>
+  <div class="card s6">
+    <div class="card-title">Sobre</div>
+    <p style="color:var(--muted);font-size:13px;line-height:1.7">Life OS — painel financeiro do casal.<br>
+    <button class="btn ghost sm" style="margin-top:10px" onclick="showOnboarding()">🔄 Reabrir configuração inicial</button></p>
+  </div>
+  </div>`;
+}
+function saveGhToken(){
+  const val=(document.getElementById('gh-tok')?.value||'').trim();
+  if(!val){toast('Cole o token primeiro','err');return;}
   localStorage.setItem(GH_TOKEN_KEY,val);
-  toast("Token salvo.");
-  ghLoad();
-  render();
+  toast('Token salvo! Sincronizando...');ghLoad();render();
 }
-function removeGithubToken(){
-  localStorage.removeItem(GH_TOKEN_KEY);
-  GH_SHA=null; GH_READY=false;
-  setSyncStatus("error","Token removido.");
-  toast("Token removido.");
-  render();
+function clearGhToken(){
+  localStorage.removeItem(GH_TOKEN_KEY);GH_SHA=null;GH_READY=false;
+  setSyncUI('err','Token removido');toast('Token removido');render();
 }
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifeos-backup-'+today()+'.json';a.click();
+}
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{ST={...defaultState(),...JSON.parse(ev.target.result)};save();render();toast('Dados importados!');}catch{toast('Arquivo invalido','err');}};
+  reader.readAsText(file);
+}
+function resetConfirm(){
+  openModal(`<div class="modal-title">Resetar todos os dados?</div>
+    <p style="color:var(--muted);margin-bottom:20px">Esta acao nao pode ser desfeita.</p>
+    <div class="btn-row">
+      <button class="btn r" onclick="doReset()">Sim, apagar tudo</button>
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+    </div>`);
+}
+function doReset(){ST=defaultState();localStorage.removeItem('lifeos_v5');closeModal();render();toast('Dados resetados');}
+
+// ══════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════
+function openModal(html){
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
 
 function openMonthEdit(k){
-  selectedMonth=k;
+  selMonth=k;
   const s=monthSummary(k);
-  const modal=document.getElementById("modal");
-  document.getElementById("modal-content").innerHTML=`
+  openModal(`
     <div class="modal-title">Realizado — ${ymLabel(k)}</div>
-    <div class="form-grid">
-      <div class="f6"><div class="label-small">Receita realizada</div><input id="m-income" class="input" type="number" value="${s.incomeActual||s.salaryProjected}"></div>
-      <div class="f6"><div class="label-small">Observação</div><input id="m-note" class="input" value="${esc(ST.monthActuals?.[k]?.note||'')}"></div>
+    <div class="fg">
+      <div class="f6"><label class="label">Receita realizada</label><input id="mi" class="inp" type="number" value="${s.incomeActual||s.sal}"></div>
+      <div class="f6"><label class="label">Observação</label><input id="mn" class="inp" value="${esc(ST.monthActuals?.[k]?.note||'')}"></div>
     </div>
-    <div class="table-wrap"><table><thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead><tbody>
-      ${ST.entries.filter(e=>e.month===k).map(e=>`<tr><td>${esc(e.name)}</td><td>${fmt(e.projected)}</td><td><input class="input actual-entry" data-id="${e.id}" type="number" value="${e.actual||0}"></td></tr>`).join("")}
-    </tbody></table></div>
-    <div class="footer-actions"><button class="btn green" onclick="saveMonthActual('${k}')">Salvar realizado</button><button class="btn ghost" onclick="closeModal()">Cancelar</button></div>`;
-  modal.classList.add("show");
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Lançamento</th><th>Projetado</th><th>Realizado</th></tr></thead>
+      <tbody>
+        ${s.manual.map(e=>`<tr>
+          <td>${esc(e.name)}</td><td class="num">${fmt(e.projected)}</td>
+          <td><input class="inp sm actual-e" data-id="${e.id}" type="number" value="${e.actual||0}"></td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+    <div class="btn-row">
+      <button class="btn g" onclick="saveMonthActual('${k}')">Salvar realizado</button>
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+    </div>`);
 }
 function saveMonthActual(k){
-  ST.monthActuals=ST.monthActuals||{};
-  ST.monthActuals[k]={incomeActual:Number(document.getElementById("m-income").value)||0,note:document.getElementById("m-note").value||""};
-  document.querySelectorAll(".actual-entry").forEach(inp=>{
+  if(!ST.monthActuals) ST.monthActuals={};
+  ST.monthActuals[k]={incomeActual:Number(document.getElementById('mi').value)||0,note:document.getElementById('mn').value||''};
+  document.querySelectorAll('.actual-e').forEach(inp=>{
     const id=Number(inp.dataset.id);
-    ST.entries=ST.entries.map(e=>e.id===id?{...e,actual:Number(inp.value)||0}:e);
+    ST.entries=(ST.entries||[]).map(e=>e.id===id?{...e,actual:Number(inp.value)||0}:e);
   });
-  save();closeModal();financeTab="compare";toast("Realizado salvo.");render();
+  save();closeModal();finTab='compare';toast('Realizado salvo');render();
 }
-function closeModal(){ document.getElementById("modal").classList.remove("show"); }
-document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 
 function openGoalEdit(id){
-  const g=ST.goals.find(x=>x.id===id); if(!g)return;
-  const modal=document.getElementById("modal");
-  document.getElementById("modal-content").innerHTML=`
+  const g=ST.goals.find(x=>x.id===id);if(!g)return;
+  openModal(`
     <div class="modal-title">Editar meta</div>
-    <div class="form-grid">
-      <div class="f12"><div class="label-small">Nome</div><input id="goal-name" class="input" value="${esc(g.name)}"></div>
-      <div class="f6"><div class="label-small">Atual</div><input id="goal-current" class="input" type="number" value="${g.current}"></div>
-      <div class="f6"><div class="label-small">Objetivo</div><input id="goal-target" class="input" type="number" value="${g.target}"></div>
+    <div class="fg">
+      <div class="f12"><label class="label">Nome</label><input id="ge-n" class="inp" value="${esc(g.name)}"></div>
+      <div class="f6"><label class="label">Valor atual</label><input id="ge-c" class="inp" type="number" value="${g.current}"></div>
+      <div class="f6"><label class="label">Objetivo</label><input id="ge-t" class="inp" type="number" value="${g.target}"></div>
     </div>
-    <div class="footer-actions"><button class="btn green" onclick="saveGoal(${id})">Salvar</button><button class="btn red" onclick="deleteGoal(${id})">Excluir</button><button class="btn ghost" onclick="closeModal()">Cancelar</button></div>`;
-  modal.classList.add("show");
+    <div class="btn-row">
+      <button class="btn g" onclick="saveGoalEdit(${id})">Salvar</button>
+      <button class="btn r" onclick="ST.goals=ST.goals.filter(x=>x.id!==${id});save();closeModal();render()">Excluir</button>
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+    </div>`);
 }
-function saveGoal(id){
-  ST.goals=ST.goals.map(g=>g.id===id?{...g,name:document.getElementById("goal-name").value,current:Number(document.getElementById("goal-current").value)||0,target:Number(document.getElementById("goal-target").value)||0}:g);
+function saveGoalEdit(id){
+  ST.goals=ST.goals.map(g=>g.id===id?{...g,name:document.getElementById('ge-n').value,current:Number(document.getElementById('ge-c').value)||0,target:Number(document.getElementById('ge-t').value)||0}:g);
   save();closeModal();render();
 }
-function deleteGoal(id){ ST.goals=ST.goals.filter(g=>g.id!==id);save();closeModal();render(); }
 
-function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
 render();
-if(ghConfigured()){
-  setSyncStatus("sync","iniciando...");
+setSyncUI('syncing','iniciando...');
+if(!ST.onboarded){
+  showOnboarding();
+} else {
   ghLoad();
-}else{
-  setSyncStatus("error","Informe o token em Config.");
 }
 </script>
 </body>
