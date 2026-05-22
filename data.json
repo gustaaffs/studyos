@@ -112,6 +112,15 @@
       "category": "essenciais",
       "owner": "casal",
       "active": true
+    },
+    {
+      "id": 1779480926742,
+      "name": "Beleza",
+      "value": 190,
+      "type": "expense",
+      "category": "lazer",
+      "owner": "p2",
+      "active": true
     }
   ],
   "cardExpenses": [
