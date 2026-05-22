@@ -76,6 +76,15 @@
       "category": "essenciais",
       "owner": "p2",
       "active": true
+    },
+    {
+      "id": 1779474077462,
+      "name": "TV",
+      "value": 50,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "casal",
+      "active": true
     }
   ],
   "cardExpenses": [],
