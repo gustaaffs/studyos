@@ -114,7 +114,18 @@
       "active": true
     }
   ],
-  "cardExpenses": [],
+  "cardExpenses": [
+    {
+      "id": 1779474590072,
+      "name": "Itaú (Lenir)",
+      "value": 850.95,
+      "totalParcels": 1,
+      "purchaseDate": "2026-05-22",
+      "category": "essenciais",
+      "owner": "casal",
+      "note": ""
+    }
+  ],
   "goals": [],
   "tasks": [
     {
