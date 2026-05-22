@@ -53,15 +53,6 @@
       "type": "expense",
       "owner": "casal",
       "active": true
-    },
-    {
-      "id": 103,
-      "name": "Internet / Celular",
-      "value": 280,
-      "category": "essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
     }
   ],
   "cardExpenses": [],
