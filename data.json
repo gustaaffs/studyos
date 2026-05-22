@@ -67,6 +67,15 @@
       "category": "essenciais",
       "owner": "p1",
       "active": true
+    },
+    {
+      "id": 1779474041915,
+      "name": "MEI",
+      "value": 85.45,
+      "type": "expense",
+      "category": "essenciais",
+      "owner": "p2",
+      "active": true
     }
   ],
   "cardExpenses": [],
