@@ -2,10 +2,10 @@
   "name1": "Gus",
   "name2": "Maria",
   "salaries": {
-    "gus": 0,
-    "maria": 0
+    "gus": 4000,
+    "maria": 3000
   },
-  "cardClosingDay": 15,
+  "cardClosingDay": 1,
   "rules": [
     {
       "id": "jcsv0d7",
