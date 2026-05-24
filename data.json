@@ -8,46 +8,94 @@
   "cardClosingDay": 1,
   "rules": [
     {
-      "id": "jcsv0d7",
-      "name": "Moradia",
-      "pct": 30,
+      "id": "heoute7",
+      "name": "Essenciais",
+      "pct": 50,
       "color": "#6090e0"
     },
     {
-      "id": "bj9o2zd",
-      "name": "Alimentação",
+      "id": "f7s8o2j",
+      "name": "Investimentos + Reserva",
       "pct": 20,
-      "color": "#e070a0"
+      "color": "#00ff00"
     },
     {
-      "id": "t11irl5",
-      "name": "Transporte",
-      "pct": 10,
-      "color": "#6ec8a0"
+      "id": "2qn405h",
+      "name": "Mesada",
+      "pct": 20,
+      "color": "#ffffff"
     },
     {
-      "id": "xtet7rc",
-      "name": "Lazer",
+      "id": "cnk43px",
+      "name": "Metas de curto/médio prazo",
       "pct": 10,
-      "color": "#c8a96e"
-    },
-    {
-      "id": "8av2mxu",
-      "name": "Outros",
-      "pct": 10,
-      "color": "#a060d0"
+      "color": "#ffff00"
     }
   ],
   "monthActuals": {},
   "entries": [],
   "recurring": [
     {
-      "id": "l7dokj4",
-      "name": "Aluguel / Condomínio",
+      "id": "829a45a",
+      "name": "Aluguel/Condomínio",
       "value": 1600,
-      "category": "Moradia",
+      "category": "Essenciais",
       "type": "expense",
       "owner": "casal",
+      "active": true
+    },
+    {
+      "id": "lhkr3b6",
+      "name": "Faculdade",
+      "value": 250,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "gus",
+      "active": true
+    },
+    {
+      "id": "s17krmt",
+      "name": "TV",
+      "value": 50,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": "1pzwjp9",
+      "name": "Internet",
+      "value": 105,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": "2hqg864",
+      "name": "Gás",
+      "value": 80,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": "xkjc1ll",
+      "name": "Luz",
+      "value": 400,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    },
+    {
+      "id": "eepdee9",
+      "name": "Mei",
+      "value": 85.45,
+      "category": "Essenciais",
+      "type": "expense",
+      "owner": "maria",
       "active": true
     }
   ],
