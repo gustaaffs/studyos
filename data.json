@@ -40,7 +40,17 @@
   ],
   "monthActuals": {},
   "entries": [],
-  "recurring": [],
+  "recurring": [
+    {
+      "id": "l7dokj4",
+      "name": "Aluguel / Condomínio",
+      "value": 1600,
+      "category": "Moradia",
+      "type": "expense",
+      "owner": "casal",
+      "active": true
+    }
+  ],
   "cardExpenses": [],
   "goals": [],
   "cofrinhos": [
