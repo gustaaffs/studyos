@@ -33,7 +33,41 @@
     }
   ],
   "monthActuals": {},
-  "entries": [],
+  "entries": [
+    {
+      "id": "m83igpr",
+      "name": "Cartão Itaú (Gus)",
+      "type": "expense",
+      "category": "Essenciais",
+      "owner": "casal",
+      "month": "2026-06",
+      "projected": 850.95,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "id": "7gzhqr9",
+      "name": "Cartão Itaú (Lenir)",
+      "type": "expense",
+      "category": "Essenciais",
+      "owner": "casal",
+      "month": "2026-06",
+      "projected": 2328.55,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "id": "z7h4k4k",
+      "name": "Mercado Pago",
+      "type": "expense",
+      "category": "Essenciais",
+      "owner": "casal",
+      "month": "2026-06",
+      "projected": 1329,
+      "actual": 0,
+      "note": ""
+    }
+  ],
   "recurring": [
     {
       "id": "829a45a",
@@ -115,6 +149,13 @@
           "date": "2026-05-24"
         }
       ]
+    },
+    {
+      "id": "szotper",
+      "name": "Bicicleta elétrica",
+      "total": 118,
+      "marked": {},
+      "deposits": []
     }
   ],
   "tasks": [],
