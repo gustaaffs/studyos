@@ -54,6 +54,25 @@ a { color: var(--accent); text-decoration: none; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .btn-sync { width: 100%; margin-top: 8px; padding: 7px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text2); font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
 .btn-sync:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sync-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  min-height: 31px;
+  background: rgba(200,169,110,0.12);
+  border: 1px solid rgba(200,169,110,0.35);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-sync-mobile:hover { background: rgba(200,169,110,0.2); border-color: var(--accent); }
+.btn-sync-mobile:active { transform: translateY(1px); }
 
 /* TOPBAR */
 .page-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
@@ -155,6 +174,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 .category-breakdown { display: flex; flex-direction: column; gap: 12px; }
 .category-row { display: flex; flex-direction: column; gap: 6px; }
 .category-row-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; }
+.pie-breakdown { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; align-items: center; }
+.pie-chart-box { display: flex; align-items: center; justify-content: center; min-height: 180px; }
+.pie-legend { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.pie-legend-item { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 12px; }
+.pie-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.pie-name { color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pie-value { font-family: 'DM Mono', monospace; color: var(--text); white-space: nowrap; }
+.pie-meta { grid-column: 2 / -1; color: var(--text3); font-size: 11px; margin-top: -4px; }
 .category-name { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--text); }
 .category-name span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .category-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
@@ -282,6 +309,15 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 /* ORC TABLE — color swatch cell */
 .color-swatch { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: inline-block; }
 
+
+/* FINANCE TABLES */
+.finance-stack { display: flex; flex-direction: column; gap: 16px; }
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+.responsive-table input[type="number"] { min-width: 96px; }
+.responsive-table .real-value-input { width: 120px; text-align: right; }
+.responsive-table .table-actions { white-space: nowrap; }
+.month-context { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: -6px; margin-bottom: 10px; }
+
 /* RESPONSIVE */
 @media (min-width: 1180px) {
   .content { max-width: 1280px; width: 100%; margin: 0 auto; }
@@ -346,7 +382,8 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
     align-items: flex-start;
   }
   .page-title { font-size: 18px; line-height: 1.2; }
-  .topbar-right { gap: 6px; }
+  .topbar-right { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn-sync-mobile { display: inline-flex; }
   .month-nav { gap: 5px; }
   .month-nav button { padding: 5px 9px; }
   .month-label { min-width: 76px; font-size: 12px; }
@@ -369,12 +406,24 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
   .card { padding: 14px; border-radius: 12px; }
   .kpi-value { font-size: 20px; }
   .donut-wrap { flex-direction: column; align-items: stretch; gap: 14px; }
+  .pie-breakdown { grid-template-columns: 1fr; gap: 12px; }
+  .pie-chart-box { min-height: 160px; }
   .bar-chart { height: 84px; }
   .category-meta, .owner-total { font-size: 10px; }
   .collapse-card > summary { padding: 14px; }
   .collapse-body { padding: 0 14px 14px; }
   .inline-form input { max-width: none; }
   table { min-width: 640px; }
+  .table-scroll { overflow-x: visible; }
+  .responsive-table { min-width: 0 !important; border-collapse: separate; border-spacing: 0 10px; }
+  .responsive-table thead { display: none; }
+  .responsive-table tbody, .responsive-table tr, .responsive-table td { display: block; width: 100%; }
+  .responsive-table tr { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 10px; }
+  .responsive-table td { border-bottom: 0; padding: 7px 4px; display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: right; }
+  .responsive-table td::before { content: attr(data-label); color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; flex: 1; }
+  .responsive-table td.table-actions::before { display: none; }
+  .responsive-table td.table-actions { justify-content: flex-end; }
+  .responsive-table td input[type="number"], .responsive-table td .real-value-input { width: 140px !important; max-width: 58vw; }
   .modal-overlay { align-items: flex-end; padding: 12px; }
   .modal { max-width: 100%; border-radius: 16px 16px 10px 10px; max-height: 88vh; }
   .toast { left: 14px; right: 14px; bottom: 82px; max-width: none; }
@@ -433,6 +482,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           <div class="month-label" id="monthLabel"></div>
           <button onclick="changeMonth(1)">›</button>
         </div>
+        <button class="btn-sync-mobile" onclick="syncToGitHub()" title="Sincronizar com GitHub">↻ Sync</button>
       </div>
     </div>
 
@@ -485,7 +535,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           <div class="section" id="db-insights"></div>
         </div>
 
-        <!-- MESES -->
+        <!-- MESES (mantido apenas por compatibilidade de dados, não exibido no menu Planejamento) -->
         <div id="fin-meses" class="hidden">
           <div class="section">
             <div class="month-timeline" id="mesesTimeline"></div>
@@ -498,12 +548,12 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           </div>
         </div>
 
-        <!-- PROJ x REAL -->
+        <!-- PROJ x REAL (mantido apenas por compatibilidade de dados, não exibido no menu Planejamento) -->
         <div id="fin-projreal" class="hidden">
           <div class="card section">
             <div class="card-title">Recorrentes cadastrados</div>
-            <div style="overflow-x:auto">
-              <table id="tblRecPR">
+            <div class="table-scroll">
+              <table id="tblRecPR" class="responsive-table table-rec-pr">
                 <thead><tr><th>Nome</th><th>Categoria</th><th>Responsável</th><th class="text-right">Projetado</th><th class="text-right">Real</th><th class="text-right">Δ</th></tr></thead>
                 <tbody id="tbodyRecPR"></tbody>
               </table>
@@ -518,10 +568,12 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           </div>
           <div class="card">
             <div class="card-title">Avulsos</div>
-            <table>
-              <thead><tr><th>Nome</th><th>Categoria</th><th>Tipo</th><th class="text-right">Projetado</th><th class="text-right">Real</th></tr></thead>
-              <tbody id="tbodyAvulsosPR"></tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="responsive-table table-avulsos-pr">
+                <thead><tr><th>Nome</th><th>Categoria</th><th>Tipo</th><th class="text-right">Projetado</th><th class="text-right">Real</th></tr></thead>
+                <tbody id="tbodyAvulsosPR"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -569,11 +621,11 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             </div>
           </details>
 
-          <div class="grid2 section">
+          <div class="finance-stack section">
             <div class="card">
               <div class="card-title">Avulsos do mês — <span id="avulsoMonthLabel"></span></div>
-              <div style="overflow-x:auto">
-                <table>
+              <div class="table-scroll">
+                <table class="responsive-table table-avulsos">
                   <thead><tr><th>Nome</th><th>Cat.</th><th>Tipo</th><th>Resp.</th><th class="text-right">Proj.</th><th class="text-right">Real</th><th></th></tr></thead>
                   <tbody id="tbodyAvulsos"></tbody>
                 </table>
@@ -581,9 +633,9 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             </div>
             <div class="card">
               <div class="card-title">Recorrentes mensais</div>
-              <div style="overflow-x:auto">
-                <table>
-                  <thead><tr><th>Nome</th><th>Categoria</th><th>Tipo</th><th>Resp.</th><th class="text-right">Valor</th><th>Ativo</th><th></th></tr></thead>
+              <div class="table-scroll">
+                <table class="responsive-table table-recorrentes">
+                  <thead><tr><th>Nome</th><th>Categoria</th><th>Tipo</th><th>Resp.</th><th class="text-right">Valor padrão</th><th class="text-right">Real do mês</th><th>Ativo</th><th></th></tr></thead>
                   <tbody id="tbodyRecorrentes"></tbody>
                 </table>
               </div>
@@ -629,8 +681,8 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           </details>
           <div class="card section">
             <div class="card-title">Compras Parceladas</div>
-            <div style="overflow-x:auto">
-              <table>
+            <div class="table-scroll">
+              <table class="responsive-table table-cartao">
                 <thead><tr><th>Nome</th><th>Cat.</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Qtd.</th><th>Compra</th><th></th></tr></thead>
                 <tbody id="tbodyCartao"></tbody>
               </table>
@@ -638,10 +690,12 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           </div>
           <div class="card">
             <div class="card-title">Faturas — <span id="cartaoMonthLabel"></span></div>
-            <table>
-              <thead><tr><th>Nome</th><th>Parcela</th><th class="text-right">Valor</th></tr></thead>
-              <tbody id="tbodyFaturas"></tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="responsive-table table-faturas">
+                <thead><tr><th>Nome</th><th>Parcela</th><th class="text-right">Valor</th></tr></thead>
+                <tbody id="tbodyFaturas"></tbody>
+              </table>
+            </div>
             <div class="mt-8 flex justify-between items-center">
               <span class="text3 text-sm">Total da fatura</span>
               <span class="mono accent" id="faturaTotal">R$ 0,00</span>
@@ -652,16 +706,15 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
         <!-- ORÇAMENTO -->
         <div id="fin-orcamento" class="hidden">
           <div class="card section">
-            <div class="flex justify-between items-center" style="margin-bottom:14px">
-              <div class="card-title" style="margin:0">Categorias</div>
-              <div class="view-switcher">
-                <button id="orcBtnProj" class="view-btn active" onclick="setOrcView('proj')">Projetado</button>
-                <button id="orcBtnReal" class="view-btn" onclick="setOrcView('real')">Realizado</button>
+            <div class="flex justify-between items-center" style="margin-bottom:14px;gap:10px;flex-wrap:wrap">
+              <div>
+                <div class="card-title" style="margin:0">Categorias e percentuais</div>
+                <div class="mode-hint mt-4">Planeje quanto da renda do mês deve ir para cada categoria. O valor real fica em Lançamentos.</div>
               </div>
             </div>
-            <div style="overflow-x:auto">
-              <table>
-                <thead><tr><th>Categoria</th><th>Cor</th><th class="text-right">%</th><th class="text-right" id="orcValHeader">Valor proj.</th><th></th></tr></thead>
+            <div class="table-scroll">
+              <table class="responsive-table table-orcamento">
+                <thead><tr><th>Categoria</th><th>Cor</th><th class="text-right">%</th><th class="text-right" id="orcValHeader">Valor planejado</th><th></th></tr></thead>
                 <tbody id="tbodyOrc"></tbody>
               </table>
             </div>
@@ -921,6 +974,8 @@ let orcView = 'proj';
 let selectedMesMonth = currentMonth;
 let taskDays = [];
 let saveTimer = null;
+let autoSyncTimer = null;
+let isSyncing = false;
 
 function loadState() {
   try {
@@ -933,11 +988,23 @@ function loadState() {
   return defaultState();
 }
 
-function saveState() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, 900);
+function hasGHConfig() {
+  const token = localStorage.getItem(GH_TOKEN_KEY) || '';
+  const cfg = getGHConfig();
+  return !!(token && cfg.repo);
+}
+
+function saveState(options = {}) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if (options.sync === false) return;
+  setSyncStatus(hasGHConfig() ? 'pending' : 'saved');
+  scheduleAutoSync();
+}
+
+function scheduleAutoSync() {
+  clearTimeout(autoSyncTimer);
+  if (!hasGHConfig()) return;
+  autoSyncTimer = setTimeout(() => syncToGitHub(true), 1200);
 }
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
@@ -967,7 +1034,9 @@ const FIN_TAB_PAGES = {
   dashboard: ['dashboard'],
   avulsos: ['avulsos'],
   cartao: ['cartao'],
-  orcamento: ['meses', 'projreal', 'orcamento'],
+  // Planejamento agora mostra somente a configuração de categorias e percentuais.
+  // As edições de real/projetado ficam concentradas em Lançamentos.
+  orcamento: ['orcamento'],
   metas: ['metas'],
 };
 
@@ -1012,6 +1081,7 @@ function changeMonth(delta) {
   const [y, m] = currentMonth.split('-').map(Number);
   const d = new Date(y, m - 1 + delta, 1);
   currentMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  selectedMesMonth = currentMonth;
   updateMonthLabel();
   renderFinTab();
 }
@@ -1024,14 +1094,16 @@ function getGHConfig() {
 function setSyncStatus(s) {
   const dot = document.getElementById('syncDot');
   const txt = document.getElementById('syncText');
-  dot.className = 'sync-dot' + (s === 'syncing' ? ' syncing' : s === 'error' ? ' error' : '');
-  txt.textContent = s === 'syncing' ? 'sync...' : s === 'error' ? 'erro' : 'local';
+  dot.className = 'sync-dot' + (s === 'syncing' || s === 'pending' ? ' syncing' : s === 'error' ? ' error' : '');
+  txt.textContent = s === 'syncing' ? 'sync...' : s === 'pending' ? 'salvando...' : s === 'saved' ? 'salvo' : s === 'error' ? 'erro' : 'local';
 }
 
-async function syncToGitHub() {
+async function syncToGitHub(silent = false) {
+  if (isSyncing) return;
   const token = localStorage.getItem(GH_TOKEN_KEY) || '';
   const cfg = getGHConfig();
-  if (!token || !cfg.repo) { toast('Configure o token e repositório em Config', 'error'); return; }
+  if (!token || !cfg.repo) { if (!silent) toast('Configure o token e repositório em Config', 'error'); return; }
+  isSyncing = true;
   setSyncStatus('syncing');
   try {
     const [owner, repo] = cfg.repo.split('/');
@@ -1050,9 +1122,10 @@ async function syncToGitHub() {
       headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
       body: JSON.stringify(body)
     });
-    if (putR.ok) { setSyncStatus('local'); toast('Sincronizado com GitHub! ✓', 'success'); }
+    if (putR.ok) { setSyncStatus('local'); if (!silent) toast('Sincronizado com GitHub! ✓', 'success'); }
     else throw new Error('status ' + putR.status);
-  } catch (e) { setSyncStatus('error'); toast('Erro ao sincronizar: ' + e.message, 'error'); }
+  } catch (e) { setSyncStatus('error'); if (!silent) toast('Erro ao sincronizar: ' + e.message, 'error'); }
+  finally { isSyncing = false; }
 }
 
 // ===================== FINANCE HELPERS =====================
@@ -1203,8 +1276,32 @@ function renderCategoryBreakdown(ym, income, total) {
     return;
   }
 
-  const max = rows[0][1] || 1;
-  wrap.innerHTML = rows.map(([cat, value]) => {
+  const cx = 90, cy = 90, r = 78;
+  let angle = -Math.PI / 2;
+  let paths = '';
+
+  rows.forEach(([cat, value]) => {
+    const rule = state.rules.find(r => r.name === cat) || {};
+    const color = rule.color || '#9090a8';
+    const pct = total > 0 ? value / total : 0;
+    const sweep = pct * 2 * Math.PI;
+
+    if (sweep >= Math.PI * 2 - 0.0001) {
+      paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" opacity="0.9"></circle>`;
+      return;
+    }
+
+    const endAngle = angle + sweep;
+    const x1 = cx + r * Math.cos(angle);
+    const y1 = cy + r * Math.sin(angle);
+    const x2 = cx + r * Math.cos(endAngle);
+    const y2 = cy + r * Math.sin(endAngle);
+    const large = sweep > Math.PI ? 1 : 0;
+    paths += `<path d="M ${cx} ${cy} L ${x1.toFixed(3)} ${y1.toFixed(3)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(3)} ${y2.toFixed(3)} Z" fill="${color}" opacity="0.9"></path>`;
+    angle = endAngle;
+  });
+
+  const legend = rows.map(([cat, value]) => {
     const rule = state.rules.find(r => r.name === cat) || {};
     const color = rule.color || '#9090a8';
     const pctOfSpend = total > 0 ? (value / total * 100) : 0;
@@ -1212,26 +1309,25 @@ function renderCategoryBreakdown(ym, income, total) {
     const diff = budget > 0 ? value - budget : null;
     const diffText = diff === null
       ? 'sem orçamento definido'
-      : (diff > 0 ? 'acima do orçamento em ' : diff < 0 ? 'abaixo do orçamento em ' : 'dentro do orçamento') + (diff !== 0 ? fmt(Math.abs(diff)) : '');
+      : (diff > 0 ? 'acima do planejado em ' : diff < 0 ? 'abaixo do planejado em ' : 'dentro do planejado') + (diff !== 0 ? fmt(Math.abs(diff)) : '');
     const diffColor = diff === null ? 'var(--text3)' : diff > 0 ? 'var(--red)' : 'var(--green)';
 
-    return `<div class="category-row">
-      <div class="category-row-head">
-        <div class="category-name">
-          <span class="category-dot" style="background:${color}"></span>
-          <span>${cat}</span>
-        </div>
-        <span class="mono">${fmt(value)}</span>
-      </div>
-      <div class="progress">
-        <div class="progress-bar" style="background:${color};width:${Math.max(value / max * 100, 3).toFixed(1)}%"></div>
-      </div>
-      <div class="category-meta">
-        <span>${pctOfSpend.toFixed(1)}% dos gastos</span>
-        <span style="color:${diffColor}">${diffText}</span>
-      </div>
+    return `<div class="pie-legend-item">
+      <span class="pie-dot" style="background:${color}"></span>
+      <span class="pie-name">${cat}</span>
+      <span class="pie-value">${fmt(value)} · ${pctOfSpend.toFixed(1)}%</span>
+      <div class="pie-meta" style="color:${diffColor}">${diffText}</div>
     </div>`;
   }).join('');
+
+  wrap.innerHTML = `<div class="pie-breakdown">
+    <div class="pie-chart-box">
+      <svg width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Gráfico de pizza dos gastos por categoria">
+        ${paths}
+      </svg>
+    </div>
+    <div class="pie-legend">${legend}</div>
+  </div>`;
 }
 
 function renderCompare(ym) {
@@ -1279,8 +1375,9 @@ function renderCompare(ym) {
 function renderHistory() {
   const el = document.getElementById('db-history');
   const months = [];
+  const [cy, cm] = currentMonth.split('-').map(Number);
   for (let i = 5; i >= 0; i--) {
-    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    const d = new Date(cy, cm - 1 - i, 1);
     const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
     const label = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()];
     months.push({ ym, label });
@@ -1288,8 +1385,8 @@ function renderHistory() {
   const totals = months.map(m => getMonthTotal(m.ym));
   const maxT = Math.max(...totals, 1);
   el.innerHTML = months.map((m, i) => {
-    const hPct = Math.max(totals[i] / maxT * 100, 2);
-    return `<div class="bar-group">
+    const hPct = Math.max(totals[i] / maxT * 100, totals[i] > 0 ? 3 : 2);
+    return `<div class="bar-group" title="${m.ym}: ${fmt(totals[i])}">
       <div class="bar" style="height:${hPct}%;background:${m.ym === currentMonth ? 'var(--accent)' : 'var(--bg4)'}"></div>
       <div class="bar-label">${m.label}</div>
     </div>`;
@@ -1321,26 +1418,30 @@ function renderInsights(ym, income, total, saldo) {
 
 // ===================== MESES =====================
 function renderMeses() {
+  selectedMesMonth = currentMonth;
   const months = [];
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+  const [cy, cm] = currentMonth.split('-').map(Number);
+  for (let i = 5; i >= -6; i--) {
+    const d = new Date(cy, cm - 1 - i, 1);
     const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
     const label = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()] + ' ' + d.getFullYear();
     months.push({ ym, label });
   }
   document.getElementById('mesesTimeline').innerHTML = months.map(m =>
-    `<div class="month-chip${m.ym === selectedMesMonth ? ' active' : ''}" onclick="selectMes('${m.ym}')">${m.label}</div>`
+    `<div class="month-chip${m.ym === currentMonth ? ' active' : ''}" onclick="selectMes('${m.ym}')">${m.label}</div>`
   ).join('');
   renderMesKpis();
 }
 
 function selectMes(ym) {
+  currentMonth = ym;
   selectedMesMonth = ym;
-  renderMeses();
+  updateMonthLabel();
+  renderFinTab();
 }
 
 function renderMesKpis() {
-  const ym = selectedMesMonth;
+  const ym = currentMonth;
   const income = getMonthIncome(ym);
   const total  = getMonthTotal(ym);
   const saldo  = income - total;
@@ -1359,8 +1460,8 @@ function renderMesKpis() {
 }
 
 function saveMesNote() {
-  if (!state.monthActuals[selectedMesMonth]) state.monthActuals[selectedMesMonth] = {};
-  state.monthActuals[selectedMesMonth].note = document.getElementById('mesNote').value;
+  if (!state.monthActuals[currentMonth]) state.monthActuals[currentMonth] = {};
+  state.monthActuals[currentMonth].note = document.getElementById('mesNote').value;
   saveState(); toast('Nota salva!', 'success');
 }
 
@@ -1379,27 +1480,27 @@ function renderProjReal() {
       const delta = real - proj;
       const dc    = delta > 0 ? 'var(--red)' : delta < 0 ? 'var(--green)' : 'var(--text3)';
       return `<tr>
-        <td>${r.name}</td>
-        <td>${r.category || '—'}</td>
-        <td><span class="badge badge-${r.owner}">${r.owner}</span></td>
-        <td class="text-right mono">${fmt(proj)}</td>
-        <td class="text-right"><input type="number" value="${real}" style="width:100px;text-align:right" onchange="setRecurOverride('${r.id}','${ym}',this.value)"></td>
-        <td class="text-right mono" style="color:${dc}">${delta > 0?'+':''}${fmt(delta)}</td>
+        <td data-label="Nome">${r.name}</td>
+        <td data-label="Categoria">${r.category || '—'}</td>
+        <td data-label="Responsável"><span class="badge badge-${r.owner}">${r.owner}</span></td>
+        <td data-label="Projetado" class="text-right mono">${fmt(proj)}</td>
+        <td data-label="Real" class="text-right"><input class="real-value-input" type="number" value="${real}" onchange="setRecurOverride('${r.id}','${ym}',this.value)"></td>
+        <td data-label="Δ" class="text-right mono" style="color:${dc}">${delta > 0?'+':''}${fmt(delta)}</td>
       </tr>`;
     }).join('') || '<tr><td colspan="6" class="text-center text3" style="padding:16px">Nenhum recorrente</td></tr>';
 
   // Cartão
   document.getElementById('tbodyCartaoPR').innerHTML = getMonthFaturas(ym)
-    .map(f => `<tr><td>${f.name} (${f.parc}/${f.totalParcels})</td><td>${f.category||'—'}</td><td class="text-right mono">${fmt(f.parcValue)}</td></tr>`)
+    .map(f => `<tr><td data-label="Nome">${f.name} (${f.parc}/${f.totalParcels})</td><td data-label="Categoria">${f.category||'—'}</td><td data-label="Valor Parcela" class="text-right mono">${fmt(f.parcValue)}</td></tr>`)
     .join('') || '<tr><td colspan="3" class="text-center text3" style="padding:16px">Sem faturas neste mês</td></tr>';
 
   // Avulsos
   document.getElementById('tbodyAvulsosPR').innerHTML = getMonthEntries(ym)
     .map(e => `<tr>
-      <td>${e.name}</td><td>${e.category||'—'}</td>
-      <td>${e.type==='expense'?'Gasto':'Receita'}</td>
-      <td class="text-right mono">${fmt(e.projected)}</td>
-      <td class="text-right mono">${fmt(e.actual)}</td>
+      <td data-label="Nome">${e.name}</td><td data-label="Categoria">${e.category||'—'}</td>
+      <td data-label="Tipo">${e.type==='expense'?'Gasto':'Receita'}</td>
+      <td data-label="Projetado" class="text-right mono">${fmt(e.projected)}</td>
+      <td data-label="Real" class="text-right mono">${fmt(e.actual)}</td>
     </tr>`)
     .join('') || '<tr><td colspan="5" class="text-center text3" style="padding:16px">Nenhum lançamento</td></tr>';
 }
@@ -1409,6 +1510,8 @@ function setRecurOverride(id, ym, val) {
   if (!state.monthActuals[ym].recurOverrides) state.monthActuals[ym].recurOverrides = {};
   state.monthActuals[ym].recurOverrides[id] = parseFloat(val) || 0;
   saveState();
+  renderProjReal();
+  renderOrcamento();
 }
 
 // ===================== LANÇAMENTOS =====================
@@ -1422,8 +1525,8 @@ function updateLancamentoMode() {
   if (realField) realField.classList.toggle('hidden', mode === 'recorrente');
   if (projLabel) projLabel.textContent = mode === 'recorrente' ? 'Valor mensal' : 'Projetado';
   if (hint) hint.textContent = mode === 'recorrente'
-    ? 'Recorrente fica ativo todos os meses e pode ter o valor realizado ajustado em Planejamento > Proj × Real.'
-    : 'Avulso entra somente no mês selecionado e pode guardar valor projetado e realizado.';
+    ? 'Recorrente fica ativo todos os meses. O real de um mês específico pode ser ajustado na tabela abaixo, em Lançamentos.'
+    : 'Avulso entra somente no mês selecionado. Se o real ficar vazio, ele será salvo igual ao projetado.';
 }
 
 function renderAvulsos() {
@@ -1432,13 +1535,15 @@ function renderAvulsos() {
   document.getElementById('avulsoMonthLabel').textContent = currentMonth;
   document.getElementById('tbodyAvulsos').innerHTML = getMonthEntries(currentMonth)
     .map(e => `<tr>
-      <td>${e.name}</td>
-      <td>${e.category||'—'}</td>
-      <td>${e.type==='expense'?'Gasto':'Receita'}</td>
-      <td><span class="badge badge-${e.owner}">${e.owner}</span></td>
-      <td class="text-right mono">${fmt(e.projected)}</td>
-      <td class="text-right mono">${fmt(e.actual)}</td>
-      <td><button class="btn btn-icon btn-ghost" onclick="delEntry('${e.id}')">×</button></td>
+      <td data-label="Nome">${e.name}</td>
+      <td data-label="Cat.">${e.category||'—'}</td>
+      <td data-label="Tipo">${e.type==='expense'?'Gasto':'Receita'}</td>
+      <td data-label="Resp."><span class="badge badge-${e.owner}">${e.owner}</span></td>
+      <td data-label="Proj." class="text-right mono">${fmt(e.projected)}</td>
+      <td data-label="Real" class="text-right">
+        <input class="real-value-input" type="number" value="${e.actual ?? ''}" placeholder="0.00" onchange="updateEntryActual('${e.id}', this.value)">
+      </td>
+      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delEntry('${e.id}')">×</button></td>
     </tr>`)
     .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhum lançamento avulso</td></tr>';
 }
@@ -1459,11 +1564,14 @@ function addLancamento() {
     state.recurring.push({ ...payload, value: projected, active: true });
     toast('Recorrente adicionado!', 'success');
   } else {
+    const realInput = document.getElementById('lanReal');
+    const rawReal = realInput ? realInput.value : '';
+    const actual = rawReal === '' ? projected : (parseFloat(rawReal) || 0);
     state.entries.push({
       ...payload,
       month: currentMonth,
       projected,
-      actual: parseFloat(document.getElementById('lanReal').value) || 0,
+      actual,
       note: document.getElementById('lanNote').value,
     });
     toast('Lançamento adicionado!', 'success');
@@ -1476,6 +1584,14 @@ function addLancamento() {
 
 function addAvulso() { addLancamento(); }
 
+function updateEntryActual(id, val) {
+  const e = state.entries.find(e => e.id === id);
+  if (!e) return;
+  e.actual = parseFloat(val) || 0;
+  saveState();
+  if (currentFinTab === 'dashboard') renderDashboard();
+}
+
 function delEntry(id) {
   state.entries = state.entries.filter(e => e.id !== id);
   saveState(); renderFinTab();
@@ -1484,22 +1600,37 @@ function delEntry(id) {
 function renderRecorrentes() {
   const tbody = document.getElementById('tbodyRecorrentes');
   if (!tbody) return;
+  const act = state.monthActuals[currentMonth] || {};
   tbody.innerHTML = state.recurring
-    .map(r => `<tr>
-      <td>${r.name}</td>
-      <td>${r.category||'—'}</td>
-      <td>${r.type==='expense'?'Gasto':'Receita'}</td>
-      <td><span class="badge badge-${r.owner}">${r.owner}</span></td>
-      <td class="text-right mono">${fmt(r.value)}</td>
-      <td>
-        <label class="toggle">
-          <input type="checkbox" ${r.active!==false?'checked':''} onchange="toggleRec('${r.id}',this.checked)">
-          <span class="toggle-slider"></span>
-        </label>
-      </td>
-      <td><button class="btn btn-icon btn-ghost" onclick="delRec('${r.id}')">×</button></td>
-    </tr>`)
-    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhum recorrente</td></tr>';
+    .map(r => {
+      const ov = (act.recurOverrides || {})[r.id];
+      const real = ov !== undefined ? ov : r.value;
+      return `<tr>
+        <td data-label="Nome">${r.name}</td>
+        <td data-label="Categoria">${r.category||'—'}</td>
+        <td data-label="Tipo">${r.type==='expense'?'Gasto':'Receita'}</td>
+        <td data-label="Resp."><span class="badge badge-${r.owner}">${r.owner}</span></td>
+        <td data-label="Valor padrão" class="text-right mono">${fmt(r.value)}</td>
+        <td data-label="Real do mês" class="text-right">
+          <input class="real-value-input" type="number" value="${real}" placeholder="0.00" onchange="setRecurringRealForCurrentMonth('${r.id}', this.value)">
+        </td>
+        <td data-label="Ativo">
+          <label class="toggle">
+            <input type="checkbox" ${r.active!==false?'checked':''} onchange="toggleRec('${r.id}',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delRec('${r.id}')">×</button></td>
+      </tr>`;
+    })
+    .join('') || '<tr><td colspan="8" class="text-center text3" style="padding:16px">Nenhum recorrente</td></tr>';
+}
+
+function setRecurringRealForCurrentMonth(id, val) {
+  if (!state.monthActuals[currentMonth]) state.monthActuals[currentMonth] = {};
+  if (!state.monthActuals[currentMonth].recurOverrides) state.monthActuals[currentMonth].recurOverrides = {};
+  state.monthActuals[currentMonth].recurOverrides[id] = parseFloat(val) || 0;
+  saveState();
 }
 
 function addRecorrente() { addLancamento(); }
@@ -1538,14 +1669,14 @@ function renderCartao() {
 
   document.getElementById('tbodyCartao').innerHTML = state.cardExpenses
     .map(ce => `<tr>
-      <td>${ce.name}</td>
-      <td>${ce.category||'—'}</td>
-      <td><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
-      <td class="text-right mono">${fmt(ce.value)}</td>
-      <td class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
-      <td class="mono">${ce.totalParcels}×</td>
-      <td class="mono text3">${ce.purchaseDate}</td>
-      <td><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
+      <td data-label="Nome">${ce.name}</td>
+      <td data-label="Cat.">${ce.category||'—'}</td>
+      <td data-label="Resp."><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
+      <td data-label="Total" class="text-right mono">${fmt(ce.value)}</td>
+      <td data-label="Parcela" class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
+      <td data-label="Qtd." class="mono">${ce.totalParcels}×</td>
+      <td data-label="Compra" class="mono text3">${ce.purchaseDate}</td>
+      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
     </tr>`)
     .join('') || '<tr><td colspan="8" class="text-center text3" style="padding:16px">Nenhuma compra cadastrada</td></tr>';
 
@@ -1553,9 +1684,9 @@ function renderCartao() {
   const total = faturas.reduce((a, f) => a + f.parcValue, 0);
   document.getElementById('tbodyFaturas').innerHTML = faturas
     .map(f => `<tr>
-      <td>${f.name}</td>
-      <td class="mono text3">${f.parc}/${f.totalParcels}</td>
-      <td class="text-right mono">${fmt(f.parcValue)}</td>
+      <td data-label="Nome">${f.name}</td>
+      <td data-label="Parcela" class="mono text3">${f.parc}/${f.totalParcels}</td>
+      <td data-label="Valor" class="text-right mono">${fmt(f.parcValue)}</td>
     </tr>`)
     .join('') || '<tr><td colspan="3" class="text-center text3" style="padding:16px">Sem faturas neste mês</td></tr>';
   document.getElementById('faturaTotal').textContent = fmt(total);
@@ -1591,57 +1722,30 @@ function populateCatSelect(id) {
 }
 
 function setOrcView(v) {
-  orcView = v;
-  document.getElementById('orcBtnProj').classList.toggle('active', v === 'proj');
-  document.getElementById('orcBtnReal').classList.toggle('active', v === 'real');
+  orcView = 'proj';
   renderOrcamento();
 }
+
 
 function renderOrcamento() {
   const income = getMonthIncome(currentMonth);
   const tbody = document.getElementById('tbodyOrc');
   let totalPct = 0;
 
-  // For "realizado" view we calculate actual spending per category
-  const realByCat = {};
-  if (orcView === 'real') {
-    const ym  = currentMonth;
-    const act = state.monthActuals[ym] || {};
-    state.recurring.filter(r => r.active !== false && r.type === 'expense').forEach(r => {
-      const cat = r.category || 'Outros';
-      const ov  = (act.recurOverrides || {})[r.id];
-      realByCat[cat] = (realByCat[cat] || 0) + (ov !== undefined ? ov : r.value);
-    });
-    getMonthEntries(ym).filter(e => e.type === 'expense').forEach(e => {
-      const cat = e.category || 'Outros';
-      realByCat[cat] = (realByCat[cat] || 0) + (e.actual != null && e.actual !== '' ? parseFloat(e.actual) : parseFloat(e.projected) || 0);
-    });
-    getMonthFaturas(ym).forEach(f => {
-      const cat = f.category || 'Outros';
-      realByCat[cat] = (realByCat[cat] || 0) + f.parcValue;
-    });
-  }
-
-  document.getElementById('orcValHeader').textContent = orcView === 'proj' ? 'Valor proj.' : 'Real gasto';
+  const header = document.getElementById('orcValHeader');
+  if (header) header.textContent = 'Valor planejado';
 
   tbody.innerHTML = state.rules.map(r => {
     totalPct += r.pct;
     const projVal = income * r.pct / 100;
-    const realVal = orcView === 'real' ? (realByCat[r.name] || 0) : projVal;
-    const diff    = orcView === 'real' ? realVal - projVal : null;
-    const diffHtml = diff !== null
-      ? `<span class="mono" style="font-size:11px;color:${diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--green)' : 'var(--text3)'}">
-          ${diff > 0 ? '▲' : diff < 0 ? '▼' : '—'} ${fmt(Math.abs(diff))}
-         </span>`
-      : '';
     return `<tr>
-      <td>${r.name} ${diffHtml}</td>
-      <td><span class="color-swatch" style="background:${r.color}"></span></td>
-      <td class="text-right">
+      <td data-label="Categoria">${r.name}</td>
+      <td data-label="Cor"><span class="color-swatch" style="background:${r.color}"></span></td>
+      <td data-label="%" class="text-right">
         <input type="number" value="${r.pct}" style="width:70px;text-align:right" onchange="updateCatPct('${r.id}',this.value)">
       </td>
-      <td class="text-right mono">${fmt(realVal)}</td>
-      <td><button class="btn btn-icon btn-ghost" onclick="delCat('${r.id}')">×</button></td>
+      <td data-label="Valor planejado" class="text-right mono">${fmt(projVal)}</td>
+      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCat('${r.id}')">×</button></td>
     </tr>`;
   }).join('');
 
@@ -2159,8 +2263,6 @@ function renderLancamentos() {
 }
 
 function renderPlanejamento() {
-  renderMeses();
-  renderProjReal();
   renderOrcamento();
 }
 
