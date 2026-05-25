@@ -2,162 +2,48 @@
   "name1": "Gus",
   "name2": "Maria",
   "salaries": {
-    "gus": 4000,
-    "maria": 3000
+    "gus": 0,
+    "maria": 0
   },
-  "cardClosingDay": 1,
+  "cardClosingDay": 15,
   "rules": [
     {
-      "id": "heoute7",
-      "name": "Essenciais",
-      "pct": 50,
+      "id": "xlpnts8",
+      "name": "Moradia",
+      "pct": 30,
       "color": "#6090e0"
     },
     {
-      "id": "f7s8o2j",
-      "name": "Investimentos + Reserva",
+      "id": "vv75w9n",
+      "name": "Alimentação",
       "pct": 20,
-      "color": "#00ff00"
+      "color": "#e070a0"
     },
     {
-      "id": "2qn405h",
-      "name": "Mesada",
-      "pct": 20,
-      "color": "#ffffff"
-    },
-    {
-      "id": "cnk43px",
-      "name": "Metas de curto/médio prazo",
+      "id": "2s8oneu",
+      "name": "Transporte",
       "pct": 10,
-      "color": "#ffff00"
+      "color": "#6ec8a0"
+    },
+    {
+      "id": "d2pkvv7",
+      "name": "Lazer",
+      "pct": 10,
+      "color": "#c8a96e"
+    },
+    {
+      "id": "gguexr3",
+      "name": "Outros",
+      "pct": 10,
+      "color": "#a060d0"
     }
   ],
   "monthActuals": {},
-  "entries": [
-    {
-      "id": "m83igpr",
-      "name": "Cartão Itaú (Gus)",
-      "type": "expense",
-      "category": "Essenciais",
-      "owner": "casal",
-      "month": "2026-06",
-      "projected": 850.95,
-      "actual": 0,
-      "note": ""
-    },
-    {
-      "id": "7gzhqr9",
-      "name": "Cartão Itaú (Lenir)",
-      "type": "expense",
-      "category": "Essenciais",
-      "owner": "casal",
-      "month": "2026-06",
-      "projected": 2328.55,
-      "actual": 0,
-      "note": ""
-    },
-    {
-      "id": "z7h4k4k",
-      "name": "Mercado Pago",
-      "type": "expense",
-      "category": "Essenciais",
-      "owner": "casal",
-      "month": "2026-06",
-      "projected": 1329,
-      "actual": 0,
-      "note": ""
-    }
-  ],
-  "recurring": [
-    {
-      "id": "829a45a",
-      "name": "Aluguel/Condomínio",
-      "value": 1600,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": "lhkr3b6",
-      "name": "Faculdade",
-      "value": 250,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "gus",
-      "active": true
-    },
-    {
-      "id": "s17krmt",
-      "name": "TV",
-      "value": 50,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": "1pzwjp9",
-      "name": "Internet",
-      "value": 105,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": "2hqg864",
-      "name": "Gás",
-      "value": 80,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": "xkjc1ll",
-      "name": "Luz",
-      "value": 400,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "casal",
-      "active": true
-    },
-    {
-      "id": "eepdee9",
-      "name": "Mei",
-      "value": 85.45,
-      "category": "Essenciais",
-      "type": "expense",
-      "owner": "maria",
-      "active": true
-    }
-  ],
+  "entries": [],
+  "recurring": [],
   "cardExpenses": [],
   "goals": [],
-  "cofrinhos": [
-    {
-      "id": "oij1n3a",
-      "name": "Viagem Itália",
-      "total": 200,
-      "marked": {
-        "10": true
-      },
-      "deposits": [
-        {
-          "num": 10,
-          "date": "2026-05-24"
-        }
-      ]
-    },
-    {
-      "id": "szotper",
-      "name": "Bicicleta elétrica",
-      "total": 118,
-      "marked": {},
-      "deposits": []
-    }
-  ],
+  "cofrinhos": [],
   "tasks": [],
   "taskChecks": {},
   "study": {
