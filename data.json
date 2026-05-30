@@ -140,15 +140,29 @@
       "id": "szotper",
       "name": "Bicicleta elétrica",
       "total": 118,
-      "marked": {},
-      "deposits": []
+      "marked": {
+        "10": true
+      },
+      "deposits": [
+        {
+          "num": 10,
+          "date": "2026-05-30"
+        }
+      ]
     },
     {
       "id": "m82bppz",
       "name": "Viagem Itália",
       "total": 246,
-      "marked": {},
-      "deposits": []
+      "marked": {
+        "10": true
+      },
+      "deposits": [
+        {
+          "num": 10,
+          "date": "2026-05-30"
+        }
+      ]
     }
   ],
   "tasks": [],
