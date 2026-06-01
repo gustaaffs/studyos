@@ -6,7 +6,23 @@
     "maria": 3000
   },
   "cardClosingDay": 1,
-  "rules": [],
+  "rules": [
+    {
+      "id": "sz0ciqq",
+      "name": "Cartão",
+      "color": "#e1ff00"
+    },
+    {
+      "id": "riwb4ja",
+      "name": "Casa",
+      "color": "#2bff00"
+    },
+    {
+      "id": "okqxth2",
+      "name": "Dívida",
+      "color": "#ff0000"
+    }
+  ],
   "planBuckets": [
     {
       "id": "sns0tmq",
