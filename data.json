@@ -11,6 +11,16 @@
       "id": "lj1s7gx",
       "name": "Casa",
       "color": "#00ff04"
+    },
+    {
+      "id": "at6gtps",
+      "name": "Cartão",
+      "color": "#fbff00"
+    },
+    {
+      "id": "aybzvy7",
+      "name": "Dívida",
+      "color": "#ff0000"
     }
   ],
   "planBuckets": [
