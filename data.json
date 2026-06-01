@@ -55,7 +55,7 @@
       "id": "5estu6y",
       "name": "Mercado pago empréstimo",
       "type": "expense",
-      "category": "Essenciais",
+      "category": "Cartão",
       "owner": "gus",
       "month": "2026-06",
       "projected": 211,
@@ -134,7 +134,7 @@
       "value": 1365.76,
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
-      "category": "Essenciais",
+      "category": "Cartão",
       "owner": "casal"
     },
     {
@@ -143,7 +143,7 @@
       "value": 850.91,
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
-      "category": "Essenciais",
+      "category": "Cartão",
       "owner": "casal"
     },
     {
@@ -152,7 +152,7 @@
       "value": 2451.01,
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
-      "category": "Essenciais",
+      "category": "Cartão",
       "owner": "casal"
     }
   ],
