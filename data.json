@@ -37,7 +37,12 @@
       "color": "#eeff00"
     }
   ],
-  "monthActuals": {},
+  "monthActuals": {
+    "2026-06": {
+      "salaryGus": 3000,
+      "salaryMaria": 4000
+    }
+  },
   "entries": [
     {
       "id": "5estu6y",
