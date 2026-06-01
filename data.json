@@ -6,32 +6,7 @@
     "maria": 3000
   },
   "cardClosingDay": 1,
-  "rules": [
-    {
-      "id": "heoute7",
-      "name": "Essenciais",
-      "pct": 50,
-      "color": "#6090e0"
-    },
-    {
-      "id": "f7s8o2j",
-      "name": "Investimentos + Reserva",
-      "pct": 20,
-      "color": "#00ff00"
-    },
-    {
-      "id": "2qn405h",
-      "name": "Mesada",
-      "pct": 20,
-      "color": "#ffffff"
-    },
-    {
-      "id": "cnk43px",
-      "name": "Metas de curto/médio prazo",
-      "pct": 10,
-      "color": "#ffff00"
-    }
-  ],
+  "rules": [],
   "planBuckets": [
     {
       "id": "sns0tmq",
