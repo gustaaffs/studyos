@@ -623,6 +623,16 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 .fab-tab.active { background: var(--bg); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
 .fab-meta-preview { background: var(--bg3); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: var(--text2); }
 
+/* PLAN OVERVIEW no dashboard */
+.db-plan-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(46,46,56,0.5); }
+.db-plan-row:last-child { border-bottom: none; }
+.db-plan-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.db-plan-name { font-size: 13px; font-weight: 500; min-width: 110px; }
+.db-plan-bar-wrap { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.db-plan-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.db-plan-amounts { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); white-space: nowrap; text-align: right; min-width: 130px; }
+.db-plan-amounts span { color: var(--text); }
+
 /* PLAN BUCKET SELECT (inline em transaction cards) */
 .plan-select { font-size: 10px; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg4); color: var(--text2); cursor: pointer; max-width: 110px; font-family: 'DM Sans', sans-serif; }
 .plan-select:focus { border-color: var(--accent); outline: none; color: var(--text); }
@@ -752,6 +762,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
               </div>
             </div>
             <div class="history-chart" id="db-history"></div>
+          </div>
+          <!-- Visão do planejamento -->
+          <div class="card section" id="db-plan-card">
+            <div class="flex justify-between items-center" style="margin-bottom:12px">
+              <div class="card-title" style="margin:0">Planejamento do Mês</div>
+              <button class="btn btn-ghost btn-sm" onclick="showFinTab('orcamento')">Ver detalhes →</button>
+            </div>
+            <div id="db-plan-buckets"></div>
           </div>
           <div class="section" id="db-insights"></div>
         </div>
@@ -1614,6 +1632,7 @@ function renderDashboard() {
   renderCategoryBreakdown(ym, income, total);
   renderCompare(ym);
   renderHistory();
+  renderPlanOverview(ym, income);
   renderInsights(ym, income, total, saldo);
   updateBudgetAlertBadge();
 }
@@ -1663,6 +1682,32 @@ function renderSalaryCard() {
   const mariaVal = act.salaryMaria !== undefined ? act.salaryMaria : state.salaries.maria;
   if (i1 && document.activeElement !== i1) i1.value = gusVal   || '';
   if (i2 && document.activeElement !== i2) i2.value = mariaVal || '';
+}
+
+function renderPlanOverview(ym, income) {
+  const el = document.getElementById('db-plan-buckets');
+  if (!el) return;
+  const buckets = state.planBuckets || [];
+  if (!buckets.length) {
+    el.innerHTML = '<div class="empty-state" style="font-size:12px">Nenhum envelope configurado. <button class="btn btn-ghost btn-sm" onclick="showFinTab(\'orcamento\')">Configurar →</button></div>';
+    return;
+  }
+  const actualByBucket = getPlanActuals(ym);
+  el.innerHTML = buckets.map(b => {
+    const planned = income > 0 ? income * b.pct / 100 : 0;
+    const actual  = actualByBucket[b.id] || 0;
+    const pct     = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
+    const isOver  = planned > 0 && actual > planned;
+    const barColor = isOver ? 'var(--red)' : b.color;
+    return `<div class="db-plan-row">
+      <div class="db-plan-dot" style="background:${b.color}"></div>
+      <div class="db-plan-name">${b.name}</div>
+      <div class="db-plan-bar-wrap"><div class="db-plan-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="db-plan-amounts" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">
+        <span style="color:${isOver ? 'var(--red)' : 'var(--text)'}">${fmt(actual)}</span> / ${income > 0 ? fmt(planned) : '—'}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function saveMonthlySalary() {
@@ -1843,43 +1888,63 @@ function renderCategoryBreakdown(ym, income, total) {
   const wrap = document.getElementById('db-category-breakdown');
   if (totalEl) totalEl.textContent = fmt(total);
 
+  // Aggregate spending from expense data
   const byCat = {};
   getExpenseItems(ym).forEach(item => {
     const cat = item.category || 'Outros';
     byCat[cat] = (byCat[cat] || 0) + item.value;
   });
 
-  const rows = Object.entries(byCat)
-    .filter(([, v]) => v > 0)
-    .sort((a, b) => b[1] - a[1]);
+  const ruleNames = new Set(state.rules.map(r => r.name));
 
-  if (!rows.length) {
+  // Orphaned: categories in data but not in current rules
+  let orphanTotal = 0;
+  const orphanCats = [];
+  Object.entries(byCat).forEach(([cat, val]) => {
+    if (!ruleNames.has(cat)) { orphanTotal += val; orphanCats.push(cat); }
+  });
+
+  // Build rows: all rules (even 0), then orphaned bucket at the end
+  const rows = state.rules.map(r => ({ name: r.name, color: r.color, value: byCat[r.name] || 0 }));
+  rows.sort((a, b) => b.value - a.value);
+
+  if (!rows.some(r => r.value > 0) && orphanTotal === 0) {
     wrap.innerHTML = '<div class="empty-state">Sem gastos cadastrados neste mês.</div>';
     return;
   }
 
-  wrap.innerHTML = rows.map(([cat, value]) => {
-    const rule = state.rules.find(r => r.name === cat) || {};
-    const color = rule.color || '#9090a8';
-    const icon  = getCategoryIcon(cat);
+  const rowsHtml = rows.map(({ name, color, value }) => {
+    const icon = getCategoryIcon(name);
     const pctOfTotal = total > 0 ? (value / total * 100) : 0;
-    const barWidth = Math.min(pctOfTotal, 100);
-
-    return `<div class="cat-item">
+    const opacity = value === 0 ? 'opacity:0.4;' : '';
+    return `<div class="cat-item" style="${opacity}">
       <div class="cat-item-head">
         <div class="cat-icon" style="background:${color}22">${icon}</div>
         <div class="cat-info">
-          <div class="cat-name">${cat}</div>
-          <div class="cat-budget" style="color:var(--text3)">${pctOfTotal.toFixed(0)}% dos gastos</div>
+          <div class="cat-name">${name}</div>
+          <div class="cat-budget" style="color:var(--text3)">${value > 0 ? pctOfTotal.toFixed(0) + '% dos gastos' : 'sem gastos'}</div>
         </div>
         <div class="cat-amount">${fmt(value)}</div>
       </div>
-      <div class="cat-progress-row">
-        <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${barWidth}%;background:${color}"></div></div>
+      ${value > 0 ? `<div class="cat-progress-row">
+        <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${Math.min(pctOfTotal,100)}%;background:${color}"></div></div>
         <div class="cat-pct">${pctOfTotal.toFixed(0)}%</div>
-      </div>
+      </div>` : ''}
     </div>`;
   }).join('');
+
+  const orphanHtml = orphanTotal > 0 ? `<div class="cat-item">
+    <div class="cat-item-head">
+      <div class="cat-icon" style="background:#9090a822">⚠️</div>
+      <div class="cat-info">
+        <div class="cat-name" style="color:var(--text2)">Sem categoria</div>
+        <div class="cat-budget" style="color:var(--red);font-size:10px">Categorias removidas: ${orphanCats.join(', ')} — atualize em Lançamentos</div>
+      </div>
+      <div class="cat-amount" style="color:var(--text2)">${fmt(orphanTotal)}</div>
+    </div>
+  </div>` : '';
+
+  wrap.innerHTML = rowsHtml + orphanHtml;
 }
 
 function renderCompare(ym) {
@@ -3111,7 +3176,6 @@ function init() {
   updateMonthLabel();
   document.getElementById('logoNames').textContent = state.name1 + ' & ' + state.name2;
   showPage('financas');
-  if (hasGHConfig()) pullFromGitHub(true);
 }
 
 init();
