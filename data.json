@@ -33,7 +33,18 @@
     }
   ],
   "monthActuals": {},
-  "entries": [],
+  "entries": [
+    {
+      "id": "5estu6y",
+      "name": "Mercado pago empréstimo",
+      "type": "expense",
+      "category": "Essenciais",
+      "owner": "gus",
+      "month": "2026-06",
+      "projected": 211,
+      "actual": 211
+    }
+  ],
   "recurring": [
     {
       "id": "829a45a",
