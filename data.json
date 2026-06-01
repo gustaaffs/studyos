@@ -23,7 +23,14 @@
       "color": "#ff0000"
     }
   ],
-  "planBuckets": [],
+  "planBuckets": [
+    {
+      "id": "fss7ok4",
+      "name": "Essenciais",
+      "pct": 0,
+      "color": "#6090e0"
+    }
+  ],
   "monthActuals": {},
   "entries": [
     {
