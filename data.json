@@ -43,16 +43,6 @@
       "month": "2026-06",
       "projected": 211,
       "actual": 211
-    },
-    {
-      "id": "w52bdrp",
-      "name": "Itaú (Gus)",
-      "type": "expense",
-      "category": "Essenciais",
-      "owner": "gus",
-      "month": "2026-06",
-      "projected": 850.91,
-      "actual": 850.91
     }
   ],
   "recurring": [
