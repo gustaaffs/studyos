@@ -1111,7 +1111,10 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             <div class="field"><label>Repositório (user/repo)</label><input id="cfgRepo" placeholder="gustaaffs/studyos"></div>
             <div class="field"><label>Branch</label><input id="cfgBranch" placeholder="main"></div>
             <div class="field"><label>Arquivo de dados</label><input id="cfgFile" placeholder="data.json"></div>
-            <button class="btn btn-primary" onclick="saveConfig()">Salvar Config</button>
+            <div class="flex gap-8" style="margin-top:4px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="saveConfig()">Salvar Config</button>
+              <button class="btn btn-ghost" onclick="pullFromGitHub()">⬇ Puxar do GitHub</button>
+            </div>
           </div>
           <div class="card">
             <div class="card-title">Identidade</div>
@@ -2801,6 +2804,7 @@ function renderConfig() {
 }
 
 function saveConfig() {
+  const wasEmpty = !localStorage.getItem(STORAGE_KEY);
   localStorage.setItem(GH_TOKEN_KEY, document.getElementById('cfgToken').value);
   localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({
     repo:   document.getElementById('cfgRepo').value,
@@ -2808,6 +2812,34 @@ function saveConfig() {
     file:   document.getElementById('cfgFile').value,
   }));
   toast('Config do GitHub salva!', 'success');
+  if (wasEmpty && hasGHConfig()) pullFromGitHub();
+}
+
+async function pullFromGitHub() {
+  const token = localStorage.getItem(GH_TOKEN_KEY) || '';
+  const cfg = getGHConfig();
+  if (!token || !cfg.repo) { toast('Configure o token e repositório antes de puxar', 'error'); return; }
+  setSyncStatus('syncing');
+  try {
+    const [owner, repo] = cfg.repo.split('/');
+    const branch = cfg.branch || 'main';
+    const file   = cfg.file   || 'data.json';
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${branch}`, {
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) throw new Error('status ' + r.status);
+    const data = await r.json();
+    const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    const remote = JSON.parse(decoded);
+    state = Object.assign(defaultState(), remote);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    setSyncStatus('saved');
+    toast('Dados puxados do GitHub! ✓', 'success');
+    showPage('financas');
+  } catch (e) {
+    setSyncStatus('error');
+    toast('Erro ao puxar dados: ' + e.message, 'error');
+  }
 }
 
 function saveIdentity() {
