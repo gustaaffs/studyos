@@ -32,6 +32,32 @@
       "color": "#ffff00"
     }
   ],
+  "planBuckets": [
+    {
+      "id": "sns0tmq",
+      "name": "Moradia",
+      "pct": 35,
+      "color": "#6090e0"
+    },
+    {
+      "id": "87kwf7j",
+      "name": "Estilo de Vida",
+      "pct": 25,
+      "color": "#e070a0"
+    },
+    {
+      "id": "te9hq6i",
+      "name": "Poupança",
+      "pct": 20,
+      "color": "#6ec8a0"
+    },
+    {
+      "id": "oiaqiep",
+      "name": "Variáveis",
+      "pct": 20,
+      "color": "#c8a96e"
+    }
+  ],
   "monthActuals": {},
   "entries": [
     {
