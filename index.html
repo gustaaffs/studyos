@@ -622,6 +622,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 .fab-tab { flex: 1; padding: 8px 4px; border-radius: 7px; border: none; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text2); background: transparent; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
 .fab-tab.active { background: var(--bg); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
 .fab-meta-preview { background: var(--bg3); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: var(--text2); }
+
+/* PLAN BUCKET SELECT (inline em transaction cards) */
+.plan-select { font-size: 10px; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg4); color: var(--text2); cursor: pointer; max-width: 110px; font-family: 'DM Sans', sans-serif; }
+.plan-select:focus { border-color: var(--accent); outline: none; color: var(--text); }
+
+/* SALARY CARD no dashboard */
+.salary-inputs { display: flex; gap: 12px; flex-wrap: wrap; }
+.salary-inputs .field { flex: 1; min-width: 110px; }
 </style>
 </head>
 <body>
@@ -709,6 +717,17 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
                   <div class="db-stat-value" id="db-pct-renda">0%</div>
                 </div>
               </div>
+            </div>
+          </div>
+          <!-- Receitas do Mês -->
+          <div class="card section" id="db-salary-card">
+            <div class="flex justify-between items-center" style="margin-bottom:10px">
+              <div class="card-title" style="margin:0">Receitas do Mês</div>
+              <button class="btn btn-ghost btn-sm" onclick="saveMonthlySalary()">Salvar</button>
+            </div>
+            <div class="salary-inputs">
+              <div class="field"><label id="sal-label-1">Gus</label><input id="sal-gus" type="number" placeholder="0.00" step="100" onkeydown="if(event.key==='Enter')saveMonthlySalary()"></div>
+              <div class="field"><label id="sal-label-2">Maria</label><input id="sal-maria" type="number" placeholder="0.00" step="100" onkeydown="if(event.key==='Enter')saveMonthlySalary()"></div>
             </div>
           </div>
           <div class="grid2 section">
@@ -816,6 +835,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
                     <option value="casal">Casal</option>
                   </select>
                 </div>
+                <div class="field" id="lanPlanField"><label>Plano</label><select id="lanPlan"><option value="">— nenhum —</option></select></div>
               </div>
               <div class="field"><label>Nota</label><input id="lanNote" placeholder="Opcional"></div>
               <div class="mode-hint" id="lanModeHint">Avulso entra apenas no mês selecionado. Recorrente aparece automaticamente nos próximos meses.</div>
@@ -906,27 +926,27 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           </div>
         </div>
 
-        <!-- ORÇAMENTO -->
+        <!-- PLANEJAMENTO -->
         <div id="fin-orcamento" class="hidden">
           <div class="section" id="orc-visual"></div>
           <div class="card section">
             <div class="flex justify-between items-center" style="margin-bottom:14px;gap:10px;flex-wrap:wrap">
               <div>
-                <div class="card-title" style="margin:0">Categorias e percentuais</div>
-                <div class="mode-hint mt-4">Planeje quanto da renda do mês deve ir para cada categoria. O valor real fica em Lançamentos.</div>
+                <div class="card-title" style="margin:0">Envelopes de Planejamento</div>
+                <div class="mode-hint mt-4">Defina quanto % da renda conjunta vai para cada área. Etiquete seus gastos em Lançamentos com o envelope correspondente.</div>
               </div>
             </div>
             <div class="table-scroll">
               <table class="responsive-table table-orcamento">
-                <thead><tr><th>Categoria</th><th>Cor</th><th class="text-right">%</th><th class="text-right" id="orcValHeader">Valor planejado</th><th></th></tr></thead>
+                <thead><tr><th>Envelope</th><th>Cor</th><th class="text-right">%</th><th class="text-right">Planejado</th><th class="text-right">Etiquetado</th><th></th></tr></thead>
                 <tbody id="tbodyOrc"></tbody>
               </table>
             </div>
             <div class="mt-12 flex items-center gap-8" style="flex-wrap:wrap">
-              <input id="newCatName" placeholder="Nome da nova categoria" style="flex:1;min-width:140px">
-              <input id="newCatPct" type="number" placeholder="%" style="width:70px">
-              <input id="newCatColor" type="color" value="#6090e0" style="width:44px;height:36px;padding:4px;border-radius:7px;cursor:pointer;flex-shrink:0">
-              <button class="btn btn-primary btn-sm" onclick="addCategory()">+ Adicionar</button>
+              <input id="newBucketName" placeholder="Nome do envelope" style="flex:1;min-width:140px">
+              <input id="newBucketPct" type="number" placeholder="%" style="width:70px">
+              <input id="newBucketColor" type="color" value="#6090e0" style="width:44px;height:36px;padding:4px;border-radius:7px;cursor:pointer;flex-shrink:0">
+              <button class="btn btn-primary btn-sm" onclick="addPlanBucket()">+ Adicionar</button>
             </div>
           </div>
           <div class="card">
@@ -1120,10 +1140,18 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             <div class="card-title">Identidade</div>
             <div class="field"><label>Nome 1 (Gus)</label><input id="cfgName1" placeholder="Gustavo"></div>
             <div class="field"><label>Nome 2 (Maria)</label><input id="cfgName2" placeholder="Maria"></div>
-            <div class="field"><label>Salário — Nome 1</label><input id="cfgSal1" type="number" placeholder="0.00"></div>
-            <div class="field"><label>Salário — Nome 2</label><input id="cfgSal2" type="number" placeholder="0.00"></div>
             <div class="field"><label>Dia de Fechamento do Cartão</label><input id="cfgCardDay" type="number" min="1" max="31" placeholder="15"></div>
             <button class="btn btn-primary" onclick="saveIdentity()">Salvar</button>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="card-title">Categorias</div>
+          <div class="mode-hint" style="margin-bottom:12px">Usadas para classificar seus gastos no extrato e no dashboard. Configure os envelopes de planejamento na aba Planejamento.</div>
+          <div id="cfg-cat-list"></div>
+          <div class="mt-12 flex items-center gap-8" style="flex-wrap:wrap">
+            <input id="newCatName" placeholder="Nome da categoria" style="flex:1;min-width:130px">
+            <input id="newCatColor" type="color" value="#6090e0" style="width:44px;height:36px;padding:4px;border-radius:7px;cursor:pointer;flex-shrink:0">
+            <button class="btn btn-primary btn-sm" onclick="addCategory()">+ Adicionar</button>
           </div>
         </div>
         <div class="card">
@@ -1231,11 +1259,17 @@ function defaultState() {
     salaries: { gus: 0, maria: 0 },
     cardClosingDay: 15,
     rules: [
-      { id: uid(), name: 'Moradia',      pct: 30, color: '#6090e0' },
-      { id: uid(), name: 'Alimentação',  pct: 20, color: '#e070a0' },
-      { id: uid(), name: 'Transporte',   pct: 10, color: '#6ec8a0' },
-      { id: uid(), name: 'Lazer',        pct: 10, color: '#c8a96e' },
-      { id: uid(), name: 'Outros',       pct: 10, color: '#a060d0' },
+      { id: uid(), name: 'Moradia',      color: '#6090e0' },
+      { id: uid(), name: 'Alimentação',  color: '#e070a0' },
+      { id: uid(), name: 'Transporte',   color: '#6ec8a0' },
+      { id: uid(), name: 'Lazer',        color: '#c8a96e' },
+      { id: uid(), name: 'Outros',       color: '#a060d0' },
+    ],
+    planBuckets: [
+      { id: uid(), name: 'Moradia',        pct: 35, color: '#6090e0' },
+      { id: uid(), name: 'Estilo de Vida', pct: 25, color: '#e070a0' },
+      { id: uid(), name: 'Poupança',       pct: 20, color: '#6ec8a0' },
+      { id: uid(), name: 'Variáveis',      pct: 20, color: '#c8a96e' },
     ],
     monthActuals: {},
     entries: [],
@@ -1419,9 +1453,9 @@ async function syncToGitHub(silent = false) {
 // ===================== FINANCE HELPERS =====================
 function getMonthIncome(ym) {
   const act = state.monthActuals[ym] || {};
-  return act.incomeActual !== undefined
-    ? act.incomeActual
-    : (state.salaries.gus || 0) + (state.salaries.maria || 0);
+  const gus   = act.salaryGus   !== undefined ? act.salaryGus   : (state.salaries.gus   || 0);
+  const maria = act.salaryMaria !== undefined ? act.salaryMaria : (state.salaries.maria || 0);
+  return gus + maria;
 }
 
 function getMonthRecurringTotal(ym) {
@@ -1552,6 +1586,7 @@ function renderDashboard() {
     pctEl.className = 'db-stat-value' + (pctRenda > 100 ? ' red' : pctRenda > 80 ? ' warn' : '');
   }
 
+  renderSalaryCard();
   renderCategoryBreakdown(ym, income, total);
   renderCompare(ym);
   renderHistory();
@@ -1563,19 +1598,47 @@ function updateBudgetAlertBadge() {
   const income = getMonthIncome(currentMonth);
   const tabEl = document.getElementById('tab-orcamento');
   if (!tabEl) return;
-  if (income <= 0) { tabEl.innerHTML = 'Planejamento'; return; }
-  const actualByCat = {};
-  getExpenseItems(currentMonth).forEach(item => {
-    const cat = item.category || 'Outros';
-    actualByCat[cat] = (actualByCat[cat] || 0) + item.value;
+  const buckets = state.planBuckets || [];
+  if (income <= 0 || !buckets.length) { tabEl.innerHTML = 'Planejamento'; return; }
+  const actualByBucket = {};
+  getMonthEntries(currentMonth).filter(e => e.type === 'expense' && e.plan).forEach(e => {
+    const val = parseFloat(e.actual ?? e.projected) || 0;
+    actualByBucket[e.plan] = (actualByBucket[e.plan] || 0) + val;
   });
-  const overBudgetCount = state.rules.filter(r => {
-    const planned = income * r.pct / 100;
-    return planned > 0 && (actualByCat[r.name] || 0) > planned;
+  const overCount = buckets.filter(b => {
+    const planned = income * b.pct / 100;
+    return planned > 0 && (actualByBucket[b.id] || 0) > planned;
   }).length;
-  tabEl.innerHTML = overBudgetCount > 0
-    ? `Planejamento <span class="budget-alert-dot" title="${overBudgetCount} categoria(s) acima do orçamento"></span>`
+  tabEl.innerHTML = overCount > 0
+    ? `Planejamento <span class="budget-alert-dot" title="${overCount} envelope(s) acima do orçamento"></span>`
     : 'Planejamento';
+}
+
+function renderSalaryCard() {
+  const act = state.monthActuals[currentMonth] || {};
+  const l1 = document.getElementById('sal-label-1');
+  const l2 = document.getElementById('sal-label-2');
+  if (l1) l1.textContent = state.name1;
+  if (l2) l2.textContent = state.name2;
+  const i1 = document.getElementById('sal-gus');
+  const i2 = document.getElementById('sal-maria');
+  const gusVal   = act.salaryGus   !== undefined ? act.salaryGus   : state.salaries.gus;
+  const mariaVal = act.salaryMaria !== undefined ? act.salaryMaria : state.salaries.maria;
+  if (i1 && document.activeElement !== i1) i1.value = gusVal   || '';
+  if (i2 && document.activeElement !== i2) i2.value = mariaVal || '';
+}
+
+function saveMonthlySalary() {
+  const gus   = parseFloat(document.getElementById('sal-gus').value)   || 0;
+  const maria = parseFloat(document.getElementById('sal-maria').value) || 0;
+  if (!state.monthActuals[currentMonth]) state.monthActuals[currentMonth] = {};
+  state.monthActuals[currentMonth].salaryGus   = gus;
+  state.monthActuals[currentMonth].salaryMaria = maria;
+  if (!state.salaries.gus   && gus)   state.salaries.gus   = gus;
+  if (!state.salaries.maria && maria) state.salaries.maria = maria;
+  saveState();
+  toast('Receitas do mês salvas! ✓', 'success');
+  renderDashboard();
 }
 
 function getCatColor(catName) {
@@ -1729,30 +1792,22 @@ function renderCategoryBreakdown(ym, income, total) {
     const rule = state.rules.find(r => r.name === cat) || {};
     const color = rule.color || '#9090a8';
     const icon  = getCategoryIcon(cat);
-    const budget = income > 0 && rule.pct ? income * rule.pct / 100 : 0;
-    const pctOfBudget = budget > 0 ? (value / budget * 100) : null;
-    const isOver = pctOfBudget !== null && pctOfBudget > 100;
-    const barPct = pctOfBudget !== null ? Math.min(pctOfBudget, 100) : null;
-
-    const statusText = budget > 0
-      ? (isOver ? `+${fmt(value - budget)} acima` : `${fmt(budget - value)} disponível`)
-      : `${total > 0 ? (value / total * 100).toFixed(0) : 0}% dos gastos`;
-    const statusColor = budget > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
-    const barColor = isOver ? 'var(--red)' : color;
+    const pctOfTotal = total > 0 ? (value / total * 100) : 0;
+    const barWidth = Math.min(pctOfTotal, 100);
 
     return `<div class="cat-item">
       <div class="cat-item-head">
         <div class="cat-icon" style="background:${color}22">${icon}</div>
         <div class="cat-info">
           <div class="cat-name">${cat}</div>
-          <div class="cat-budget" style="color:${statusColor}">${statusText}</div>
+          <div class="cat-budget" style="color:var(--text3)">${pctOfTotal.toFixed(0)}% dos gastos</div>
         </div>
-        <div class="cat-amount" style="color:${isOver && budget > 0 ? 'var(--red)' : 'var(--text)'}">${fmt(value)}</div>
+        <div class="cat-amount">${fmt(value)}</div>
       </div>
-      ${barPct !== null ? `<div class="cat-progress-row">
-        <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
-        <div class="cat-pct">${pctOfBudget.toFixed(0)}%</div>
-      </div>` : ''}
+      <div class="cat-progress-row">
+        <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${barWidth}%;background:${color}"></div></div>
+        <div class="cat-pct">${pctOfTotal.toFixed(0)}%</div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1965,6 +2020,7 @@ function updateLancamentoMode() {
 
 function renderAvulsos() {
   populateCatSelect('lanCat');
+  populatePlanSelect('lanPlan', null);
   updateLancamentoMode();
   document.getElementById('avulsoMonthLabel').textContent = currentMonth;
   const searchEl = document.getElementById('avulso-search');
@@ -2004,6 +2060,7 @@ function renderAvulsoTable() {
         <div class="txn-meta">
           <span>${e.category || 'Outros'}</span>
           <span class="badge badge-${e.owner}" style="font-size:10px;padding:1px 6px">${ownerLabel}</span>
+          ${e.type === 'expense' ? `<select class="plan-select" onchange="setEntryPlan('${e.id}',this.value)">${(state.planBuckets||[]).map(b=>`<option value="${b.id}"${b.id===e.plan?' selected':''}>${b.name}</option>`).join('')}<option value=""${!e.plan?' selected':''}>— plano</option></select>` : ''}
           ${e.note ? `<span title="${e.note}">📝</span>` : ''}
         </div>
       </div>
@@ -2060,11 +2117,13 @@ function addLancamento() {
   const nome = nomeEl ? nomeEl.value.trim() : '';
   if (!nome) { toast('Informe o nome', 'error'); return; }
   const mode = document.getElementById('lanMode').value;
+  const planVal = document.getElementById('lanPlan').value || null;
   const payload = {
     id: uid(), name: nome,
     type: document.getElementById('lanTipo').value,
     category: document.getElementById('lanCat').value,
     owner: document.getElementById('lanOwner').value,
+    plan: planVal,
   };
   const projected = parseFloat(document.getElementById('lanProj').value) || 0;
   if (mode === 'recorrente') {
@@ -2265,6 +2324,14 @@ function populateCatSelect(id) {
   if (prev) el.value = prev;
 }
 
+function populatePlanSelect(id, currentPlan) {
+  const el = document.getElementById(id);
+  if (!el || el.tagName !== 'SELECT') return;
+  const buckets = state.planBuckets || [];
+  el.innerHTML = `<option value="">— nenhum —</option>` +
+    buckets.map(b => `<option value="${b.id}"${b.id === currentPlan ? ' selected' : ''}>${b.name}</option>`).join('');
+}
+
 function setOrcView(v) {
   orcView = 'proj';
   renderOrcamento();
@@ -2274,42 +2341,45 @@ function setOrcView(v) {
 function renderOrcamento() {
   const income = getMonthIncome(currentMonth);
   const tbody = document.getElementById('tbodyOrc');
+  if (!tbody) return;
+  const buckets = state.planBuckets || [];
   let totalPct = 0;
 
-  const header = document.getElementById('orcValHeader');
-  if (header) header.textContent = 'Valor planejado';
-
-  // Actual spending by category for the current month
-  const actualByCat = {};
-  getExpenseItems(currentMonth).forEach(item => {
-    const cat = item.category || 'Outros';
-    actualByCat[cat] = (actualByCat[cat] || 0) + item.value;
+  // Sum expenses tagged to each bucket
+  const actualByBucket = {};
+  getMonthEntries(currentMonth).filter(e => e.type === 'expense' && e.plan).forEach(e => {
+    const val = parseFloat(e.actual ?? e.projected) || 0;
+    actualByBucket[e.plan] = (actualByBucket[e.plan] || 0) + val;
+  });
+  const actuals = state.monthActuals[currentMonth] || {};
+  state.recurring.filter(r => r.active !== false && r.type === 'expense' && r.plan).forEach(r => {
+    const val = (actuals.recurOverrides || {})[r.id] ?? r.value;
+    actualByBucket[r.plan] = (actualByBucket[r.plan] || 0) + val;
   });
 
-  // Visual budget cards
+  // Visual cards
   const visualEl = document.getElementById('orc-visual');
-  if (visualEl && state.rules.length) {
-    visualEl.innerHTML = '<div class="orc-visual-grid">' + state.rules.map(r => {
-      const planned = income * r.pct / 100;
-      const actual  = actualByCat[r.name] || 0;
-      const pct     = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
+  if (visualEl && buckets.length) {
+    visualEl.innerHTML = '<div class="orc-visual-grid">' + buckets.map(b => {
+      const planned = income * b.pct / 100;
+      const actual  = actualByBucket[b.id] || 0;
+      const fillPct = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
       const isOver  = planned > 0 && actual > planned;
-      const barColor  = isOver ? 'var(--red)' : r.color;
-      const amtColor  = isOver ? 'var(--red)' : 'var(--text)';
-      const statusText = planned > 0
+      const barColor   = isOver ? 'var(--red)' : b.color;
+      const amtColor   = isOver ? 'var(--red)' : 'var(--text)';
+      const statusText = income > 0
         ? (isOver ? `+${fmt(actual - planned)} acima do planejado` : `${fmt(planned - actual)} disponível`)
-        : 'sem valor planejado (salário não configurado)';
-      const statusColor = planned > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
-      const icon = getCategoryIcon(r.name);
+        : 'configure a receita no Dashboard';
+      const statusColor = income > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
       return `<div class="orc-cat-card">
         <div class="orc-cat-head">
-          <div class="orc-cat-icon" style="background:${r.color}22">${icon}</div>
-          <span class="orc-cat-name">${r.name}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${r.pct}% da renda</span>
+          <div class="orc-cat-icon" style="background:${b.color}22">📋</div>
+          <span class="orc-cat-name">${b.name}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${b.pct}% da renda</span>
         </div>
         <div class="orc-amounts">
           <div>
-            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Gasto real</div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Etiquetado</div>
             <div class="orc-spent" style="color:${amtColor}">${fmt(actual)}</div>
           </div>
           <div style="text-align:right">
@@ -2318,57 +2388,79 @@ function renderOrcamento() {
           </div>
         </div>
         ${income > 0 ? `<div class="orc-bar-row">
-          <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${fillPct}%;background:${barColor}"></div></div>
           <div class="orc-bar-pct" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">${planned > 0 ? (actual / planned * 100).toFixed(0) + '%' : '—'}</div>
         </div>
         <div style="font-size:11px;color:${statusColor};margin-top:6px">${statusText}</div>` : ''}
       </div>`;
     }).join('') + '</div>';
   } else if (visualEl) {
-    visualEl.innerHTML = '';
+    visualEl.innerHTML = buckets.length === 0 ? '<div class="empty-state">Nenhum envelope cadastrado. Adicione abaixo.</div>' : '';
   }
 
-  tbody.innerHTML = state.rules.map(r => {
-    totalPct += r.pct;
-    const projVal = income * r.pct / 100;
+  tbody.innerHTML = buckets.map(b => {
+    totalPct += b.pct;
+    const planned = income * b.pct / 100;
+    const actual  = actualByBucket[b.id] || 0;
     return `<tr>
-      <td data-label="Categoria">${r.name}</td>
-      <td data-label="Cor"><span class="color-swatch" style="background:${r.color}"></span></td>
+      <td data-label="Envelope">${b.name}</td>
+      <td data-label="Cor"><span class="color-swatch" style="background:${b.color}"></span></td>
       <td data-label="%" class="text-right">
-        <input type="number" value="${r.pct}" style="width:70px;text-align:right" onchange="updateCatPct('${r.id}',this.value)">
+        <input type="number" value="${b.pct}" style="width:70px;text-align:right" onchange="updateBucketPct('${b.id}',this.value)">
       </td>
-      <td data-label="Valor planejado" class="text-right mono">${fmt(projVal)}</td>
-      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCat('${r.id}')">×</button></td>
+      <td data-label="Planejado" class="text-right mono">${income > 0 ? fmt(planned) : '—'}</td>
+      <td data-label="Etiquetado" class="text-right mono" style="color:${actual > planned && planned > 0 ? 'var(--red)' : 'var(--text)'}">${fmt(actual)}</td>
+      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delPlanBucket('${b.id}')">×</button></td>
     </tr>`;
   }).join('');
 
   const rest = 100 - totalPct;
   document.getElementById('orcPctUsado').textContent = totalPct.toFixed(1) + '%';
-  document.getElementById('orcPctRestLabel').textContent = (rest > 0 ? rest.toFixed(1) + '% restante' : rest < 0 ? Math.abs(rest).toFixed(1) + '% excedido' : 'exato');
+  document.getElementById('orcPctRestLabel').textContent = rest > 0 ? rest.toFixed(1) + '% restante' : rest < 0 ? Math.abs(rest).toFixed(1) + '% excedido' : 'exato';
   document.getElementById('orcPctBar').style.width = Math.min(totalPct, 100) + '%';
   document.getElementById('orcPctBar').style.background = rest < 0 ? 'var(--red)' : rest < 5 ? 'var(--green)' : 'var(--accent)';
 }
 
-function updateCatPct(id, val) {
-  const r = state.rules.find(r => r.id === id);
-  if (r) r.pct = parseFloat(val) || 0;
+function updateBucketPct(id, val) {
+  const b = (state.planBuckets || []).find(b => b.id === id);
+  if (b) b.pct = parseFloat(val) || 0;
+  saveState(); renderOrcamento();
+}
+
+function addPlanBucket() {
+  const name  = document.getElementById('newBucketName').value.trim();
+  const pct   = parseFloat(document.getElementById('newBucketPct').value) || 0;
+  const color = document.getElementById('newBucketColor').value;
+  if (!name) { toast('Informe o nome do envelope', 'error'); return; }
+  if (!state.planBuckets) state.planBuckets = [];
+  state.planBuckets.push({ id: uid(), name, pct, color });
+  document.getElementById('newBucketName').value = '';
+  document.getElementById('newBucketPct').value  = '';
+  saveState(); renderOrcamento(); toast('Envelope adicionado!', 'success');
+}
+
+function delPlanBucket(id) {
+  state.planBuckets = (state.planBuckets || []).filter(b => b.id !== id);
   saveState(); renderOrcamento();
 }
 
 function addCategory() {
   const name  = document.getElementById('newCatName').value.trim();
-  const pct   = parseFloat(document.getElementById('newCatPct').value) || 0;
   const color = document.getElementById('newCatColor').value;
   if (!name) { toast('Informe o nome da categoria', 'error'); return; }
-  state.rules.push({ id: uid(), name, pct, color });
+  state.rules.push({ id: uid(), name, color });
   document.getElementById('newCatName').value = '';
-  document.getElementById('newCatPct').value  = '';
-  saveState(); renderOrcamento(); toast('Categoria adicionada!', 'success');
+  saveState(); renderConfig(); toast('Categoria adicionada!', 'success');
 }
 
 function delCat(id) {
   state.rules = state.rules.filter(r => r.id !== id);
-  saveState(); renderOrcamento();
+  saveState(); renderConfig();
+}
+
+function setEntryPlan(id, bucketId) {
+  const entry = state.entries.find(e => e.id === id);
+  if (entry) { entry.plan = bucketId || null; saveState(); updateBudgetAlertBadge(); }
 }
 
 // ===================== METAS =====================
@@ -2798,9 +2890,16 @@ function renderConfig() {
   document.getElementById('cfgFile').value    = cfg.file   || 'data.json';
   document.getElementById('cfgName1').value   = state.name1;
   document.getElementById('cfgName2').value   = state.name2;
-  document.getElementById('cfgSal1').value    = state.salaries.gus;
-  document.getElementById('cfgSal2').value    = state.salaries.maria;
   document.getElementById('cfgCardDay').value = state.cardClosingDay;
+  const catList = document.getElementById('cfg-cat-list');
+  if (catList) {
+    catList.innerHTML = state.rules.map(r => `
+      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+        <span style="width:14px;height:14px;border-radius:4px;background:${r.color};flex-shrink:0;display:inline-block"></span>
+        <span style="flex:1;font-size:13px">${r.name}</span>
+        <button class="btn btn-icon btn-ghost" onclick="delCat('${r.id}')" style="padding:2px 8px">×</button>
+      </div>`).join('');
+  }
 }
 
 function saveConfig() {
@@ -2815,10 +2914,10 @@ function saveConfig() {
   if (wasEmpty && hasGHConfig()) pullFromGitHub();
 }
 
-async function pullFromGitHub() {
+async function pullFromGitHub(silent = false) {
   const token = localStorage.getItem(GH_TOKEN_KEY) || '';
   const cfg = getGHConfig();
-  if (!token || !cfg.repo) { toast('Configure o token e repositório antes de puxar', 'error'); return; }
+  if (!token || !cfg.repo) { if (!silent) toast('Configure o token e repositório antes de puxar', 'error'); return; }
   setSyncStatus('syncing');
   try {
     const [owner, repo] = cfg.repo.split('/');
@@ -2834,20 +2933,19 @@ async function pullFromGitHub() {
     state = Object.assign(defaultState(), remote);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     setSyncStatus('saved');
-    toast('Dados puxados do GitHub! ✓', 'success');
-    showPage('financas');
+    if (!silent) toast('Dados puxados do GitHub! ✓', 'success');
+    document.getElementById('logoNames').textContent = state.name1 + ' & ' + state.name2;
+    renderFinTab();
   } catch (e) {
     setSyncStatus('error');
-    toast('Erro ao puxar dados: ' + e.message, 'error');
+    if (!silent) toast('Erro ao puxar dados: ' + e.message, 'error');
   }
 }
 
 function saveIdentity() {
-  state.name1              = document.getElementById('cfgName1').value || 'Gus';
-  state.name2              = document.getElementById('cfgName2').value || 'Maria';
-  state.salaries.gus       = parseFloat(document.getElementById('cfgSal1').value)    || 0;
-  state.salaries.maria     = parseFloat(document.getElementById('cfgSal2').value)    || 0;
-  state.cardClosingDay     = parseInt(document.getElementById('cfgCardDay').value)    || 15;
+  state.name1          = document.getElementById('cfgName1').value || 'Gus';
+  state.name2          = document.getElementById('cfgName2').value || 'Maria';
+  state.cardClosingDay = parseInt(document.getElementById('cfgCardDay').value) || 15;
   document.getElementById('logoNames').textContent = state.name1 + ' & ' + state.name2;
   saveState(); toast('Identidade salva!', 'success');
 }
@@ -2919,6 +3017,7 @@ function init() {
   updateMonthLabel();
   document.getElementById('logoNames').textContent = state.name1 + ' & ' + state.name2;
   showPage('financas');
+  if (hasGHConfig()) pullFromGitHub(true);
 }
 
 init();
