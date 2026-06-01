@@ -582,8 +582,46 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 /* BUDGET ALERT DOT */
 .budget-alert-dot { display: inline-block; width: 7px; height: 7px; background: var(--red); border-radius: 50%; margin-left: 4px; vertical-align: middle; animation: pulse 1.5s infinite; }
 
-/* GOAL PROGRESS RING */
-.goal-ring-row { display: flex; align-items: center; gap: 12px; }
+/* TRANSACTION CARDS (extrato) */
+.txn-list { display: flex; flex-direction: column; gap: 6px; }
+.txn-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: var(--bg3); border-radius: 12px;
+  transition: background 0.15s;
+}
+.txn-card:hover { background: var(--bg4); }
+.txn-cat-circle {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
+}
+.txn-body { flex: 1; min-width: 0; }
+.txn-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.txn-meta { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+.txn-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.txn-amount-row { display: flex; align-items: center; gap: 6px; }
+.txn-amount {
+  font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 600; white-space: nowrap;
+  cursor: pointer; padding: 2px 4px; border-radius: 5px; transition: background 0.12s;
+}
+.txn-amount:hover { background: rgba(255,255,255,0.06); }
+.txn-amount.expense { color: var(--red); }
+.txn-amount.income  { color: var(--green); }
+.txn-delta { font-size: 10px; font-family: 'DM Mono', monospace; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.txn-delta.over  { background: rgba(224,112,96,0.15); color: var(--red); }
+.txn-delta.under { background: rgba(110,200,160,0.15); color: var(--green); }
+.txn-actions { display: flex; gap: 4px; align-items: center; }
+.txn-del-btn { background: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--text3); cursor: pointer; padding: 2px 7px; font-size: 14px; transition: all 0.15s; }
+.txn-del-btn:hover { border-color: var(--red); color: var(--red); }
+.txn-real-wrap { display: none; align-items: center; gap: 4px; }
+.txn-real-wrap.open { display: flex; }
+.txn-real-input { width: 92px; padding: 4px 8px; font-size: 12px; text-align: right; }
+
+/* FAB TABS */
+.fab-tabs { display: flex; gap: 3px; margin-bottom: 18px; background: var(--bg3); border-radius: 10px; padding: 4px; }
+.fab-tab { flex: 1; padding: 8px 4px; border-radius: 7px; border: none; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text2); background: transparent; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+.fab-tab.active { background: var(--bg); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+.fab-meta-preview { background: var(--bg3); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: var(--text2); }
 </style>
 </head>
 <body>
@@ -798,12 +836,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
                   <button class="filter-chip" onclick="setAvulsoFilter('income',this)">Receitas</button>
                 </div>
               </div>
-              <div class="table-scroll">
-                <table class="responsive-table table-avulsos">
-                  <thead><tr><th>Nome</th><th>Cat.</th><th>Tipo</th><th>Resp.</th><th class="text-right">Proj.</th><th class="text-right">Real</th><th></th></tr></thead>
-                  <tbody id="tbodyAvulsos"></tbody>
-                </table>
-              </div>
+              <div id="txn-list-avulsos" class="txn-list"></div>
             </div>
             <div class="card">
               <div class="card-title">Recorrentes mensais</div>
@@ -1109,27 +1142,70 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 
 <div class="modal-overlay hidden" id="fab-modal" onclick="if(event.target===this)closeFab()">
   <div class="modal">
-    <div class="modal-title">Novo Lançamento</div>
-    <div class="field-row">
-      <div class="field"><label>Nome</label><input id="fab-nome" placeholder="mercado, aluguel, salário..."></div>
-      <div class="field" style="max-width:150px"><label>Valor</label><input id="fab-valor" type="number" placeholder="0.00" step="0.01"></div>
+    <div class="modal-title">Adicionar</div>
+    <div class="fab-tabs" id="fab-tabs">
+      <button class="fab-tab active" onclick="setFabTab('lancamento',this)">💸 Lançamento</button>
+      <button class="fab-tab" onclick="setFabTab('recorrente',this)">🔄 Recorrente</button>
+      <button class="fab-tab" onclick="setFabTab('meta',this)">🎯 Meta</button>
     </div>
-    <div class="field-row">
-      <div class="field"><label>Tipo</label>
-        <select id="fab-tipo">
-          <option value="expense">Gasto</option>
-          <option value="income">Receita</option>
-        </select>
+
+    <!-- Lançamento avulso -->
+    <div id="fab-form-lancamento">
+      <div class="field-row">
+        <div class="field"><label>Nome</label><input id="fab-nome" placeholder="mercado, aluguel, salário..."></div>
+        <div class="field" style="max-width:140px"><label>Valor</label><input id="fab-valor" type="number" placeholder="0.00" step="0.01"></div>
       </div>
-      <div class="field"><label>Categoria</label><select id="fab-cat"></select></div>
-      <div class="field"><label>Responsável</label>
-        <select id="fab-owner">
-          <option value="gus" id="fab-own-1">Gus</option>
-          <option value="maria" id="fab-own-2">Maria</option>
-          <option value="casal">Casal</option>
-        </select>
+      <div class="field-row">
+        <div class="field"><label>Tipo</label>
+          <select id="fab-tipo">
+            <option value="expense">Gasto</option>
+            <option value="income">Receita</option>
+          </select>
+        </div>
+        <div class="field"><label>Categoria</label><select id="fab-cat"></select></div>
+        <div class="field"><label>Responsável</label>
+          <select id="fab-owner">
+            <option value="gus" id="fab-own-1">Gus</option>
+            <option value="maria" id="fab-own-2">Maria</option>
+            <option value="casal">Casal</option>
+          </select>
+        </div>
       </div>
     </div>
+
+    <!-- Recorrente mensal -->
+    <div id="fab-form-recorrente" class="hidden">
+      <div class="field-row">
+        <div class="field"><label>Nome</label><input id="fab-rec-nome" placeholder="Netflix, academia, aluguel..."></div>
+        <div class="field" style="max-width:140px"><label>Valor mensal</label><input id="fab-rec-valor" type="number" placeholder="0.00" step="0.01"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Tipo</label>
+          <select id="fab-rec-tipo">
+            <option value="expense">Gasto</option>
+            <option value="income">Receita</option>
+          </select>
+        </div>
+        <div class="field"><label>Categoria</label><select id="fab-rec-cat"></select></div>
+        <div class="field"><label>Responsável</label>
+          <select id="fab-rec-owner">
+            <option value="gus" id="fab-rec-own-1">Gus</option>
+            <option value="maria" id="fab-rec-own-2">Maria</option>
+            <option value="casal">Casal</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Depositar em meta -->
+    <div id="fab-form-meta" class="hidden">
+      <div class="field-row">
+        <div class="field"><label>Meta</label><select id="fab-meta-id" onchange="updateFabMetaPreview()"></select></div>
+        <div class="field" style="max-width:160px"><label>Valor a depositar</label><input id="fab-meta-valor" type="number" placeholder="0.00" step="0.01"></div>
+      </div>
+      <div id="fab-meta-preview" class="fab-meta-preview hidden"></div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeFab()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveFab()">+ Salvar</button>
@@ -1182,6 +1258,7 @@ let autoSyncTimer = null;
 let isSyncing = false;
 let avulsoTypeFilter = 'all';
 let avulsoSearchQuery = '';
+let fabTab = 'lancamento';
 
 function loadState() {
   try {
@@ -1517,35 +1594,103 @@ function circleRing(pct, color, size = 54) {
 }
 
 // ===================== FAB =====================
+function setFabTab(tab, btn) {
+  fabTab = tab;
+  document.querySelectorAll('.fab-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  ['lancamento','recorrente','meta'].forEach(t => {
+    const el = document.getElementById('fab-form-' + t);
+    if (el) el.classList.toggle('hidden', t !== tab);
+  });
+  if (tab === 'meta') updateFabMetaPreview();
+}
+
+function updateFabMetaPreview() {
+  const sel = document.getElementById('fab-meta-id');
+  const id = sel ? sel.value : null;
+  const g = id ? state.goals.find(g => g.id === id) : null;
+  const prev = document.getElementById('fab-meta-preview');
+  if (!prev) return;
+  if (g) {
+    const pct = g.target > 0 ? (g.current / g.target * 100).toFixed(0) : 0;
+    prev.textContent = `Atual: ${fmt(g.current)} / ${fmt(g.target)} (${pct}%)`;
+    prev.classList.remove('hidden');
+  } else {
+    prev.classList.add('hidden');
+  }
+}
+
 function openFab() {
   populateCatSelect('fab-cat');
+  populateCatSelect('fab-rec-cat');
   const o1 = document.getElementById('fab-own-1');
   const o2 = document.getElementById('fab-own-2');
   if (o1) o1.textContent = state.name1;
   if (o2) o2.textContent = state.name2;
+  const ro1 = document.getElementById('fab-rec-own-1');
+  const ro2 = document.getElementById('fab-rec-own-2');
+  if (ro1) ro1.textContent = state.name1;
+  if (ro2) ro2.textContent = state.name2;
+  const metaSel = document.getElementById('fab-meta-id');
+  if (metaSel) {
+    const active = state.goals.filter(g => !g.completedAt);
+    metaSel.innerHTML = active.length
+      ? active.map(g => `<option value="${g.id}">${g.name}</option>`).join('')
+      : '<option value="">Nenhuma meta cadastrada</option>';
+  }
   document.getElementById('fab-modal').classList.remove('hidden');
+  setFabTab(fabTab, document.querySelector('.fab-tab.active'));
   setTimeout(() => { const n = document.getElementById('fab-nome'); if (n) n.focus(); }, 50);
 }
 function closeFab() {
   document.getElementById('fab-modal').classList.add('hidden');
-  ['fab-nome','fab-valor'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['fab-nome','fab-valor','fab-rec-nome','fab-rec-valor','fab-meta-valor'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
 }
 function saveFab() {
-  const nome = (document.getElementById('fab-nome').value || '').trim();
-  const valor = parseFloat(document.getElementById('fab-valor').value) || 0;
-  if (!nome) { toast('Informe o nome', 'error'); return; }
-  state.entries.push({
-    id: uid(), name: nome,
-    type:     document.getElementById('fab-tipo').value,
-    category: document.getElementById('fab-cat').value,
-    owner:    document.getElementById('fab-owner').value,
-    month: currentMonth, projected: valor, actual: valor,
-  });
-  saveState();
-  closeFab();
-  toast('Lançamento adicionado! ✓', 'success');
-  if (currentFinTab === 'dashboard' || currentFinTab === 'avulsos') renderFinTab();
-  updateBudgetAlertBadge();
+  if (fabTab === 'lancamento') {
+    const nome = (document.getElementById('fab-nome').value || '').trim();
+    const valor = parseFloat(document.getElementById('fab-valor').value) || 0;
+    if (!nome) { toast('Informe o nome', 'error'); return; }
+    state.entries.push({
+      id: uid(), name: nome,
+      type:     document.getElementById('fab-tipo').value,
+      category: document.getElementById('fab-cat').value,
+      owner:    document.getElementById('fab-owner').value,
+      month: currentMonth, projected: valor, actual: valor,
+    });
+    saveState(); closeFab();
+    toast('Lançamento adicionado! ✓', 'success');
+    if (currentFinTab === 'dashboard' || currentFinTab === 'avulsos') renderFinTab();
+    updateBudgetAlertBadge();
+  } else if (fabTab === 'recorrente') {
+    const nome = (document.getElementById('fab-rec-nome').value || '').trim();
+    const valor = parseFloat(document.getElementById('fab-rec-valor').value) || 0;
+    if (!nome) { toast('Informe o nome', 'error'); return; }
+    state.recurring.push({
+      id: uid(), name: nome,
+      type:     document.getElementById('fab-rec-tipo').value,
+      category: document.getElementById('fab-rec-cat').value,
+      owner:    document.getElementById('fab-rec-owner').value,
+      value: valor, active: true,
+    });
+    saveState(); closeFab();
+    toast('Recorrente adicionado! ✓', 'success');
+    if (currentFinTab === 'recorrentes') renderFinTab();
+  } else if (fabTab === 'meta') {
+    const metaId = (document.getElementById('fab-meta-id').value || '').trim();
+    const valor = parseFloat(document.getElementById('fab-meta-valor').value) || 0;
+    if (!metaId) { toast('Selecione uma meta', 'error'); return; }
+    if (!valor) { toast('Informe o valor', 'error'); return; }
+    const g = state.goals.find(g => g.id === metaId);
+    if (!g) { toast('Meta não encontrada', 'error'); return; }
+    g.current = Math.min((g.current || 0) + valor, g.target || 0);
+    if (g.current >= g.target && !g.completedAt) g.completedAt = new Date().toISOString().slice(0, 10);
+    saveState(); closeFab();
+    toast(`Depositado ${fmt(valor)} em "${g.name}"! ✓`, 'success');
+    if (currentFinTab === 'metas') renderFinTab();
+  }
 }
 
 const CATEGORY_ICONS = {
@@ -1831,23 +1976,68 @@ function renderAvulsoTable() {
     const q = avulsoSearchQuery;
     entries = entries.filter(e => e.name.toLowerCase().includes(q) || (e.category||'').toLowerCase().includes(q));
   }
-  document.getElementById('tbodyAvulsos').innerHTML = entries
-    .map(e => {
-      const icon = getCategoryIcon(e.category || 'Outros');
-      const isExp = e.type === 'expense';
-      return `<tr>
-        <td data-label="Nome">${e.name}</td>
-        <td data-label="Cat." style="font-size:15px" title="${e.category||'Outros'}">${icon}</td>
-        <td data-label="Tipo"><span class="${isExp ? 'tipo-expense' : 'tipo-income'}">${isExp ? 'Gasto' : 'Receita'}</span></td>
-        <td data-label="Resp."><span class="badge badge-${e.owner}">${e.owner}</span></td>
-        <td data-label="Proj." class="text-right mono ${isExp ? 'amount-expense' : 'amount-income'}">${fmt(e.projected)}</td>
-        <td data-label="Real" class="text-right">
-          <input class="real-value-input" type="number" value="${e.actual ?? ''}" placeholder="0.00" onchange="updateEntryActual('${e.id}', this.value)">
-        </td>
-        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delEntry('${e.id}')">×</button></td>
-      </tr>`;
-    })
-    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhum lançamento encontrado</td></tr>';
+  const el = document.getElementById('txn-list-avulsos');
+  if (!el) return;
+  if (!entries.length) {
+    el.innerHTML = '<div class="empty-state">Nenhum lançamento encontrado</div>';
+    return;
+  }
+  el.innerHTML = entries.map(e => {
+    const icon    = getCategoryIcon(e.category || 'Outros');
+    const color   = getCatColor(e.category);
+    const isExp   = e.type === 'expense';
+    const actual  = e.actual != null && e.actual !== '' ? parseFloat(e.actual) : parseFloat(e.projected) || 0;
+    const proj    = parseFloat(e.projected) || 0;
+    const delta   = actual - proj;
+    const hasDelta = Math.abs(delta) > 0.009 && proj > 0;
+    const ownerLabel = e.owner === 'gus' ? state.name1 : e.owner === 'maria' ? state.name2 : 'Casal';
+    const deltaHtml = hasDelta
+      ? `<span class="txn-delta ${(isExp && delta > 0) || (!isExp && delta < 0) ? 'over' : 'under'}">${delta > 0 ? '+' : ''}${fmt(delta)}</span>`
+      : '';
+    return `<div class="txn-card">
+      <div class="txn-cat-circle" style="background:${color}22">${icon}</div>
+      <div class="txn-body">
+        <div class="txn-name">${e.name}</div>
+        <div class="txn-meta">
+          <span>${e.category || 'Outros'}</span>
+          <span class="badge badge-${e.owner}" style="font-size:10px;padding:1px 6px">${ownerLabel}</span>
+          ${e.note ? `<span title="${e.note}">📝</span>` : ''}
+        </div>
+      </div>
+      <div class="txn-right">
+        <div class="txn-amount-row">
+          ${deltaHtml}
+          <div class="txn-amount ${isExp ? 'expense' : 'income'}" onclick="openTxnEdit('${e.id}')" title="Clique para editar o valor real">
+            ${isExp ? '−' : '+'}${fmt(actual)}
+          </div>
+        </div>
+        <div class="txn-real-wrap" id="txn-edit-${e.id}">
+          <input class="txn-real-input" type="number" value="${actual}"
+            onblur="saveTxnEdit('${e.id}',this.value)"
+            onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape')closeTxnEdit('${e.id}')">
+        </div>
+        <div class="txn-actions">
+          <button class="txn-del-btn" onclick="delEntry('${e.id}')" title="Excluir">×</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTxnEdit(id) {
+  const wrap = document.getElementById('txn-edit-' + id);
+  if (!wrap) return;
+  wrap.classList.add('open');
+  const input = wrap.querySelector('input');
+  if (input) { input.focus(); input.select(); }
+}
+function closeTxnEdit(id) {
+  const wrap = document.getElementById('txn-edit-' + id);
+  if (wrap) wrap.classList.remove('open');
+}
+function saveTxnEdit(id, val) {
+  closeTxnEdit(id);
+  updateEntryActual(id, val);
 }
 
 function setAvulsoFilter(type, btn) {
