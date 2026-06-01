@@ -8,19 +8,9 @@
   "cardClosingDay": 1,
   "rules": [
     {
-      "id": "sz0ciqq",
-      "name": "Cartão",
-      "color": "#e1ff00"
-    },
-    {
-      "id": "riwb4ja",
+      "id": "lj1s7gx",
       "name": "Casa",
-      "color": "#2bff00"
-    },
-    {
-      "id": "okqxth2",
-      "name": "Dívida",
-      "color": "#ff0000"
+      "color": "#00ff04"
     }
   ],
   "planBuckets": [
