@@ -1358,15 +1358,7 @@ function hasGHConfig() {
 
 function saveState(options = {}) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  if (options.sync === false) return;
-  setSyncStatus(hasGHConfig() ? 'pending' : 'saved');
-  scheduleAutoSync();
-}
-
-function scheduleAutoSync() {
-  clearTimeout(autoSyncTimer);
-  if (!hasGHConfig()) return;
-  autoSyncTimer = setTimeout(() => syncToGitHub(true), 1200);
+  setSyncStatus('saved');
 }
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
