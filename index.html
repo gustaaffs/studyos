@@ -439,6 +439,151 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
   .month-chip { padding: 6px 10px; }
   .category-row-head, .owner-row-head { font-size: 12px; }
 }
+
+/* ===== MOBILLS-STYLE ENHANCEMENTS ===== */
+/* HERO BALANCE CARD */
+.db-hero {
+  background: linear-gradient(145deg, #1c1c26 0%, #18182a 100%);
+  border: 1px solid rgba(200,169,110,0.2);
+  border-radius: 18px;
+  padding: 28px 24px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.db-hero::after {
+  content: '';
+  position: absolute;
+  top: -60px; right: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(200,169,110,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.db-hero-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.db-hero-value { font-family: 'DM Mono', monospace; font-size: 38px; font-weight: 500; line-height: 1.1; margin-bottom: 6px; position: relative; z-index: 1; }
+.db-hero-sub { font-size: 12px; color: var(--text3); margin-bottom: 22px; }
+.db-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.db-stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+.db-stat-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+.db-stat-icon.green  { background: rgba(110,200,160,0.15); color: var(--green); }
+.db-stat-icon.red    { background: rgba(224,112,96,0.15);  color: var(--red); }
+.db-stat-icon.accent { background: rgba(200,169,110,0.15); color: var(--accent); }
+.db-stat-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+.db-stat-value { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); }
+.db-stat-value.green { color: var(--green); }
+.db-stat-value.red   { color: var(--red); }
+.db-stat-value.warn  { color: var(--accent); }
+
+/* CATEGORY ITEMS WITH ICONS + PROGRESS */
+.cat-item { padding: 10px 0; border-bottom: 1px solid rgba(46,46,56,0.6); }
+.cat-item:last-child { border-bottom: none; padding-bottom: 0; }
+.cat-item:first-child { padding-top: 4px; }
+.cat-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.cat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.cat-info { flex: 1; min-width: 0; }
+.cat-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.cat-budget { font-size: 11px; margin-top: 1px; }
+.cat-amount { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+.cat-progress-row { display: flex; align-items: center; gap: 8px; }
+.cat-bar-wrap { flex: 1; height: 5px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.cat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.cat-pct { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); min-width: 30px; text-align: right; }
+
+/* HISTORY DUAL-BAR CHART */
+.history-chart { display: flex; align-items: flex-end; gap: 5px; height: 110px; padding-top: 4px; }
+.history-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.history-bars { display: flex; gap: 3px; align-items: flex-end; width: 100%; flex: 1; }
+.history-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 2px; }
+.history-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; flex-shrink: 0; }
+
+/* BUDGET VISUAL CARDS */
+.orc-visual-grid { display: flex; flex-direction: column; gap: 8px; }
+.orc-cat-card { background: var(--bg3); border-radius: 12px; padding: 14px; }
+.orc-cat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.orc-cat-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.orc-cat-name { font-size: 13px; font-weight: 600; flex: 1; color: var(--text); }
+.orc-amounts { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.orc-spent { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; }
+.orc-limit { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3); }
+.orc-bar-row { display: flex; align-items: center; gap: 8px; }
+.orc-bar-wrap { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.orc-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.orc-bar-pct { font-family: 'DM Mono', monospace; font-size: 11px; min-width: 36px; text-align: right; }
+
+/* AMOUNT COLORS */
+.amount-expense { color: var(--red); }
+.amount-income  { color: var(--green); }
+
+/* TIPO BADGE */
+.tipo-expense { color: var(--red);   font-size: 11px; font-weight: 600; }
+.tipo-income  { color: var(--green); font-size: 11px; font-weight: 600; }
+
+@media (max-width: 768px) {
+  .db-hero { padding: 20px 16px 16px; }
+  .db-hero-value { font-size: 30px; }
+  .db-stat-row { gap: 8px; }
+  .db-stat-card { padding: 10px 8px; gap: 8px; }
+  .db-stat-icon { width: 28px; height: 28px; font-size: 13px; }
+  .db-stat-value { font-size: 12px; }
+  .db-stat-label { font-size: 9px; }
+}
+
+/* FAB (Floating Action Button) */
+.fab {
+  position: fixed; bottom: 90px; right: 24px;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--accent); color: #1a1200; border: none; cursor: pointer;
+  font-size: 28px; font-weight: 300; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(200,169,110,0.45); z-index: 300;
+  transition: all 0.18s;
+}
+.fab:hover { background: var(--accent2); transform: scale(1.08); box-shadow: 0 6px 28px rgba(200,169,110,0.55); }
+.fab:active { transform: scale(0.95); }
+@media (min-width: 769px) { .fab { bottom: 28px; } }
+
+/* CREDIT CARD VISUAL */
+.cc-summary {
+  background: linear-gradient(135deg, #1a2a4a 0%, #0f1f3d 100%);
+  border: 1px solid rgba(96,144,224,0.25); border-radius: 16px;
+  padding: 20px 24px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; position: relative; overflow: hidden;
+}
+.cc-summary::after { content: '◉'; position: absolute; right: -10px; top: -14px; font-size: 80px; color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; }
+.cc-summary-left { display: flex; flex-direction: column; gap: 4px; }
+.cc-summary-chip { font-size: 10px; color: rgba(96,144,224,0.7); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.cc-summary-month { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: #e8e8f0; }
+.cc-summary-label { font-size: 12px; color: rgba(232,232,240,0.45); }
+.cc-summary-stats { display: flex; gap: 24px; flex-wrap: wrap; }
+.cc-summary-stat { display: flex; flex-direction: column; gap: 3px; }
+.cc-summary-stat-label { font-size: 10px; color: rgba(232,232,240,0.4); text-transform: uppercase; letter-spacing: 0.07em; }
+.cc-summary-stat-val { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: #e8e8f0; }
+
+/* RECURRING CARDS */
+.rec-cards-grid { display: flex; flex-direction: column; gap: 8px; }
+.rec-card { background: var(--bg3); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
+.rec-card:hover { background: var(--bg4); }
+.rec-card.inactive { opacity: 0.5; }
+.rec-card-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.rec-card-info { flex: 1; min-width: 0; }
+.rec-card-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rec-card-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+.rec-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rec-card-right input { width: 100px; text-align: right; padding: 5px 8px; font-size: 12px; }
+.rec-card-actions { display: flex; align-items: center; gap: 6px; }
+
+/* FILTER BAR */
+.filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.filter-bar input { flex: 1; min-width: 160px; }
+.filter-chips { display: flex; gap: 4px; }
+.filter-chip { padding: 5px 13px; border-radius: 16px; border: 1px solid var(--border); background: transparent; color: var(--text2); font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+.filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active { background: var(--accent); color: #1a1200; border-color: var(--accent); font-weight: 600; }
+
+/* BUDGET ALERT DOT */
+.budget-alert-dot { display: inline-block; width: 7px; height: 7px; background: var(--red); border-radius: 50%; margin-left: 4px; vertical-align: middle; animation: pulse 1.5s infinite; }
+
+/* GOAL PROGRESS RING */
+.goal-ring-row { display: flex; align-items: center; gap: 12px; }
 </style>
 </head>
 <body>
@@ -493,35 +638,48 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           <button class="tab active" onclick="showFinTab('dashboard')">Dashboard</button>
           <button class="tab" onclick="showFinTab('avulsos')">Lançamentos</button>
           <button class="tab" onclick="showFinTab('cartao')">Cartão</button>
-          <button class="tab" onclick="showFinTab('orcamento')">Planejamento</button>
+          <button class="tab" id="tab-orcamento" onclick="showFinTab('orcamento')">Planejamento</button>
           <button class="tab" onclick="showFinTab('metas')">Metas</button>
         </div>
 
         <!-- DASHBOARD -->
         <div id="fin-dashboard">
-          <div class="grid2 section">
-            <div class="card">
-              <div class="card-title">Receita do Mês</div>
-              <div class="kpi">
-                <div class="kpi-value accent" id="db-income">R$ 0</div>
-                <div class="kpi-label">entrada total</div>
+          <!-- Hero Balance Card -->
+          <div class="db-hero section">
+            <div class="db-hero-label">Saldo do Mês</div>
+            <div class="db-hero-value" id="db-saldo">R$ 0</div>
+            <div class="db-hero-sub" id="db-hero-sub">receita − gastos</div>
+            <div class="db-stat-row">
+              <div class="db-stat-card">
+                <div class="db-stat-icon green">↑</div>
+                <div>
+                  <div class="db-stat-label">Receitas</div>
+                  <div class="db-stat-value green" id="db-income">R$ 0</div>
+                </div>
               </div>
-            </div>
-            <div class="card">
-              <div class="card-title">Saldo do Mês</div>
-              <div class="kpi">
-                <div class="kpi-value" id="db-saldo">R$ 0</div>
-                <div class="kpi-label">receita − gastos</div>
+              <div class="db-stat-card">
+                <div class="db-stat-icon red">↓</div>
+                <div>
+                  <div class="db-stat-label">Gastos</div>
+                  <div class="db-stat-value red" id="db-expense-total">R$ 0</div>
+                </div>
+              </div>
+              <div class="db-stat-card">
+                <div class="db-stat-icon accent">%</div>
+                <div>
+                  <div class="db-stat-label">% da Renda</div>
+                  <div class="db-stat-value" id="db-pct-renda">0%</div>
+                </div>
               </div>
             </div>
           </div>
           <div class="grid2 section">
             <div class="card">
-              <div class="flex justify-between items-center" style="margin-bottom:14px;gap:10px">
+              <div class="flex justify-between items-center" style="margin-bottom:4px;gap:10px">
                 <div class="card-title" style="margin:0">Gastos por Categoria</div>
                 <span class="badge badge-accent" id="db-category-total">R$ 0,00</span>
               </div>
-              <div class="category-breakdown" id="db-category-breakdown"></div>
+              <div id="db-category-breakdown"></div>
             </div>
             <div class="card">
               <div class="card-title">Gastos por Pessoa</div>
@@ -529,8 +687,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             </div>
           </div>
           <div class="card section">
-            <div class="card-title">Histórico 6 Meses</div>
-            <div class="bar-chart" id="db-history"></div>
+            <div class="flex justify-between items-center" style="margin-bottom:12px">
+              <div class="card-title" style="margin:0">Histórico 6 Meses</div>
+              <div class="flex gap-8 items-center" style="flex-shrink:0">
+                <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);display:inline-block"></span>Receita</span>
+                <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:2px;background:var(--red);display:inline-block"></span>Gastos</span>
+              </div>
+            </div>
+            <div class="history-chart" id="db-history"></div>
           </div>
           <div class="section" id="db-insights"></div>
         </div>
@@ -623,7 +787,17 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 
           <div class="finance-stack section">
             <div class="card">
-              <div class="card-title">Avulsos do mês — <span id="avulsoMonthLabel"></span></div>
+              <div class="flex justify-between items-center" style="margin-bottom:10px;gap:10px;flex-wrap:wrap">
+                <div class="card-title" style="margin:0">Avulsos do mês — <span id="avulsoMonthLabel"></span></div>
+              </div>
+              <div class="filter-bar">
+                <input id="avulso-search" placeholder="🔍 Buscar lançamento..." oninput="filterAvulsos()">
+                <div class="filter-chips" id="avulso-type-chips">
+                  <button class="filter-chip active" onclick="setAvulsoFilter('all',this)">Todos</button>
+                  <button class="filter-chip" onclick="setAvulsoFilter('expense',this)">Gastos</button>
+                  <button class="filter-chip" onclick="setAvulsoFilter('income',this)">Receitas</button>
+                </div>
+              </div>
               <div class="table-scroll">
                 <table class="responsive-table table-avulsos">
                   <thead><tr><th>Nome</th><th>Cat.</th><th>Tipo</th><th>Resp.</th><th class="text-right">Proj.</th><th class="text-right">Real</th><th></th></tr></thead>
@@ -633,18 +807,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             </div>
             <div class="card">
               <div class="card-title">Recorrentes mensais</div>
-              <div class="table-scroll">
-                <table class="responsive-table table-recorrentes">
-                  <thead><tr><th>Nome</th><th>Categoria</th><th>Tipo</th><th>Resp.</th><th class="text-right">Valor padrão</th><th class="text-right">Real do mês</th><th>Ativo</th><th></th></tr></thead>
-                  <tbody id="tbodyRecorrentes"></tbody>
-                </table>
-              </div>
+              <div id="recorrentes-cards" class="rec-cards-grid"></div>
             </div>
           </div>
         </div>
 
         <!-- CARTÃO -->
         <div id="fin-cartao" class="hidden">
+          <div id="cc-summary" class="section"></div>
           <details class="collapse-card section" id="cartaoFormDetails">
             <summary>
               <div class="collapse-summary-title">
@@ -705,6 +875,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 
         <!-- ORÇAMENTO -->
         <div id="fin-orcamento" class="hidden">
+          <div class="section" id="orc-visual"></div>
           <div class="card section">
             <div class="flex justify-between items-center" style="margin-bottom:14px;gap:10px;flex-wrap:wrap">
               <div>
@@ -933,6 +1104,39 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
   </div>
 </div>
 
+<!-- FAB -->
+<button class="fab hidden" id="fab-btn" onclick="openFab()" title="Novo lançamento">+</button>
+
+<div class="modal-overlay hidden" id="fab-modal" onclick="if(event.target===this)closeFab()">
+  <div class="modal">
+    <div class="modal-title">Novo Lançamento</div>
+    <div class="field-row">
+      <div class="field"><label>Nome</label><input id="fab-nome" placeholder="mercado, aluguel, salário..."></div>
+      <div class="field" style="max-width:150px"><label>Valor</label><input id="fab-valor" type="number" placeholder="0.00" step="0.01"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Tipo</label>
+        <select id="fab-tipo">
+          <option value="expense">Gasto</option>
+          <option value="income">Receita</option>
+        </select>
+      </div>
+      <div class="field"><label>Categoria</label><select id="fab-cat"></select></div>
+      <div class="field"><label>Responsável</label>
+        <select id="fab-owner">
+          <option value="gus" id="fab-own-1">Gus</option>
+          <option value="maria" id="fab-own-2">Maria</option>
+          <option value="casal">Casal</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeFab()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveFab()">+ Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -976,6 +1180,8 @@ let taskDays = [];
 let saveTimer = null;
 let autoSyncTimer = null;
 let isSyncing = false;
+let avulsoTypeFilter = 'all';
+let avulsoSearchQuery = '';
 
 function loadState() {
   try {
@@ -1020,6 +1226,8 @@ function showPage(p) {
   document.querySelectorAll('.nav-item').forEach((el, i) => {
     el.classList.toggle('active', ['financas','casa','estudos','config'][i] === p);
   });
+  const fabEl = document.getElementById('fab-btn');
+  if (fabEl) fabEl.classList.toggle('hidden', p !== 'financas');
   const titles = { financas:'Finanças', casa:'Casa', estudos:'Estudos', config:'Configurações' };
   document.getElementById('pageTitle').textContent = titles[p] || p;
   document.getElementById('monthNavWrap').classList.toggle('hidden', p !== 'financas');
@@ -1244,17 +1452,110 @@ function renderDashboard() {
   const income = getMonthIncome(ym);
   const total  = getMonthTotal(ym);
   const saldo  = income - total;
+  const pctRenda = income > 0 ? (total / income * 100) : 0;
 
-  document.getElementById('db-income').textContent = fmt(income);
   const saldoEl = document.getElementById('db-saldo');
   saldoEl.textContent = fmt(saldo);
   saldoEl.style.color = saldo >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const subEl = document.getElementById('db-hero-sub');
+  if (subEl) subEl.textContent = saldo >= 0 ? 'Você está no azul este mês ✓' : 'Gastos acima da receita — atenção!';
+
+  document.getElementById('db-income').textContent = fmt(income);
+
+  const expEl = document.getElementById('db-expense-total');
+  if (expEl) expEl.textContent = fmt(total);
+
+  const pctEl = document.getElementById('db-pct-renda');
+  if (pctEl) {
+    pctEl.textContent = pctRenda.toFixed(1) + '%';
+    pctEl.className = 'db-stat-value' + (pctRenda > 100 ? ' red' : pctRenda > 80 ? ' warn' : '');
+  }
 
   renderCategoryBreakdown(ym, income, total);
   renderCompare(ym);
   renderHistory();
   renderInsights(ym, income, total, saldo);
+  updateBudgetAlertBadge();
 }
+
+function updateBudgetAlertBadge() {
+  const income = getMonthIncome(currentMonth);
+  const tabEl = document.getElementById('tab-orcamento');
+  if (!tabEl) return;
+  if (income <= 0) { tabEl.innerHTML = 'Planejamento'; return; }
+  const actualByCat = {};
+  getExpenseItems(currentMonth).forEach(item => {
+    const cat = item.category || 'Outros';
+    actualByCat[cat] = (actualByCat[cat] || 0) + item.value;
+  });
+  const overBudgetCount = state.rules.filter(r => {
+    const planned = income * r.pct / 100;
+    return planned > 0 && (actualByCat[r.name] || 0) > planned;
+  }).length;
+  tabEl.innerHTML = overBudgetCount > 0
+    ? `Planejamento <span class="budget-alert-dot" title="${overBudgetCount} categoria(s) acima do orçamento"></span>`
+    : 'Planejamento';
+}
+
+function getCatColor(catName) {
+  const rule = state.rules.find(r => r.name === catName);
+  return rule ? rule.color : '#9090a8';
+}
+
+function circleRing(pct, color, size = 54) {
+  const r = (size - 10) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.min(pct, 100) / 100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bg4)" stroke-width="6"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+      stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}"
+      stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2+4}" text-anchor="middle" fill="${color}" font-size="10" font-family="DM Mono,monospace" font-weight="500">${pct.toFixed(0)}%</text>
+  </svg>`;
+}
+
+// ===================== FAB =====================
+function openFab() {
+  populateCatSelect('fab-cat');
+  const o1 = document.getElementById('fab-own-1');
+  const o2 = document.getElementById('fab-own-2');
+  if (o1) o1.textContent = state.name1;
+  if (o2) o2.textContent = state.name2;
+  document.getElementById('fab-modal').classList.remove('hidden');
+  setTimeout(() => { const n = document.getElementById('fab-nome'); if (n) n.focus(); }, 50);
+}
+function closeFab() {
+  document.getElementById('fab-modal').classList.add('hidden');
+  ['fab-nome','fab-valor'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+}
+function saveFab() {
+  const nome = (document.getElementById('fab-nome').value || '').trim();
+  const valor = parseFloat(document.getElementById('fab-valor').value) || 0;
+  if (!nome) { toast('Informe o nome', 'error'); return; }
+  state.entries.push({
+    id: uid(), name: nome,
+    type:     document.getElementById('fab-tipo').value,
+    category: document.getElementById('fab-cat').value,
+    owner:    document.getElementById('fab-owner').value,
+    month: currentMonth, projected: valor, actual: valor,
+  });
+  saveState();
+  closeFab();
+  toast('Lançamento adicionado! ✓', 'success');
+  if (currentFinTab === 'dashboard' || currentFinTab === 'avulsos') renderFinTab();
+  updateBudgetAlertBadge();
+}
+
+const CATEGORY_ICONS = {
+  'Moradia':'🏠','Alimentação':'🍽️','Transporte':'🚗','Lazer':'🎭',
+  'Saúde':'❤️','Educação':'📚','Vestuário':'👗','Pets':'🐾','Outros':'📦',
+  'Cartão':'💳','Streaming':'📺','Academia':'💪','Viagem':'✈️',
+  'Investimentos':'📈','Seguros':'🛡️','Assinaturas':'🔄','Beleza':'💅',
+  'Farmácia':'💊','Tecnologia':'💻','Restaurante':'🍕','Mercado':'🛒',
+};
+function getCategoryIcon(cat) { return CATEGORY_ICONS[cat] || '📂'; }
 
 function renderCategoryBreakdown(ym, income, total) {
   const totalEl = document.getElementById('db-category-total');
@@ -1268,7 +1569,7 @@ function renderCategoryBreakdown(ym, income, total) {
   });
 
   const rows = Object.entries(byCat)
-    .filter(([, value]) => value > 0)
+    .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
 
   if (!rows.length) {
@@ -1276,58 +1577,36 @@ function renderCategoryBreakdown(ym, income, total) {
     return;
   }
 
-  const cx = 90, cy = 90, r = 78;
-  let angle = -Math.PI / 2;
-  let paths = '';
-
-  rows.forEach(([cat, value]) => {
+  wrap.innerHTML = rows.map(([cat, value]) => {
     const rule = state.rules.find(r => r.name === cat) || {};
     const color = rule.color || '#9090a8';
-    const pct = total > 0 ? value / total : 0;
-    const sweep = pct * 2 * Math.PI;
-
-    if (sweep >= Math.PI * 2 - 0.0001) {
-      paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" opacity="0.9"></circle>`;
-      return;
-    }
-
-    const endAngle = angle + sweep;
-    const x1 = cx + r * Math.cos(angle);
-    const y1 = cy + r * Math.sin(angle);
-    const x2 = cx + r * Math.cos(endAngle);
-    const y2 = cy + r * Math.sin(endAngle);
-    const large = sweep > Math.PI ? 1 : 0;
-    paths += `<path d="M ${cx} ${cy} L ${x1.toFixed(3)} ${y1.toFixed(3)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(3)} ${y2.toFixed(3)} Z" fill="${color}" opacity="0.9"></path>`;
-    angle = endAngle;
-  });
-
-  const legend = rows.map(([cat, value]) => {
-    const rule = state.rules.find(r => r.name === cat) || {};
-    const color = rule.color || '#9090a8';
-    const pctOfSpend = total > 0 ? (value / total * 100) : 0;
+    const icon  = getCategoryIcon(cat);
     const budget = income > 0 && rule.pct ? income * rule.pct / 100 : 0;
-    const diff = budget > 0 ? value - budget : null;
-    const diffText = diff === null
-      ? 'sem orçamento definido'
-      : (diff > 0 ? 'acima do planejado em ' : diff < 0 ? 'abaixo do planejado em ' : 'dentro do planejado') + (diff !== 0 ? fmt(Math.abs(diff)) : '');
-    const diffColor = diff === null ? 'var(--text3)' : diff > 0 ? 'var(--red)' : 'var(--green)';
+    const pctOfBudget = budget > 0 ? (value / budget * 100) : null;
+    const isOver = pctOfBudget !== null && pctOfBudget > 100;
+    const barPct = pctOfBudget !== null ? Math.min(pctOfBudget, 100) : null;
 
-    return `<div class="pie-legend-item">
-      <span class="pie-dot" style="background:${color}"></span>
-      <span class="pie-name">${cat}</span>
-      <span class="pie-value">${fmt(value)} · ${pctOfSpend.toFixed(1)}%</span>
-      <div class="pie-meta" style="color:${diffColor}">${diffText}</div>
+    const statusText = budget > 0
+      ? (isOver ? `+${fmt(value - budget)} acima` : `${fmt(budget - value)} disponível`)
+      : `${total > 0 ? (value / total * 100).toFixed(0) : 0}% dos gastos`;
+    const statusColor = budget > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
+    const barColor = isOver ? 'var(--red)' : color;
+
+    return `<div class="cat-item">
+      <div class="cat-item-head">
+        <div class="cat-icon" style="background:${color}22">${icon}</div>
+        <div class="cat-info">
+          <div class="cat-name">${cat}</div>
+          <div class="cat-budget" style="color:${statusColor}">${statusText}</div>
+        </div>
+        <div class="cat-amount" style="color:${isOver && budget > 0 ? 'var(--red)' : 'var(--text)'}">${fmt(value)}</div>
+      </div>
+      ${barPct !== null ? `<div class="cat-progress-row">
+        <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+        <div class="cat-pct">${pctOfBudget.toFixed(0)}%</div>
+      </div>` : ''}
     </div>`;
   }).join('');
-
-  wrap.innerHTML = `<div class="pie-breakdown">
-    <div class="pie-chart-box">
-      <svg width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Gráfico de pizza dos gastos por categoria">
-        ${paths}
-      </svg>
-    </div>
-    <div class="pie-legend">${legend}</div>
-  </div>`;
 }
 
 function renderCompare(ym) {
@@ -1382,13 +1661,20 @@ function renderHistory() {
     const label = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()];
     months.push({ ym, label });
   }
-  const totals = months.map(m => getMonthTotal(m.ym));
-  const maxT = Math.max(...totals, 1);
+  const incomes = months.map(m => getMonthIncome(m.ym));
+  const totals  = months.map(m => getMonthTotal(m.ym));
+  const maxVal  = Math.max(...incomes, ...totals, 1);
+
   el.innerHTML = months.map((m, i) => {
-    const hPct = Math.max(totals[i] / maxT * 100, totals[i] > 0 ? 3 : 2);
-    return `<div class="bar-group" title="${m.ym}: ${fmt(totals[i])}">
-      <div class="bar" style="height:${hPct}%;background:${m.ym === currentMonth ? 'var(--accent)' : 'var(--bg4)'}"></div>
-      <div class="bar-label">${m.label}</div>
+    const iH = Math.max(incomes[i] / maxVal * 100, incomes[i] > 0 ? 4 : 0);
+    const tH = Math.max(totals[i]  / maxVal * 100, totals[i]  > 0 ? 4 : 0);
+    const cur = m.ym === currentMonth;
+    return `<div class="history-group" title="${m.label}: Receita ${fmt(incomes[i])} · Gastos ${fmt(totals[i])}">
+      <div class="history-bars">
+        <div class="history-bar" style="height:${iH}%;background:${cur ? 'var(--green)' : 'rgba(110,200,160,0.3)'}"></div>
+        <div class="history-bar" style="height:${tH}%;background:${cur ? 'var(--red)'   : 'rgba(224,112,96,0.3)'}"></div>
+      </div>
+      <div class="history-label">${m.label}</div>
     </div>`;
   }).join('');
 }
@@ -1533,19 +1819,47 @@ function renderAvulsos() {
   populateCatSelect('lanCat');
   updateLancamentoMode();
   document.getElementById('avulsoMonthLabel').textContent = currentMonth;
-  document.getElementById('tbodyAvulsos').innerHTML = getMonthEntries(currentMonth)
-    .map(e => `<tr>
-      <td data-label="Nome">${e.name}</td>
-      <td data-label="Cat.">${e.category||'—'}</td>
-      <td data-label="Tipo">${e.type==='expense'?'Gasto':'Receita'}</td>
-      <td data-label="Resp."><span class="badge badge-${e.owner}">${e.owner}</span></td>
-      <td data-label="Proj." class="text-right mono">${fmt(e.projected)}</td>
-      <td data-label="Real" class="text-right">
-        <input class="real-value-input" type="number" value="${e.actual ?? ''}" placeholder="0.00" onchange="updateEntryActual('${e.id}', this.value)">
-      </td>
-      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delEntry('${e.id}')">×</button></td>
-    </tr>`)
-    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhum lançamento avulso</td></tr>';
+  const searchEl = document.getElementById('avulso-search');
+  if (searchEl) searchEl.value = avulsoSearchQuery;
+  renderAvulsoTable();
+}
+
+function renderAvulsoTable() {
+  let entries = getMonthEntries(currentMonth);
+  if (avulsoTypeFilter !== 'all') entries = entries.filter(e => e.type === avulsoTypeFilter);
+  if (avulsoSearchQuery) {
+    const q = avulsoSearchQuery;
+    entries = entries.filter(e => e.name.toLowerCase().includes(q) || (e.category||'').toLowerCase().includes(q));
+  }
+  document.getElementById('tbodyAvulsos').innerHTML = entries
+    .map(e => {
+      const icon = getCategoryIcon(e.category || 'Outros');
+      const isExp = e.type === 'expense';
+      return `<tr>
+        <td data-label="Nome">${e.name}</td>
+        <td data-label="Cat." style="font-size:15px" title="${e.category||'Outros'}">${icon}</td>
+        <td data-label="Tipo"><span class="${isExp ? 'tipo-expense' : 'tipo-income'}">${isExp ? 'Gasto' : 'Receita'}</span></td>
+        <td data-label="Resp."><span class="badge badge-${e.owner}">${e.owner}</span></td>
+        <td data-label="Proj." class="text-right mono ${isExp ? 'amount-expense' : 'amount-income'}">${fmt(e.projected)}</td>
+        <td data-label="Real" class="text-right">
+          <input class="real-value-input" type="number" value="${e.actual ?? ''}" placeholder="0.00" onchange="updateEntryActual('${e.id}', this.value)">
+        </td>
+        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delEntry('${e.id}')">×</button></td>
+      </tr>`;
+    })
+    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhum lançamento encontrado</td></tr>';
+}
+
+function setAvulsoFilter(type, btn) {
+  avulsoTypeFilter = type;
+  document.querySelectorAll('#avulso-type-chips .filter-chip').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderAvulsoTable();
+}
+
+function filterAvulsos() {
+  avulsoSearchQuery = (document.getElementById('avulso-search').value || '').toLowerCase();
+  renderAvulsoTable();
 }
 
 function addLancamento() {
@@ -1598,32 +1912,44 @@ function delEntry(id) {
 }
 
 function renderRecorrentes() {
-  const tbody = document.getElementById('tbodyRecorrentes');
-  if (!tbody) return;
+  const el = document.getElementById('recorrentes-cards');
+  if (!el) return;
   const act = state.monthActuals[currentMonth] || {};
-  tbody.innerHTML = state.recurring
-    .map(r => {
-      const ov = (act.recurOverrides || {})[r.id];
-      const real = ov !== undefined ? ov : r.value;
-      return `<tr>
-        <td data-label="Nome">${r.name}</td>
-        <td data-label="Categoria">${r.category||'—'}</td>
-        <td data-label="Tipo">${r.type==='expense'?'Gasto':'Receita'}</td>
-        <td data-label="Resp."><span class="badge badge-${r.owner}">${r.owner}</span></td>
-        <td data-label="Valor padrão" class="text-right mono">${fmt(r.value)}</td>
-        <td data-label="Real do mês" class="text-right">
-          <input class="real-value-input" type="number" value="${real}" placeholder="0.00" onchange="setRecurringRealForCurrentMonth('${r.id}', this.value)">
-        </td>
-        <td data-label="Ativo">
-          <label class="toggle">
-            <input type="checkbox" ${r.active!==false?'checked':''} onchange="toggleRec('${r.id}',this.checked)">
+  if (!state.recurring.length) {
+    el.innerHTML = '<div class="empty-state">Nenhum recorrente. Use o formulário acima para adicionar.</div>';
+    return;
+  }
+  el.innerHTML = state.recurring.map(r => {
+    const ov = (act.recurOverrides || {})[r.id];
+    const real = ov !== undefined ? ov : r.value;
+    const icon = getCategoryIcon(r.category || 'Outros');
+    const color = getCatColor(r.category);
+    const isActive = r.active !== false;
+    const isExp = r.type === 'expense';
+    return `<div class="rec-card ${isActive ? '' : 'inactive'}">
+      <div class="rec-card-left">
+        <div class="cat-icon" style="background:${color}22">${icon}</div>
+        <div class="rec-card-info">
+          <div class="rec-card-name">${r.name}</div>
+          <div class="rec-card-meta">
+            <span class="badge badge-${r.owner}">${r.owner}</span>
+            <span class="${isExp ? 'tipo-expense' : 'tipo-income'}">${isExp ? 'Gasto' : 'Receita'}</span>
+            ${r.category ? `<span class="text3" style="font-size:11px">${r.category}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="rec-card-right">
+        <input type="number" value="${real}" placeholder="0.00" onchange="setRecurringRealForCurrentMonth('${r.id}', this.value)" title="Valor real do mês">
+        <div class="rec-card-actions">
+          <label class="toggle" title="${isActive ? 'Ativo' : 'Inativo'}">
+            <input type="checkbox" ${isActive ? 'checked' : ''} onchange="toggleRec('${r.id}',this.checked)">
             <span class="toggle-slider"></span>
           </label>
-        </td>
-        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delRec('${r.id}')">×</button></td>
-      </tr>`;
-    })
-    .join('') || '<tr><td colspan="8" class="text-center text3" style="padding:16px">Nenhum recorrente</td></tr>';
+          <button class="btn btn-icon btn-ghost" onclick="delRec('${r.id}')">×</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function setRecurringRealForCurrentMonth(id, val) {
@@ -1666,6 +1992,31 @@ function renderCartao() {
   const today = new Date().toISOString().slice(0, 10);
   if (!document.getElementById('ctDate').value) document.getElementById('ctDate').value = today;
   document.getElementById('cartaoMonthLabel').textContent = currentMonth;
+
+  const ccEl = document.getElementById('cc-summary');
+  if (ccEl) {
+    const faturas = getMonthFaturas(currentMonth);
+    const total = faturas.reduce((a, f) => a + f.parcValue, 0);
+    const [y, m] = currentMonth.split('-').map(Number);
+    const mnames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    ccEl.innerHTML = `<div class="cc-summary">
+      <div class="cc-summary-left">
+        <div class="cc-summary-chip">💳 Cartão de Crédito</div>
+        <div class="cc-summary-month">${fmt(total)}</div>
+        <div class="cc-summary-label">fatura de ${mnames[m-1]} ${y}</div>
+      </div>
+      <div class="cc-summary-stats">
+        <div class="cc-summary-stat">
+          <div class="cc-summary-stat-label">Parcelas no mês</div>
+          <div class="cc-summary-stat-val">${faturas.length} de ${state.cardExpenses.length}</div>
+        </div>
+        <div class="cc-summary-stat">
+          <div class="cc-summary-stat-label">Fechamento</div>
+          <div class="cc-summary-stat-val">Dia ${state.cardClosingDay || 15}</div>
+        </div>
+      </div>
+    </div>`;
+  }
 
   document.getElementById('tbodyCartao').innerHTML = state.cardExpenses
     .map(ce => `<tr>
@@ -1734,6 +2085,55 @@ function renderOrcamento() {
 
   const header = document.getElementById('orcValHeader');
   if (header) header.textContent = 'Valor planejado';
+
+  // Actual spending by category for the current month
+  const actualByCat = {};
+  getExpenseItems(currentMonth).forEach(item => {
+    const cat = item.category || 'Outros';
+    actualByCat[cat] = (actualByCat[cat] || 0) + item.value;
+  });
+
+  // Visual budget cards
+  const visualEl = document.getElementById('orc-visual');
+  if (visualEl && state.rules.length) {
+    visualEl.innerHTML = '<div class="orc-visual-grid">' + state.rules.map(r => {
+      const planned = income * r.pct / 100;
+      const actual  = actualByCat[r.name] || 0;
+      const pct     = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
+      const isOver  = planned > 0 && actual > planned;
+      const barColor  = isOver ? 'var(--red)' : r.color;
+      const amtColor  = isOver ? 'var(--red)' : 'var(--text)';
+      const statusText = planned > 0
+        ? (isOver ? `+${fmt(actual - planned)} acima do planejado` : `${fmt(planned - actual)} disponível`)
+        : 'sem valor planejado (salário não configurado)';
+      const statusColor = planned > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
+      const icon = getCategoryIcon(r.name);
+      return `<div class="orc-cat-card">
+        <div class="orc-cat-head">
+          <div class="orc-cat-icon" style="background:${r.color}22">${icon}</div>
+          <span class="orc-cat-name">${r.name}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${r.pct}% da renda</span>
+        </div>
+        <div class="orc-amounts">
+          <div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Gasto real</div>
+            <div class="orc-spent" style="color:${amtColor}">${fmt(actual)}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Planejado</div>
+            <div class="orc-limit">${income > 0 ? fmt(planned) : '—'}</div>
+          </div>
+        </div>
+        ${income > 0 ? `<div class="orc-bar-row">
+          <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <div class="orc-bar-pct" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">${planned > 0 ? (actual / planned * 100).toFixed(0) + '%' : '—'}</div>
+        </div>
+        <div style="font-size:11px;color:${statusColor};margin-top:6px">${statusText}</div>` : ''}
+      </div>`;
+    }).join('') + '</div>';
+  } else if (visualEl) {
+    visualEl.innerHTML = '';
+  }
 
   tbody.innerHTML = state.rules.map(r => {
     totalPct += r.pct;
@@ -1823,11 +2223,13 @@ function renderMetas() {
     const needed = Math.max(g.target - g.current, 0);
     const ms     = saldo > 0 && needed > 0 ? Math.ceil(needed / saldo) : needed <= 0 ? 0 : '∞';
     const detailId = 'goal-details-' + g.id;
+    const ringColor = pct >= 100 ? 'var(--green)' : pct >= 70 ? 'var(--accent)' : 'var(--blue)';
     return `<div class="goal-item">
       <div class="goal-summary" onclick="toggleGoalDetails('${detailId}')">
+        ${circleRing(pct, ringColor, 54)}
         <div class="goal-summary-main">
           <div class="goal-summary-title"><span>${g.name}</span><span class="badge badge-accent">Tradicional</span></div>
-          <div class="goal-summary-meta"><span>${fmt(g.current)} / ${fmt(g.target)}</span><span>${pct.toFixed(0)}% concluído</span></div>
+          <div class="goal-summary-meta"><span>${fmt(g.current)} / ${fmt(g.target)}</span></div>
         </div>
         <span class="goal-chevron">⌄</span>
       </div>
