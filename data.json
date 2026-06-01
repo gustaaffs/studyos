@@ -119,6 +119,24 @@
       "purchaseDate": "2026-05-20",
       "category": "Essenciais",
       "owner": "casal"
+    },
+    {
+      "id": "0hv7dfs",
+      "name": "Itaú (Gus)",
+      "value": 850.91,
+      "totalParcels": 1,
+      "purchaseDate": "2026-05-20",
+      "category": "Essenciais",
+      "owner": "casal"
+    },
+    {
+      "id": "kmix40j",
+      "name": "Itaú (Lenir)",
+      "value": 2451.01,
+      "totalParcels": 1,
+      "purchaseDate": "2026-05-20",
+      "category": "Essenciais",
+      "owner": "casal"
     }
   ],
   "goals": [],
