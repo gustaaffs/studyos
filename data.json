@@ -180,8 +180,34 @@
       ]
     }
   ],
-  "tasks": [],
-  "taskChecks": {},
+  "tasks": [
+    {
+      "id": "arl2wwb",
+      "name": "Limpar caixa de areia",
+      "freq": "weekly",
+      "owner": "gus",
+      "time": "07:00",
+      "note": "",
+      "startDate": "2026-06-02",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "taskChecks": {
+    "2026-06-01_neecp8o": true,
+    "2026-05-29_neecp8o": true,
+    "2026-06-02_neecp8o": false,
+    "2026-05-28_neecp8o": true,
+    "2026-05-27_neecp8o": true,
+    "2026-06-02_arl2wwb": true,
+    "2026-06-01_arl2wwb": true,
+    "2026-05-29_arl2wwb": true
+  },
   "study": {
     "gus": {
       "sessions": []
