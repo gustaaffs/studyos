@@ -640,6 +640,18 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
 /* SALARY CARD no dashboard */
 .salary-inputs { display: flex; gap: 12px; flex-wrap: wrap; }
 .salary-inputs .field { flex: 1; min-width: 110px; }
+
+/* CASA IMPROVEMENTS */
+.task-overdue .task-name { color: var(--red); }
+.task-overdue .task-check { border-color: var(--red); }
+.task-section-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-family: 'DM Mono', monospace; margin: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
+.task-section-header.overdue { color: var(--red); }
+.task-section-header.upcoming { color: var(--accent); }
+.task-upcoming-date { font-size: 10px; font-family: 'DM Mono', monospace; background: var(--bg3); border-radius: 5px; padding: 2px 7px; color: var(--text3); margin-left: auto; }
+.casa-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--red); color: #fff; border-radius: 10px; font-size: 9px; padding: 1px 5px; font-family: 'DM Mono', monospace; margin-left: 4px; line-height: 1.4; }
+.task-note { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.task-gcal-link { font-size: 10px; color: var(--accent); text-decoration: none; margin-left: 4px; }
+.task-gcal-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -654,8 +666,8 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
       <div class="nav-item active" onclick="showPage('financas')">
         <span class="nav-icon">💰</span><span>Finanças</span>
       </div>
-      <div class="nav-item" onclick="showPage('casa')">
-        <span class="nav-icon">🏠</span><span>Casa</span>
+      <div class="nav-item" id="nav-casa" onclick="showPage('casa')">
+        <span class="nav-icon">🏠</span><span id="nav-casa-label">Casa</span>
       </div>
       <div class="nav-item" onclick="showPage('estudos')">
         <span class="nav-icon">📚</span><span>Estudos</span>
@@ -1054,12 +1066,14 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
       <div class="page" id="page-casa">
         <div class="tabs" id="casaTabs">
           <button class="tab active" onclick="showCasaTab('hoje')">Hoje</button>
-          <button class="tab" onclick="showCasaTab('semana')">Próx. 7 dias</button>
+          <button class="tab" onclick="showCasaTab('semana')">Esta Semana</button>
+          <button class="tab" onclick="showCasaTab('proximas')">Próximas</button>
           <button class="tab" onclick="showCasaTab('todas')">Todas</button>
-          <button class="tab" onclick="showCasaTab('nova')">+ Nova Tarefa</button>
+          <button class="tab" onclick="showCasaTab('nova')">+ Nova</button>
         </div>
         <div id="casa-hoje"></div>
         <div id="casa-semana" class="hidden"></div>
+        <div id="casa-proximas" class="hidden"></div>
         <div id="casa-todas" class="hidden"></div>
         <div id="casa-nova" class="hidden">
           <div class="card" style="max-width:500px">
@@ -1103,6 +1117,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
               <input id="taskDate" type="date">
             </div>
             <div class="field"><label>Horário (opcional)</label><input id="taskTime" type="time"></div>
+            <div class="field"><label>Nota (opcional)</label><input id="taskNote" placeholder="Descrição ou lembrete"></div>
             <button class="btn btn-primary" onclick="addTask()">+ Adicionar Tarefa</button>
           </div>
         </div>
@@ -1413,7 +1428,7 @@ function showFinTab(tab) {
   renderFinTab();
 }
 
-const CASA_TABS = ['hoje','semana','todas','nova'];
+const CASA_TABS = ['hoje','semana','proximas','todas','nova'];
 
 function showCasaTab(tab) {
   currentCasaTab = tab;
@@ -2868,6 +2883,69 @@ function delCofrinho(id) {
 // ===================== CASA / TASKS =====================
 const FREQ_LABELS = { weekly:'Semanal', biweekly:'Quinzenal', monthly:'Mensal', once:'Única' };
 
+function getOverdueTasks(today) {
+  const overdue = [];
+  // once tasks past their date
+  state.tasks.filter(t => t.freq === 'once' && t.date && t.date < today).forEach(t => {
+    if (!state.taskChecks[t.date + '_' + t.id]) overdue.push({ task: t, date: t.date });
+  });
+  // recurring: check last 7 days
+  const past = [];
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date(today + 'T12:00:00'); d.setDate(d.getDate() - i);
+    past.push(d.toISOString().slice(0, 10));
+  }
+  state.tasks.filter(t => t.freq !== 'once').forEach(t => {
+    for (const d of past) {
+      if (isTaskDueOn(t, d) && !state.taskChecks[d + '_' + t.id]) {
+        overdue.push({ task: t, date: d }); break;
+      }
+    }
+  });
+  return overdue.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function getNextOccurrences(today, days) {
+  const result = [];
+  const start = new Date(today + 'T12:00:00'); start.setDate(start.getDate() + 1);
+  const to    = new Date(today + 'T12:00:00'); to.setDate(to.getDate() + days);
+  const dates = getDatesInRange(start.toISOString().slice(0, 10), to.toISOString().slice(0, 10));
+  state.tasks.forEach(task => {
+    for (const d of dates) {
+      if (isTaskDueOn(task, d)) { result.push({ task, date: d }); break; }
+    }
+  });
+  return result.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function taskToGCalUrl(task, date) {
+  const title = encodeURIComponent(task.name);
+  const note  = task.note ? encodeURIComponent(task.note) : '';
+  if (date) {
+    const d = date.replace(/-/g, '');
+    const time = (task.time || '').replace(':', '');
+    const dates = time ? `${d}T${time}00/${d}T${time}59` : `${d}/${d}`;
+    return `https://calendar.google.com/calendar/r/eventedit?text=${title}&dates=${dates}&details=${note}`;
+  }
+  return `https://calendar.google.com/calendar/r/eventedit?text=${title}&details=${note}`;
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+}
+
+function updateCasaBadge() {
+  const today = new Date().toISOString().slice(0, 10);
+  const overdue = getOverdueTasks(today).length;
+  const todayDue = state.tasks.filter(t => isTaskDueOn(t, today));
+  const unchecked = todayDue.filter(t => !state.taskChecks[today + '_' + t.id]).length;
+  const total = overdue + unchecked;
+  const labelEl = document.getElementById('nav-casa-label');
+  if (labelEl) labelEl.innerHTML = total > 0 ? `Casa <span class="casa-badge">${total}</span>` : 'Casa';
+}
+
 function updateTaskFreqFields() {
   const freq = document.getElementById('taskFreq').value;
   document.getElementById('taskDaysField').classList.toggle('hidden', freq !== 'weekly' && freq !== 'biweekly');
@@ -2913,6 +2991,7 @@ function addTask() {
     id: uid(), name: nome, freq,
     owner:     document.getElementById('taskOwner').value,
     time:      document.getElementById('taskTime').value,
+    note:      document.getElementById('taskNote').value,
     startDate: today,
   };
   if (freq === 'weekly' || freq === 'biweekly') task.days = [...taskDays];
@@ -2921,6 +3000,7 @@ function addTask() {
   state.tasks.push(task);
   document.getElementById('taskNome').value = '';
   document.getElementById('taskTime').value = '';
+  document.getElementById('taskNote').value = '';
   taskDays = [];
   document.querySelectorAll('#taskDaysField .btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-ghost'); });
   saveState(); toast('Tarefa adicionada!', 'success'); showCasaTab('todas');
@@ -2928,19 +3008,53 @@ function addTask() {
 
 function renderCasa() {
   const today = new Date().toISOString().slice(0, 10);
+  updateCasaBadge();
+
   if (currentCasaTab === 'hoje') {
-    const due = state.tasks.filter(t => isTaskDueOn(t, today));
-    renderTaskList('casa-hoje', due, today, 'Nenhuma tarefa para hoje');
+    const overdue  = getOverdueTasks(today);
+    const dueTasks = state.tasks.filter(t => isTaskDueOn(t, today));
+    const el = document.getElementById('casa-hoje');
+    let html = '';
+    if (overdue.length) {
+      html += `<div class="task-section-header overdue">⚠ Atrasadas (${overdue.length})</div>`;
+      html += overdue.map(({ task, date }) => taskHtml(task, today, { date, overdue: true })).join('');
+    }
+    if (dueTasks.length) {
+      html += `<div class="task-section-header">Hoje — ${fmtDate(today)}</div>`;
+      html += dueTasks.map(t => taskHtml(t, today)).join('');
+    }
+    if (!html) html = '<div class="text-center text3" style="padding:24px">Nenhuma tarefa para hoje 🎉</div>';
+    el.innerHTML = html;
   }
+
   if (currentCasaTab === 'semana') {
-    const from = new Date(); from.setDate(from.getDate() + 1);
-    const to   = new Date(); to.setDate(to.getDate() + 7);
-    const f = from.toISOString().slice(0, 10);
-    const t = to.toISOString().slice(0, 10);
-    const dates = getDatesInRange(f, t);
-    const due = state.tasks.filter(task => dates.some(d => isTaskDueOn(task, d)));
-    renderTaskList('casa-semana', due, today, 'Nenhuma tarefa nos próximos 7 dias');
+    const from = new Date(today + 'T12:00:00'); from.setDate(from.getDate() + 1);
+    const to   = new Date(today + 'T12:00:00'); to.setDate(to.getDate() + 7);
+    const dates = getDatesInRange(from.toISOString().slice(0, 10), to.toISOString().slice(0, 10));
+    const el = document.getElementById('casa-semana');
+    let html = '';
+    dates.forEach(d => {
+      const due = state.tasks.filter(t => isTaskDueOn(t, d));
+      if (due.length) {
+        html += `<div class="task-section-header">${fmtDate(d)}</div>`;
+        html += due.map(t => taskHtml(t, today, { date: d })).join('');
+      }
+    });
+    el.innerHTML = html || '<div class="text-center text3" style="padding:24px">Nenhuma tarefa nos próximos 7 dias</div>';
   }
+
+  if (currentCasaTab === 'proximas') {
+    const upcoming = getNextOccurrences(today, 60);
+    const el = document.getElementById('casa-proximas');
+    if (!upcoming.length) {
+      el.innerHTML = '<div class="text-center text3" style="padding:24px">Nenhuma tarefa nos próximos 60 dias</div>';
+    } else {
+      el.innerHTML = upcoming.map(({ task, date }) =>
+        `<div style="display:flex;align-items:center;gap:6px">${taskHtml(task, today, { date })}<span class="task-upcoming-date">${fmtDate(date)}</span></div>`
+      ).join('');
+    }
+  }
+
   if (currentCasaTab === 'todas') {
     const el = document.getElementById('casa-todas');
     if (!state.tasks.length) { el.innerHTML = '<div class="text-center text3" style="padding:24px">Nenhuma tarefa cadastrada</div>'; return; }
@@ -2964,19 +3078,24 @@ function renderTaskList(elId, tasks, today, emptyMsg) {
     : `<div class="text-center text3" style="padding:24px">${emptyMsg}</div>`;
 }
 
-function taskHtml(t, today) {
-  const key  = today + '_' + t.id;
+function taskHtml(t, today, opts = {}) {
+  const key  = (opts.date || today) + '_' + t.id;
   const done = !!state.taskChecks[key];
-  return `<div class="task-item">
+  const isOverdue = opts.overdue;
+  const gcalDate = opts.date || (t.freq === 'once' ? t.date : null);
+  const gcalUrl  = taskToGCalUrl(t, gcalDate);
+  return `<div class="task-item${isOverdue ? ' task-overdue' : ''}">
     <div class="task-check${done?' checked':''}" onclick="toggleTask('${key}')">
       ${done ? '<span style="color:#1a1200;font-size:10px;font-weight:900">✓</span>' : ''}
     </div>
     <div style="flex:1;min-width:0">
       <div class="task-name${done?' done':''}">${t.name}</div>
+      ${t.note ? `<div class="task-note">${t.note}</div>` : ''}
       <div class="task-meta">
         <span class="badge badge-${t.owner}">${t.owner}</span>
         <span>${FREQ_LABELS[t.freq]||t.freq}</span>
         ${t.time ? '<span>🕐 ' + t.time + '</span>' : ''}
+        ${gcalUrl ? `<a class="task-gcal-link" href="${gcalUrl}" target="_blank" rel="noopener">📅 GCal</a>` : ''}
       </div>
     </div>
     <button class="btn btn-icon btn-ghost" onclick="delTask('${t.id}')">×</button>
