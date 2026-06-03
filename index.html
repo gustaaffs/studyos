@@ -886,6 +886,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
                   <button class="filter-chip" onclick="setAvulsoFilter('income',this)">Receitas</button>
                 </div>
               </div>
+              <div id="avulso-summary" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"></div>
               <div id="txn-list-avulsos" class="txn-list"></div>
             </div>
             <div class="card">
@@ -2217,6 +2218,28 @@ function renderAvulsos() {
 
 function renderAvulsoTable() {
   let entries = getMonthEntries(currentMonth);
+
+  // summary over all entries (before filter)
+  const sumEl = document.getElementById('avulso-summary');
+  if (sumEl) {
+    const allExp  = entries.filter(e => e.type === 'expense').reduce((a, e) => a + (parseFloat(e.actual ?? e.projected) || 0), 0);
+    const allInc  = entries.filter(e => e.type === 'income').reduce((a, e)  => a + (parseFloat(e.actual ?? e.projected) || 0), 0);
+    const balance = allInc - allExp;
+    sumEl.innerHTML = `
+      <div style="flex:1;min-width:90px;background:var(--bg3);border-radius:10px;padding:8px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Gastos</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red)">−${fmt(allExp)}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:var(--bg3);border-radius:10px;padding:8px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Receitas</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green)">+${fmt(allInc)}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:var(--bg3);border-radius:10px;padding:8px 12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Saldo</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:${balance >= 0 ? 'var(--green)' : 'var(--red)'}">${balance >= 0 ? '+' : ''}${fmt(balance)}</div>
+      </div>`;
+  }
+
   if (avulsoTypeFilter !== 'all') entries = entries.filter(e => e.type === avulsoTypeFilter);
   if (avulsoSearchQuery) {
     const q = avulsoSearchQuery;
