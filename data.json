@@ -155,7 +155,8 @@
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
       "category": "Cartão",
-      "owner": "casal"
+      "owner": "casal",
+      "plan": "7buv3di"
     },
     {
       "id": "0hv7dfs",
@@ -164,7 +165,8 @@
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
       "category": "Cartão",
-      "owner": "casal"
+      "owner": "casal",
+      "plan": "7buv3di"
     },
     {
       "id": "kmix40j",
@@ -173,7 +175,8 @@
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
       "category": "Cartão",
-      "owner": "casal"
+      "owner": "casal",
+      "plan": "7buv3di"
     }
   ],
   "goals": [],
