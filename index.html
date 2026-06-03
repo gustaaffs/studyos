@@ -936,7 +936,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             <div class="card-title">Compras Parceladas</div>
             <div class="table-scroll">
               <table class="responsive-table table-cartao">
-                <thead><tr><th>Nome</th><th>Cat.</th><th>Plano</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Qtd.</th><th>Compra</th><th></th></tr></thead>
+                <thead><tr><th>Nome</th><th>Cat.</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Qtd.</th><th>Compra</th><th></th></tr></thead>
                 <tbody id="tbodyCartao"></tbody>
               </table>
             </div>
@@ -2470,12 +2470,6 @@ function renderCartao() {
           ${state.rules.map(r=>`<option value="${r.name}"${r.name===(ce.category||'')?' selected':''}>${r.name}</option>`).join('')}
         </select>
       </td>
-      <td data-label="Plano">
-        <select class="plan-select" style="max-width:120px" onchange="setCardPlan('${ce.id}',this.value)">
-          <option value=""${!ce.plan?' selected':''}>— plano</option>
-          ${(state.planBuckets||[]).map(b=>`<option value="${b.id}"${b.id===ce.plan?' selected':''}>${b.name}</option>`).join('')}
-        </select>
-      </td>
       <td data-label="Resp."><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
       <td data-label="Total" class="text-right mono">${fmt(ce.value)}</td>
       <td data-label="Parcela" class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
@@ -2483,7 +2477,7 @@ function renderCartao() {
       <td data-label="Compra" class="mono text3">${ce.purchaseDate}</td>
       <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
     </tr>`)
-    .join('') || '<tr><td colspan="9" class="text-center text3" style="padding:16px">Nenhuma compra cadastrada</td></tr>';
+    .join('') || '<tr><td colspan="8" class="text-center text3" style="padding:16px">Nenhuma compra cadastrada</td></tr>';
 
   const faturas = getMonthFaturas(currentMonth);
   const total = faturas.reduce((a, f) => a + f.parcValue, 0);
