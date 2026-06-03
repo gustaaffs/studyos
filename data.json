@@ -39,7 +39,7 @@
   ],
   "monthActuals": {
     "2026-06": {
-      "salaryGus": 3000,
+      "salaryGus": 4738.91,
       "salaryMaria": 4000,
       "recurOverrides": {
         "829a45a": 1599.62,
@@ -51,14 +51,16 @@
   },
   "entries": [
     {
-      "id": "5estu6y",
-      "name": "Mercado pago empréstimo",
+      "id": "gpn100u",
+      "name": "Mercado Pago",
       "type": "expense",
       "category": "Dívida",
       "owner": "gus",
+      "plan": "7buv3di",
       "month": "2026-06",
-      "projected": 211,
-      "actual": 0
+      "projected": 444.78,
+      "actual": 444.78,
+      "note": ""
     }
   ],
   "recurring": [
@@ -69,7 +71,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "casal",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "lhkr3b6",
@@ -78,7 +81,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "gus",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "s17krmt",
@@ -87,7 +91,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "casal",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "1pzwjp9",
@@ -96,7 +101,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "casal",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "2hqg864",
@@ -105,7 +111,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "casal",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "xkjc1ll",
@@ -114,7 +121,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "casal",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     },
     {
       "id": "eepdee9",
@@ -123,7 +131,8 @@
       "category": "Casa",
       "type": "expense",
       "owner": "maria",
-      "active": true
+      "active": true,
+      "plan": "7buv3di"
     }
   ],
   "cardExpenses": [
