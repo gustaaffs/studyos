@@ -968,7 +968,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             </div>
             <div class="table-scroll">
               <table class="responsive-table table-orcamento">
-                <thead><tr><th>Envelope</th><th>Cor</th><th class="text-right">%</th><th class="text-right">Planejado</th><th class="text-right">Etiquetado</th><th></th></tr></thead>
+                <thead><tr><th>Envelope</th><th>Cor</th><th class="text-right">%</th><th class="text-right">Tipo</th><th></th></tr></thead>
                 <tbody id="tbodyOrc"></tbody>
               </table>
             </div>
@@ -1323,10 +1323,10 @@ function defaultState() {
       { id: uid(), name: 'Outros',       color: '#a060d0' },
     ],
     planBuckets: [
-      { id: uid(), name: 'Moradia',        pct: 35, color: '#6090e0' },
-      { id: uid(), name: 'Estilo de Vida', pct: 25, color: '#e070a0' },
-      { id: uid(), name: 'Poupança',       pct: 20, color: '#6ec8a0' },
-      { id: uid(), name: 'Variáveis',      pct: 20, color: '#c8a96e' },
+      { id: uid(), name: 'Essenciais',         pct: 50, color: '#6090e0', isSpending: true },
+      { id: uid(), name: 'Mesada',             pct: 20, color: '#e070a0' },
+      { id: uid(), name: 'Investimentos',      pct: 20, color: '#6ec8a0' },
+      { id: uid(), name: 'Metas',              pct: 10, color: '#c8a96e' },
     ],
     monthActuals: {},
     entries: [],
@@ -1359,7 +1359,12 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return Object.assign(defaultState(), parsed);
+      const merged = Object.assign(defaultState(), parsed);
+      // migration: mark first bucket as spending if none are marked
+      if (merged.planBuckets && merged.planBuckets.length && !merged.planBuckets.some(b => b.isSpending)) {
+        merged.planBuckets[0].isSpending = true;
+      }
+      return merged;
     }
   } catch (e) {}
   return defaultState();
@@ -1545,6 +1550,19 @@ function getMonthEntriesTotal(ym) {
     .reduce((a, e) => a + (e.actual != null && e.actual !== '' ? parseFloat(e.actual) : parseFloat(e.projected) || 0), 0);
 }
 
+function getTotalMonthExpenses(ym) {
+  let total = 0;
+  getMonthEntries(ym).filter(e => e.type === 'expense').forEach(e => {
+    total += parseFloat(e.actual ?? e.projected) || 0;
+  });
+  const act = state.monthActuals[ym] || {};
+  state.recurring.filter(r => r.active !== false && r.type === 'expense').forEach(r => {
+    total += (act.recurOverrides || {})[r.id] ?? r.value;
+  });
+  getMonthFaturas(ym).forEach(f => { total += f.parcValue || 0; });
+  return total;
+}
+
 function getMonthTotal(ym) {
   return getExpenseItems(ym).reduce((a, item) => a + item.value, 0);
 }
@@ -1667,13 +1685,12 @@ function updateBudgetAlertBadge() {
   if (!tabEl) return;
   const buckets = state.planBuckets || [];
   if (income <= 0 || !buckets.length) { tabEl.innerHTML = 'Planejamento'; return; }
-  const actualByBucket = getPlanActuals(currentMonth);
-  const overCount = buckets.filter(b => {
-    const planned = income * b.pct / 100;
-    return planned > 0 && (actualByBucket[b.id] || 0) > planned;
-  }).length;
-  tabEl.innerHTML = overCount > 0
-    ? `Planejamento <span class="budget-alert-dot" title="${overCount} envelope(s) acima do orçamento"></span>`
+  const spendBucket = buckets.find(b => b.isSpending) || buckets[0];
+  const totalSpent = getTotalMonthExpenses(currentMonth);
+  const planned = income * spendBucket.pct / 100;
+  const isOver = totalSpent > planned;
+  tabEl.innerHTML = isOver
+    ? `Planejamento <span class="budget-alert-dot" title="Gastos acima do planejado"></span>`
     : 'Planejamento';
 }
 
@@ -1699,22 +1716,50 @@ function renderPlanOverview(ym, income) {
     el.innerHTML = '<div class="empty-state" style="font-size:12px">Nenhum envelope configurado. <button class="btn btn-ghost btn-sm" onclick="showFinTab(\'orcamento\')">Configurar →</button></div>';
     return;
   }
-  const actualByBucket = getPlanActuals(ym);
-  el.innerHTML = buckets.map(b => {
-    const planned = income > 0 ? income * b.pct / 100 : 0;
-    const actual  = actualByBucket[b.id] || 0;
-    const pct     = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
-    const isOver  = planned > 0 && actual > planned;
-    const barColor = isOver ? 'var(--red)' : b.color;
-    return `<div class="db-plan-row">
+  const spendBucket  = buckets.find(b => b.isSpending) || buckets[0];
+  const saveBuckets  = buckets.filter(b => b !== spendBucket);
+  const totalSpent   = getTotalMonthExpenses(ym);
+  const plannedSpend = income > 0 ? income * spendBucket.pct / 100 : 0;
+  const remaining    = Math.max(0, income - totalSpent);
+  const isOver       = income > 0 && totalSpent > plannedSpend;
+  const savePctTotal = saveBuckets.reduce((s, b) => s + b.pct, 0);
+  const spendBarPct  = plannedSpend > 0 ? Math.min(totalSpent / plannedSpend * 100, 100) : 0;
+
+  let html = `<div class="db-plan-row">
+    <div class="db-plan-dot" style="background:${spendBucket.color}"></div>
+    <div class="db-plan-name">${spendBucket.name}</div>
+    <div class="db-plan-bar-wrap"><div class="db-plan-bar-fill" style="width:${spendBarPct}%;background:${isOver ? 'var(--red)' : spendBucket.color}"></div></div>
+    <div class="db-plan-amounts" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">
+      <span style="color:${isOver ? 'var(--red)' : 'var(--text)'}">${fmt(totalSpent)}</span> / ${income > 0 ? fmt(plannedSpend) : '—'}
+    </div>
+  </div>`;
+
+  if (isOver) {
+    html += `<div style="font-size:11px;color:var(--red);padding:2px 0 6px 20px">
+      ⚠ Ultrapassou em ${fmt(totalSpent - plannedSpend)} — sobram ${fmt(remaining)} para reservas
+    </div>`;
+  }
+
+  saveBuckets.forEach(b => {
+    const target    = income > 0 ? income * b.pct / 100 : 0;
+    const available = income > 0 ? (savePctTotal > 0 ? remaining * (b.pct / savePctTotal) : 0) : 0;
+    const display   = isOver ? available : target;
+    const shortage  = isOver && available < target;
+    const barPct    = target > 0 ? Math.min(display / target * 100, 100) : 0;
+    html += `<div class="db-plan-row">
       <div class="db-plan-dot" style="background:${b.color}"></div>
       <div class="db-plan-name">${b.name}</div>
-      <div class="db-plan-bar-wrap"><div class="db-plan-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-      <div class="db-plan-amounts" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">
-        <span style="color:${isOver ? 'var(--red)' : 'var(--text)'}">${fmt(actual)}</span> / ${income > 0 ? fmt(planned) : '—'}
+      <div class="db-plan-bar-wrap"><div class="db-plan-bar-fill" style="width:${barPct}%;background:${shortage ? 'var(--red)' : b.color}"></div></div>
+      <div class="db-plan-amounts">
+        <span style="color:${shortage ? 'var(--red)' : 'var(--text)'}">${income > 0 ? fmt(display) : '—'}</span>
+        ${income > 0 && isOver
+          ? `<span style="font-size:10px;color:var(--text3);text-decoration:line-through;margin-left:4px">${fmt(target)}</span>`
+          : `<span style="color:var(--text3)"> / ${income > 0 ? fmt(target) : '—'}</span>`}
       </div>
     </div>`;
-  }).join('');
+  });
+
+  el.innerHTML = html;
 }
 
 function saveMonthlySalary() {
@@ -2496,66 +2541,123 @@ function setOrcView(v) {
 
 
 function renderOrcamento() {
-  const income = getMonthIncome(currentMonth);
-  const tbody = document.getElementById('tbodyOrc');
+  const income     = getMonthIncome(currentMonth);
+  const tbody      = document.getElementById('tbodyOrc');
   if (!tbody) return;
-  const buckets = state.planBuckets || [];
+  const buckets    = state.planBuckets || [];
+  const spendBucket  = buckets.find(b => b.isSpending) || buckets[0];
+  const saveBuckets  = buckets.filter(b => b !== spendBucket);
+  const totalSpent   = getTotalMonthExpenses(currentMonth);
+  const plannedSpend = income > 0 ? income * (spendBucket ? spendBucket.pct : 0) / 100 : 0;
+  const remaining    = Math.max(0, income - totalSpent);
+  const isOver       = income > 0 && totalSpent > plannedSpend;
+  const savePctTotal = saveBuckets.reduce((s, b) => s + b.pct, 0);
   let totalPct = 0;
-  const actualByBucket = getPlanActuals(currentMonth);
 
-  // Visual cards
   const visualEl = document.getElementById('orc-visual');
-  if (visualEl && buckets.length) {
-    visualEl.innerHTML = '<div class="orc-visual-grid">' + buckets.map(b => {
-      const planned = income * b.pct / 100;
-      const actual  = actualByBucket[b.id] || 0;
-      const fillPct = planned > 0 ? Math.min(actual / planned * 100, 100) : 0;
-      const isOver  = planned > 0 && actual > planned;
-      const barColor   = isOver ? 'var(--red)' : b.color;
-      const amtColor   = isOver ? 'var(--red)' : 'var(--text)';
-      const statusText = income > 0
-        ? (isOver ? `+${fmt(actual - planned)} acima do planejado` : `${fmt(planned - actual)} disponível`)
-        : 'configure a receita no Dashboard';
-      const statusColor = income > 0 ? (isOver ? 'var(--red)' : 'var(--green)') : 'var(--text3)';
-      return `<div class="orc-cat-card">
-        <div class="orc-cat-head">
-          <div class="orc-cat-icon" style="background:${b.color}22">📋</div>
-          <span class="orc-cat-name">${b.name}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${b.pct}% da renda</span>
-        </div>
-        <div class="orc-amounts">
-          <div>
-            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Etiquetado</div>
-            <div class="orc-spent" style="color:${amtColor}">${fmt(actual)}</div>
+  if (visualEl) {
+    if (!buckets.length) {
+      visualEl.innerHTML = '<div class="empty-state">Nenhum envelope cadastrado. Adicione abaixo.</div>';
+    } else {
+      // Cascade summary banner
+      const bannerColor = isOver ? 'var(--red)' : 'var(--green)';
+      const bannerText  = income <= 0
+        ? 'Configure a receita no Dashboard para ver os cálculos.'
+        : isOver
+          ? `⚠ Gastos ${fmt(totalSpent)} ultrapassaram o planejado ${fmt(plannedSpend)} em <strong style="color:var(--red)">${fmt(totalSpent - plannedSpend)}</strong>. Sobram <strong>${fmt(remaining)}</strong> para distribuir entre reservas.`
+          : `✓ Gastos ${fmt(totalSpent)} dentro do planejado ${fmt(plannedSpend)}. Sobram <strong style="color:var(--green)">${fmt(remaining)}</strong> para reservas.`;
+
+      let cardsHtml = `<div style="font-size:12px;color:${bannerColor};padding:10px 12px;background:var(--bg3);border-radius:10px;margin-bottom:10px;line-height:1.5">${bannerText}</div>`;
+      cardsHtml += '<div class="orc-visual-grid">';
+
+      // Spending card
+      if (spendBucket) {
+        const fillPct  = plannedSpend > 0 ? Math.min(totalSpent / plannedSpend * 100, 100) : 0;
+        const barColor = isOver ? 'var(--red)' : spendBucket.color;
+        const statusText = income > 0
+          ? (isOver ? `+${fmt(totalSpent - plannedSpend)} acima` : `${fmt(plannedSpend - totalSpent)} disponível`)
+          : '—';
+        cardsHtml += `<div class="orc-cat-card" style="border-left:3px solid ${spendBucket.color}">
+          <div class="orc-cat-head">
+            <div class="orc-cat-icon" style="background:${spendBucket.color}22">💸</div>
+            <span class="orc-cat-name">${spendBucket.name}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)">Gastos (auto)</span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${spendBucket.pct}%</span>
           </div>
-          <div style="text-align:right">
-            <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Planejado</div>
-            <div class="orc-limit">${income > 0 ? fmt(planned) : '—'}</div>
+          <div class="orc-amounts">
+            <div>
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Gasto real</div>
+              <div class="orc-spent" style="color:${isOver ? 'var(--red)' : 'var(--text)'}">${fmt(totalSpent)}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Planejado</div>
+              <div class="orc-limit">${income > 0 ? fmt(plannedSpend) : '—'}</div>
+            </div>
           </div>
-        </div>
-        ${income > 0 ? `<div class="orc-bar-row">
-          <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${fillPct}%;background:${barColor}"></div></div>
-          <div class="orc-bar-pct" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">${planned > 0 ? (actual / planned * 100).toFixed(0) + '%' : '—'}</div>
-        </div>
-        <div style="font-size:11px;color:${statusColor};margin-top:6px">${statusText}</div>` : ''}
-      </div>`;
-    }).join('') + '</div>';
-  } else if (visualEl) {
-    visualEl.innerHTML = buckets.length === 0 ? '<div class="empty-state">Nenhum envelope cadastrado. Adicione abaixo.</div>' : '';
+          ${income > 0 ? `<div class="orc-bar-row">
+            <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${fillPct}%;background:${barColor}"></div></div>
+            <div class="orc-bar-pct" style="color:${isOver ? 'var(--red)' : 'var(--text3)'}">${plannedSpend > 0 ? (totalSpent / plannedSpend * 100).toFixed(0) + '%' : '—'}</div>
+          </div>
+          <div style="font-size:11px;color:${isOver ? 'var(--red)' : 'var(--green)'};margin-top:6px">${statusText}</div>` : ''}
+        </div>`;
+      }
+
+      // Savings cards
+      saveBuckets.forEach(b => {
+        const target    = income > 0 ? income * b.pct / 100 : 0;
+        const available = income > 0 ? (savePctTotal > 0 ? remaining * (b.pct / savePctTotal) : 0) : 0;
+        const display   = isOver ? available : target;
+        const shortage  = isOver && available < target;
+        const fillPct   = target > 0 ? Math.min(display / target * 100, 100) : 0;
+        const statusText = income > 0
+          ? (shortage ? `Deficit de ${fmt(target - available)} vs meta` : `Meta: ${fmt(target)}`)
+          : '—';
+        cardsHtml += `<div class="orc-cat-card" style="border-left:3px solid ${b.color}">
+          <div class="orc-cat-head">
+            <div class="orc-cat-icon" style="background:${b.color}22">🏦</div>
+            <span class="orc-cat-name">${b.name}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)">${b.pct}%</span>
+          </div>
+          <div class="orc-amounts">
+            <div>
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">${isOver ? 'Disponível' : 'Meta'}</div>
+              <div class="orc-spent" style="color:${shortage ? 'var(--red)' : 'var(--text)'}">${income > 0 ? fmt(display) : '—'}</div>
+            </div>
+            ${isOver ? `<div style="text-align:right">
+              <div style="font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em">Meta original</div>
+              <div class="orc-limit" style="text-decoration:line-through">${fmt(target)}</div>
+            </div>` : ''}
+          </div>
+          ${income > 0 ? `<div class="orc-bar-row">
+            <div class="orc-bar-wrap"><div class="orc-bar-fill" style="width:${fillPct}%;background:${shortage ? 'var(--red)' : b.color}"></div></div>
+            <div class="orc-bar-pct" style="color:${shortage ? 'var(--red)' : 'var(--text3)'}">${target > 0 ? (display / target * 100).toFixed(0) + '%' : '—'}</div>
+          </div>
+          <div style="font-size:11px;color:${shortage ? 'var(--red)' : 'var(--green)'};margin-top:6px">${statusText}</div>` : ''}
+        </div>`;
+      });
+
+      cardsHtml += '</div>';
+      visualEl.innerHTML = cardsHtml;
+    }
   }
 
   tbody.innerHTML = buckets.map(b => {
     totalPct += b.pct;
-    const planned = income * b.pct / 100;
-    const actual  = actualByBucket[b.id] || 0;
+    const isSpend = b === spendBucket;
     return `<tr>
-      <td data-label="Envelope">${b.name}</td>
+      <td data-label="Envelope">
+        ${b.name}
+        ${isSpend ? '<span style="font-size:10px;color:var(--accent);margin-left:6px">💸 gastos</span>' : ''}
+      </td>
       <td data-label="Cor"><span class="color-swatch" style="background:${b.color}"></span></td>
       <td data-label="%" class="text-right">
         <input type="number" value="${b.pct}" style="width:70px;text-align:right" onchange="updateBucketPct('${b.id}',this.value)">
       </td>
-      <td data-label="Planejado" class="text-right mono">${income > 0 ? fmt(planned) : '—'}</td>
-      <td data-label="Etiquetado" class="text-right mono" style="color:${actual > planned && planned > 0 ? 'var(--red)' : 'var(--text)'}">${fmt(actual)}</td>
+      <td data-label="Tipo" class="text-right">
+        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 6px;${isSpend ? 'color:var(--accent)' : ''}" onclick="setSpendingBucket('${b.id}')" title="Marcar como envelope de gastos">
+          ${isSpend ? '💸 gastos' : '🏦 reserva'}
+        </button>
+      </td>
       <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delPlanBucket('${b.id}')">×</button></td>
     </tr>`;
   }).join('');
@@ -2587,7 +2689,17 @@ function addPlanBucket() {
 
 function delPlanBucket(id) {
   state.planBuckets = (state.planBuckets || []).filter(b => b.id !== id);
+  // ensure at least one bucket is marked as spending
+  if (state.planBuckets.length && !state.planBuckets.some(b => b.isSpending)) {
+    state.planBuckets[0].isSpending = true;
+  }
   saveState(); renderOrcamento();
+}
+
+function setSpendingBucket(id) {
+  (state.planBuckets || []).forEach(b => { b.isSpending = b.id === id; });
+  saveState(); renderOrcamento(); updateBudgetAlertBadge();
+  toast('Envelope de gastos atualizado!', 'success');
 }
 
 function addCategory() {
