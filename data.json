@@ -28,25 +28,29 @@
       "id": "7buv3di",
       "name": "Essenciais",
       "pct": 50,
-      "color": "#6090e0"
+      "color": "#6090e0",
+      "isSpending": true
     },
     {
       "id": "e7cd1q7",
       "name": "Mesada",
       "pct": 20,
-      "color": "#ffffff"
+      "color": "#ffffff",
+      "isSpending": false
     },
     {
       "id": "9u0bmtj",
       "name": "Investimentos + Reserva",
       "pct": 20,
-      "color": "#00ff1e"
+      "color": "#00ff1e",
+      "isSpending": false
     },
     {
       "id": "f3cyjzu",
       "name": "Metas de curto/médio prazo",
       "pct": 10,
-      "color": "#00ff1e"
+      "color": "#00ff1e",
+      "isSpending": false
     }
   ],
   "monthActuals": {
@@ -169,13 +173,13 @@
       "plan": "7buv3di"
     },
     {
-      "id": "kmix40j",
+      "id": "ttuy7as",
       "name": "Itaú (Lenir)",
-      "value": 2451.01,
+      "value": 2574.9,
       "totalParcels": 1,
       "purchaseDate": "2026-05-20",
       "category": "Cartão",
-      "owner": "casal",
+      "owner": "gus",
       "plan": "7buv3di"
     }
   ],
@@ -185,15 +189,8 @@
       "id": "szotper",
       "name": "Bicicleta elétrica",
       "total": 118,
-      "marked": {
-        "10": true
-      },
-      "deposits": [
-        {
-          "num": 10,
-          "date": "2026-05-30"
-        }
-      ]
+      "marked": {},
+      "deposits": []
     },
     {
       "id": "m82bppz",
