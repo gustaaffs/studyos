@@ -31,10 +31,22 @@
       "color": "#6090e0"
     },
     {
-      "id": "1viixn8",
-      "name": "Pagamento",
-      "pct": 0,
-      "color": "#eeff00"
+      "id": "e7cd1q7",
+      "name": "Mesada",
+      "pct": 20,
+      "color": "#ffffff"
+    },
+    {
+      "id": "9u0bmtj",
+      "name": "Investimentos + Reserva",
+      "pct": 20,
+      "color": "#00ff1e"
+    },
+    {
+      "id": "f3cyjzu",
+      "name": "Metas de curto/médio prazo",
+      "pct": 10,
+      "color": "#00ff1e"
     }
   ],
   "monthActuals": {
