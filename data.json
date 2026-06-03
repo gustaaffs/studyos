@@ -40,7 +40,13 @@
   "monthActuals": {
     "2026-06": {
       "salaryGus": 3000,
-      "salaryMaria": 4000
+      "salaryMaria": 4000,
+      "recurOverrides": {
+        "829a45a": 1599.62,
+        "2hqg864": 66.48,
+        "1pzwjp9": 119.9,
+        "xkjc1ll": 305.59
+      }
     }
   },
   "entries": [
@@ -52,7 +58,7 @@
       "owner": "gus",
       "month": "2026-06",
       "projected": 211,
-      "actual": 211
+      "actual": 0
     }
   ],
   "recurring": [
@@ -206,7 +212,8 @@
     "2026-05-27_neecp8o": true,
     "2026-06-02_arl2wwb": true,
     "2026-06-01_arl2wwb": true,
-    "2026-05-29_arl2wwb": true
+    "2026-05-29_arl2wwb": true,
+    "2026-05-28_arl2wwb": true
   },
   "study": {
     "gus": {
