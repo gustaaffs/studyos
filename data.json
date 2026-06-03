@@ -46,11 +46,10 @@
       "isSpending": false
     },
     {
-      "id": "f3cyjzu",
+      "id": "teufyrt",
       "name": "Metas de curto/médio prazo",
       "pct": 10,
-      "color": "#00ff1e",
-      "isSpending": false
+      "color": "#ff00bb"
     }
   ],
   "monthActuals": {
@@ -61,7 +60,8 @@
         "829a45a": 1599.62,
         "2hqg864": 66.48,
         "1pzwjp9": 119.9,
-        "xkjc1ll": 305.59
+        "xkjc1ll": 305.59,
+        "5i9ofl2": 122
       }
     }
   },
@@ -147,6 +147,16 @@
       "category": "Casa",
       "type": "expense",
       "owner": "maria",
+      "active": true,
+      "plan": "7buv3di"
+    },
+    {
+      "id": "5i9ofl2",
+      "name": "Tim",
+      "type": "expense",
+      "category": "Casa",
+      "owner": "gus",
+      "value": 125,
       "active": true,
       "plan": "7buv3di"
     }
