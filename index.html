@@ -937,7 +937,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
             <div class="card-title">Compras Parceladas</div>
             <div class="table-scroll">
               <table class="responsive-table table-cartao">
-                <thead><tr><th>Nome</th><th>Cat.</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Qtd.</th><th>Compra</th><th></th></tr></thead>
+                <thead><tr><th>Nome</th><th>Cat.</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Compra</th><th></th></tr></thead>
                 <tbody id="tbodyCartao"></tbody>
               </table>
             </div>
@@ -2485,22 +2485,43 @@ function renderCartao() {
     </div>`;
   }
 
-  document.getElementById('tbodyCartao').innerHTML = state.cardExpenses
-    .map(ce => `<tr>
-      <td data-label="Nome">${ce.name}</td>
-      <td data-label="Cat.">
-        <select class="plan-select" style="max-width:120px" onchange="setCardCat('${ce.id}',this.value)">
-          ${state.rules.map(r=>`<option value="${r.name}"${r.name===(ce.category||'')?' selected':''}>${r.name}</option>`).join('')}
-        </select>
-      </td>
-      <td data-label="Resp."><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
-      <td data-label="Total" class="text-right mono">${fmt(ce.value)}</td>
-      <td data-label="Parcela" class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
-      <td data-label="Qtd." class="mono">${ce.totalParcels}×</td>
-      <td data-label="Compra" class="mono text3">${ce.purchaseDate}</td>
-      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
-    </tr>`)
-    .join('') || '<tr><td colspan="8" class="text-center text3" style="padding:16px">Nenhuma compra cadastrada</td></tr>';
+  // show only purchases that still have parcels in currentMonth or future
+  const activeExpenses = state.cardExpenses.filter(ce => {
+    const cd = state.cardClosingDay || 15;
+    const pd = new Date(ce.purchaseDate + 'T12:00:00');
+    let sm = pd.getMonth() + 1, sy = pd.getFullYear();
+    if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
+    let lm = sm + (ce.totalParcels - 1), ly = sy;
+    while (lm > 12) { lm -= 12; ly++; }
+    const lastYm = `${ly}-${String(lm).padStart(2, '0')}`;
+    return lastYm >= currentMonth;
+  });
+
+  document.getElementById('tbodyCartao').innerHTML = activeExpenses
+    .map(ce => {
+      const cd = state.cardClosingDay || 15;
+      const pd = new Date(ce.purchaseDate + 'T12:00:00');
+      let sm = pd.getMonth() + 1, sy = pd.getFullYear();
+      if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
+      // find current parcel number
+      const [cy, cm] = currentMonth.split('-').map(Number);
+      const monthDiff = (cy - sy) * 12 + (cm - sm) + 1;
+      const parcAtual = Math.min(Math.max(monthDiff, 1), ce.totalParcels);
+      return `<tr>
+        <td data-label="Nome">${ce.name} <span style="font-size:10px;color:var(--text3)">${parcAtual}/${ce.totalParcels}×</span></td>
+        <td data-label="Cat.">
+          <select class="plan-select" style="max-width:120px" onchange="setCardCat('${ce.id}',this.value)">
+            ${state.rules.map(r=>`<option value="${r.name}"${r.name===(ce.category||'')?' selected':''}>${r.name}</option>`).join('')}
+          </select>
+        </td>
+        <td data-label="Resp."><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
+        <td data-label="Total" class="text-right mono">${fmt(ce.value)}</td>
+        <td data-label="Parcela" class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
+        <td data-label="Compra" class="mono text3">${ce.purchaseDate}</td>
+        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
+      </tr>`;
+    })
+    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhuma compra ativa neste mês</td></tr>';
 
   const faturas = getMonthFaturas(currentMonth);
   const total = faturas.reduce((a, f) => a + f.parcValue, 0);
