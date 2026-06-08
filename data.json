@@ -197,6 +197,87 @@
       "plan": "7buv3di"
     }
   ],
+  "cards": [
+    {
+      "id": "bxbc0a7",
+      "name": "Itaú (Gus)",
+      "color": "#6090e0",
+      "closingDay": 1,
+      "owner": "casal"
+    },
+    {
+      "id": "9q0i9wu",
+      "name": "Itaú (Lenir)",
+      "color": "#00ff11",
+      "closingDay": 1,
+      "owner": "casal"
+    },
+    {
+      "id": "9che2rf",
+      "name": "Mercado Pago",
+      "color": "#eeff00",
+      "closingDay": 1,
+      "owner": "casal"
+    }
+  ],
+  "cardInvoices": [
+    {
+      "id": "uolkla5",
+      "cardId": "bxbc0a7",
+      "month": "2026-06",
+      "value": 4791.57,
+      "note": "Migrado de compras parceladas"
+    },
+    {
+      "id": "zgxz5k7",
+      "cardId": "9che2rf",
+      "month": "2026-07",
+      "value": 1493.09,
+      "note": ""
+    },
+    {
+      "id": "o30oyhk",
+      "cardId": "9che2rf",
+      "month": "2026-08",
+      "value": 33.21,
+      "note": ""
+    },
+    {
+      "id": "fo2bnps",
+      "cardId": "9che2rf",
+      "month": "2026-09",
+      "value": 33.21,
+      "note": ""
+    },
+    {
+      "id": "1fsjv1c",
+      "cardId": "9che2rf",
+      "month": "2026-10",
+      "value": 33.21,
+      "note": ""
+    },
+    {
+      "id": "7wyaefh",
+      "cardId": "9che2rf",
+      "month": "2026-11",
+      "value": 33.21,
+      "note": ""
+    },
+    {
+      "id": "0wrennt",
+      "cardId": "bxbc0a7",
+      "month": "2026-07",
+      "value": 0,
+      "note": ""
+    },
+    {
+      "id": "6tuaa35",
+      "cardId": "9q0i9wu",
+      "month": "2026-07",
+      "value": 682.73,
+      "note": ""
+    }
+  ],
   "goals": [],
   "cofrinhos": [
     {
@@ -257,5 +338,6 @@
     "maria": {
       "sessions": []
     }
-  }
+  },
+  "_cardModelMigrated": true
 }
