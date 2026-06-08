@@ -195,24 +195,6 @@
       "category": "Cartão",
       "owner": "gus",
       "plan": "7buv3di"
-    },
-    {
-      "id": "u7wr3j4",
-      "name": "Mercado pago",
-      "value": 479.4,
-      "totalParcels": 1,
-      "purchaseDate": "2026-06-05",
-      "category": "Cartão",
-      "owner": "casal"
-    },
-    {
-      "id": "43n8s4e",
-      "name": "Mercado Pago",
-      "value": 132.84,
-      "totalParcels": 4,
-      "purchaseDate": "2026-06-05",
-      "category": "Casa",
-      "owner": "gus"
     }
   ],
   "goals": [],
