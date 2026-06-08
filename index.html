@@ -813,7 +813,7 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           <div class="card section">
             <div class="card-title">Cartão</div>
             <table>
-              <thead><tr><th>Nome</th><th>Categoria</th><th class="text-right">Valor Parcela</th></tr></thead>
+              <thead><tr><th>Cartão</th><th>Nota</th><th class="text-right">Valor</th></tr></thead>
               <tbody id="tbodyCartaoPR"></tbody>
             </table>
           </div>
@@ -902,58 +902,36 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
           <details class="collapse-card section" id="cartaoFormDetails">
             <summary>
               <div class="collapse-summary-title">
-                <strong>Nova compra parcelada</strong>
-                <span>Cadastre apenas quando for uma compra no cartão com parcelas futuras.</span>
+                <strong>Meus cartões</strong>
+                <span>Cadastre os cartões da casa — depois é só lançar o valor da fatura a cada mês.</span>
               </div>
               <span class="collapse-indicator"></span>
             </summary>
             <div class="collapse-body">
               <div class="field-row mt-12">
-                <div class="field"><label>Nome</label><input id="ctNome" placeholder="Ex: Geladeira"></div>
-                <div class="field"><label>Valor Total</label><input id="ctVal" type="number" placeholder="0.00" oninput="calcParcela()"></div>
-                <div class="field"><label>Parcelas</label><input id="ctParc" type="number" placeholder="12" min="1" oninput="calcParcela()"></div>
-              </div>
-              <div class="field-row">
-                <div class="field"><label>Data da Compra</label><input id="ctDate" type="date" oninput="calcParcela()"></div>
-                <div class="field"><label>Categoria</label><select id="ctCat"></select></div>
+                <div class="field"><label>Nome</label><input id="newCardName" placeholder="Ex: Itaú, Nubank..."></div>
+                <div class="field" style="max-width:110px"><label>Fechamento</label><input id="newCardDay" type="number" placeholder="15" min="1" max="31"></div>
+                <div class="field" style="max-width:70px"><label>Cor</label><input id="newCardColor" type="color" value="#6090e0" style="width:44px;height:36px;padding:4px;border-radius:7px;cursor:pointer"></div>
                 <div class="field"><label>Responsável</label>
-                  <select id="ctOwner">
+                  <select id="newCardOwner">
+                    <option value="casal">Casal</option>
                     <option value="gus">Gus</option>
                     <option value="maria">Maria</option>
-                    <option value="casal">Casal</option>
                   </select>
                 </div>
               </div>
-              <div class="flex items-center gap-8 mt-4" style="flex-wrap:wrap">
-                <span class="text3 text-sm">Parcela:</span>
-                <span class="mono accent" id="parcelaPreview">R$ 0,00</span>
-                <span class="text3 text-sm ml-8">1ª fatura:</span>
-                <span class="mono" id="primeiraFatura">—</span>
+              <div class="mt-12"><button class="btn btn-primary" onclick="addCard()">+ Adicionar cartão</button></div>
+              <div class="table-scroll mt-12">
+                <table class="responsive-table">
+                  <thead><tr><th>Nome</th><th>Cor</th><th class="text-right">Fechamento</th><th>Resp.</th><th></th></tr></thead>
+                  <tbody id="tbodyCards"></tbody>
+                </table>
               </div>
-              <div class="mt-12"><button class="btn btn-primary" onclick="addCartao()">+ Adicionar</button></div>
             </div>
           </details>
-          <div class="card section">
-            <div class="card-title">Compras Parceladas</div>
-            <div class="table-scroll">
-              <table class="responsive-table table-cartao">
-                <thead><tr><th>Nome</th><th>Cat.</th><th>Resp.</th><th class="text-right">Total</th><th class="text-right">Parcela</th><th>Compra</th><th></th></tr></thead>
-                <tbody id="tbodyCartao"></tbody>
-              </table>
-            </div>
-          </div>
           <div class="card">
-            <div class="card-title">Faturas — <span id="cartaoMonthLabel"></span></div>
-            <div class="table-scroll">
-              <table class="responsive-table table-faturas">
-                <thead><tr><th>Nome</th><th>Parcela</th><th class="text-right">Valor</th></tr></thead>
-                <tbody id="tbodyFaturas"></tbody>
-              </table>
-            </div>
-            <div class="mt-8 flex justify-between items-center">
-              <span class="text3 text-sm">Total da fatura</span>
-              <span class="mono accent" id="faturaTotal">R$ 0,00</span>
-            </div>
+            <div class="card-title">Fatura — <span id="cartaoMonthLabel"></span></div>
+            <div id="cartao-invoice-list"></div>
           </div>
         </div>
 
@@ -1272,27 +1250,16 @@ td input[type="number"] { width: 90px; padding: 5px 8px; font-size: 12px; }
       <div id="fab-meta-preview" class="fab-meta-preview hidden"></div>
     </div>
 
-    <!-- Compra no cartão -->
+    <!-- Fatura de cartão -->
     <div id="fab-form-cartao" class="hidden">
       <div class="field-row">
-        <div class="field"><label>Nome</label><input id="fab-ct-nome" placeholder="Geladeira, celular..."></div>
-        <div class="field" style="max-width:140px"><label>Valor total</label><input id="fab-ct-valor" type="number" placeholder="0.00" step="0.01" oninput="calcFabParcela()"></div>
+        <div class="field"><label>Cartão</label><select id="fab-ct-card"></select></div>
+        <div class="field" style="max-width:140px"><label>Valor da fatura</label><input id="fab-ct-valor" type="number" placeholder="0.00" step="0.01"></div>
       </div>
       <div class="field-row">
-        <div class="field" style="max-width:90px"><label>Parcelas</label><input id="fab-ct-parc" type="number" min="1" value="1" oninput="calcFabParcela()"></div>
-        <div class="field" style="max-width:120px"><label>Por parcela</label><div id="fab-ct-parc-preview" style="padding:8px 10px;background:var(--bg3);border-radius:7px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)">R$ 0,00</div></div>
-        <div class="field"><label>Data da compra</label><input id="fab-ct-date" type="date"></div>
+        <div class="field"><label>Nota (opcional)</label><input id="fab-ct-nota" placeholder="Ex: compras do mês"></div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Categoria</label><select id="fab-ct-cat"></select></div>
-        <div class="field"><label>Responsável</label>
-          <select id="fab-ct-owner">
-            <option value="gus" id="fab-ct-own-1">Gus</option>
-            <option value="maria" id="fab-ct-own-2">Maria</option>
-            <option value="casal">Casal</option>
-          </select>
-        </div>
-      </div>
+      <div class="text3 text-sm mt-4">Lança a fatura de <strong id="fab-ct-month"></strong> para o cartão selecionado.</div>
     </div>
 
     <div class="modal-footer">
@@ -1333,6 +1300,8 @@ function defaultState() {
     entries: [],
     recurring: [],
     cardExpenses: [],
+    cards: [],
+    cardInvoices: [],
     goals: [],
     cofrinhos: [],
     tasks: [],
@@ -1365,10 +1334,41 @@ function loadState() {
       if (merged.planBuckets && merged.planBuckets.length && !merged.planBuckets.some(b => b.isSpending)) {
         merged.planBuckets[0].isSpending = true;
       }
+      // migration: convert old itemized card purchases into a card + monthly invoices
+      if (!merged._cardModelMigrated) {
+        if (merged.cardExpenses && merged.cardExpenses.length && !merged.cards.length) {
+          migrateCardExpensesToInvoices(merged);
+        }
+        merged._cardModelMigrated = true;
+      }
       return merged;
     }
   } catch (e) {}
   return defaultState();
+}
+
+function migrateCardExpensesToInvoices(s) {
+  const card = { id: uid(), name: 'Cartão', color: '#6090e0', closingDay: s.cardClosingDay || 15, owner: 'casal' };
+  s.cards = [card];
+  const cd = s.cardClosingDay || 15;
+  const monthTotals = {};
+  s.cardExpenses.forEach(ce => {
+    const pd = new Date(ce.purchaseDate + 'T12:00:00');
+    let sm = pd.getMonth() + 1, sy = pd.getFullYear();
+    if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
+    const parcVal = ce.value / ce.totalParcels;
+    for (let i = 0; i < ce.totalParcels; i++) {
+      let pm = sm + i, py = sy;
+      while (pm > 12) { pm -= 12; py++; }
+      const ym = `${py}-${String(pm).padStart(2, '0')}`;
+      monthTotals[ym] = (monthTotals[ym] || 0) + parcVal;
+    }
+  });
+  s.cardInvoices = Object.keys(monthTotals).map(ym => ({
+    id: uid(), cardId: card.id, month: ym,
+    value: Math.round(monthTotals[ym] * 100) / 100,
+    note: 'Migrado de compras parceladas',
+  }));
 }
 
 function hasGHConfig() {
@@ -1560,7 +1560,7 @@ function getTotalMonthExpenses(ym) {
   state.recurring.filter(r => r.active !== false && r.type === 'expense').forEach(r => {
     total += (act.recurOverrides || {})[r.id] ?? r.value;
   });
-  getMonthFaturas(ym).forEach(f => { total += f.parcValue || 0; });
+  total += getMonthCardTotal(ym);
   return total;
 }
 
@@ -1597,35 +1597,55 @@ function getExpenseItems(ym) {
       });
     });
 
-  getMonthFaturas(ym).forEach(f => {
+  getMonthCardInvoices(ym).forEach(inv => {
+    const card = (state.cards || []).find(c => c.id === inv.cardId);
     items.push({
       source: 'Cartão',
-      name: f.name,
-      category: f.category || 'Outros',
-      owner: f.owner || 'casal',
-      value: f.parcValue || 0,
+      name: card ? card.name : 'Cartão',
+      category: 'Cartão',
+      owner: card ? card.owner : 'casal',
+      value: inv.value || 0,
     });
   });
 
   return items;
 }
 
-function getMonthFaturas(ym) {
-  const [y, m] = ym.split('-').map(Number);
-  const cd = state.cardClosingDay || 15;
-  const result = [];
-  state.cardExpenses.forEach(ce => {
-    const pd = new Date(ce.purchaseDate + 'T12:00:00');
-    let sm = pd.getMonth() + 1, sy = pd.getFullYear();
-    if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
-    const parcVal = ce.value / ce.totalParcels;
-    for (let i = 0; i < ce.totalParcels; i++) {
-      let pm = sm + i, py = sy;
-      while (pm > 12) { pm -= 12; py++; }
-      if (py === y && pm === m) { result.push({ ...ce, parc: i + 1, parcValue: parcVal }); break; }
-    }
-  });
-  return result;
+function getMonthCardInvoices(ym) {
+  return (state.cardInvoices || []).filter(inv => inv.month === ym);
+}
+
+function getMonthCardTotal(ym) {
+  return getMonthCardInvoices(ym).reduce((a, inv) => a + (inv.value || 0), 0);
+}
+
+function getCardInvoice(cardId, ym) {
+  return (state.cardInvoices || []).find(inv => inv.cardId === cardId && inv.month === ym);
+}
+
+function setCardInvoiceValue(cardId, ym, val) {
+  const value = parseFloat(val) || 0;
+  let inv = getCardInvoice(cardId, ym);
+  if (!inv) {
+    inv = { id: uid(), cardId, month: ym, value, note: '' };
+    state.cardInvoices.push(inv);
+  } else {
+    inv.value = value;
+  }
+  saveState(); renderCartao(); updateBudgetAlertBadge();
+}
+
+function setCardInvoiceNote(cardId, ym, note) {
+  const trimmed = (note || '').trim();
+  let inv = getCardInvoice(cardId, ym);
+  if (!inv) {
+    if (!trimmed) return;
+    inv = { id: uid(), cardId, month: ym, value: 0, note: trimmed };
+    state.cardInvoices.push(inv);
+  } else {
+    inv.note = trimmed;
+  }
+  saveState();
 }
 
 // ===================== DASHBOARD =====================
@@ -1661,23 +1681,6 @@ function renderDashboard() {
   renderPlanOverview(ym, income);
   renderInsights(ym, income, total, saldo);
   updateBudgetAlertBadge();
-}
-
-function getPlanActuals(ym) {
-  const byBucket = {};
-  getMonthEntries(ym).filter(e => e.type === 'expense' && e.plan).forEach(e => {
-    const val = parseFloat(e.actual ?? e.projected) || 0;
-    byBucket[e.plan] = (byBucket[e.plan] || 0) + val;
-  });
-  const act = state.monthActuals[ym] || {};
-  state.recurring.filter(r => r.active !== false && r.type === 'expense' && r.plan).forEach(r => {
-    const val = (act.recurOverrides || {})[r.id] ?? r.value;
-    byBucket[r.plan] = (byBucket[r.plan] || 0) + val;
-  });
-  getMonthFaturas(ym).forEach(f => {
-    if (f.plan) byBucket[f.plan] = (byBucket[f.plan] || 0) + f.parcValue;
-  });
-  return byBucket;
 }
 
 function updateBudgetAlertBadge() {
@@ -1839,32 +1842,24 @@ function openFab() {
       ? active.map(g => `<option value="${g.id}">${g.name}</option>`).join('')
       : '<option value="">Nenhuma meta cadastrada</option>';
   }
-  populateCatSelect('fab-ct-cat');
-  const co1 = document.getElementById('fab-ct-own-1');
-  const co2 = document.getElementById('fab-ct-own-2');
-  if (co1) co1.textContent = state.name1;
-  if (co2) co2.textContent = state.name2;
-  const dateEl = document.getElementById('fab-ct-date');
-  if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
+  const fabCardSel = document.getElementById('fab-ct-card');
+  if (fabCardSel) {
+    const cards = state.cards || [];
+    fabCardSel.innerHTML = cards.length
+      ? cards.map(c => `<option value="${c.id}">${c.name}</option>`).join('')
+      : '<option value="">Cadastre um cartão em Finanças → Cartão</option>';
+  }
+  const monthEl = document.getElementById('fab-ct-month');
+  if (monthEl) monthEl.textContent = currentMonth;
   document.getElementById('fab-modal').classList.remove('hidden');
   setFabTab(fabTab, document.querySelector('.fab-tab.active'));
   setTimeout(() => { const n = document.getElementById('fab-nome'); if (n) n.focus(); }, 50);
 }
 function closeFab() {
   document.getElementById('fab-modal').classList.add('hidden');
-  ['fab-nome','fab-valor','fab-rec-nome','fab-rec-valor','fab-meta-valor','fab-ct-nome','fab-ct-valor'].forEach(id => {
+  ['fab-nome','fab-valor','fab-rec-nome','fab-rec-valor','fab-meta-valor','fab-ct-valor','fab-ct-nota'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
-  const pEl = document.getElementById('fab-ct-parc');
-  if (pEl) pEl.value = '1';
-  const pvEl = document.getElementById('fab-ct-parc-preview');
-  if (pvEl) pvEl.textContent = 'R$ 0,00';
-}
-function calcFabParcela() {
-  const val  = parseFloat(document.getElementById('fab-ct-valor').value) || 0;
-  const parc = parseInt(document.getElementById('fab-ct-parc').value) || 1;
-  const prev = document.getElementById('fab-ct-parc-preview');
-  if (prev) prev.textContent = fmt(val / parc);
 }
 function saveFab() {
   if (fabTab === 'lancamento') {
@@ -1909,21 +1904,16 @@ function saveFab() {
     toast(`Depositado ${fmt(valor)} em "${g.name}"! ✓`, 'success');
     if (currentFinTab === 'metas') renderFinTab();
   } else if (fabTab === 'cartao') {
-    const nome = (document.getElementById('fab-ct-nome').value || '').trim();
-    const valor = parseFloat(document.getElementById('fab-ct-valor').value) || 0;
-    const parc  = parseInt(document.getElementById('fab-ct-parc').value) || 1;
-    const date  = document.getElementById('fab-ct-date').value;
-    if (!nome) { toast('Informe o nome', 'error'); return; }
-    if (!date) { toast('Informe a data', 'error'); return; }
-    state.cardExpenses.push({
-      id: uid(), name: nome, value: valor, totalParcels: parc,
-      purchaseDate: date,
-      category: document.getElementById('fab-ct-cat').value,
-      owner:    document.getElementById('fab-ct-owner').value,
-    });
-    saveState(); closeFab();
-    toast('Compra no cartão adicionada! ✓', 'success');
-    if (currentFinTab === 'cartao') renderFinTab();
+    const cardId = document.getElementById('fab-ct-card').value;
+    const valor  = parseFloat(document.getElementById('fab-ct-valor').value) || 0;
+    const nota   = (document.getElementById('fab-ct-nota').value || '').trim();
+    if (!cardId) { toast('Cadastre um cartão primeiro', 'error'); return; }
+    if (!valor) { toast('Informe o valor da fatura', 'error'); return; }
+    setCardInvoiceValue(cardId, currentMonth, valor);
+    if (nota) setCardInvoiceNote(cardId, currentMonth, nota);
+    closeFab();
+    toast('Fatura lançada! ✓', 'success');
+    if (currentFinTab === 'cartao' || currentFinTab === 'dashboard') renderFinTab();
   }
 }
 
@@ -1954,11 +1944,12 @@ function renderCategoryBreakdown(ym, income, total) {
   let orphanTotal = 0;
   const orphanCats = [];
   Object.entries(byCat).forEach(([cat, val]) => {
-    if (!ruleNames.has(cat)) { orphanTotal += val; orphanCats.push(cat); }
+    if (cat !== 'Cartão' && !ruleNames.has(cat)) { orphanTotal += val; orphanCats.push(cat); }
   });
 
-  // Build rows: all rules (even 0), then orphaned bucket at the end
+  // Build rows: all rules (even 0), plus a fixed "Cartão" row (faturas don't map to budget categories), then orphaned bucket at the end
   const rows = state.rules.map(r => ({ name: r.name, color: r.color, value: byCat[r.name] || 0 }));
+  if (byCat['Cartão']) rows.push({ name: 'Cartão', color: '#6090e0', value: byCat['Cartão'] });
   rows.sort((a, b) => b.value - a.value);
 
   if (!rows.some(r => r.value > 0) && orphanTotal === 0) {
@@ -2167,8 +2158,11 @@ function renderProjReal() {
     }).join('') || '<tr><td colspan="6" class="text-center text3" style="padding:16px">Nenhum recorrente</td></tr>';
 
   // Cartão
-  document.getElementById('tbodyCartaoPR').innerHTML = getMonthFaturas(ym)
-    .map(f => `<tr><td data-label="Nome">${f.name} (${f.parc}/${f.totalParcels})</td><td data-label="Categoria">${f.category||'—'}</td><td data-label="Valor Parcela" class="text-right mono">${fmt(f.parcValue)}</td></tr>`)
+  document.getElementById('tbodyCartaoPR').innerHTML = getMonthCardInvoices(ym)
+    .map(inv => {
+      const card = (state.cards || []).find(c => c.id === inv.cardId);
+      return `<tr><td data-label="Cartão">${card ? card.name : 'Cartão'}</td><td data-label="Nota" class="text3">${inv.note || '—'}</td><td data-label="Valor" class="text-right mono">${fmt(inv.value)}</td></tr>`;
+    })
     .join('') || '<tr><td colspan="3" class="text-center text3" style="padding:16px">Sem faturas neste mês</td></tr>';
 
   // Avulsos
@@ -2439,31 +2433,14 @@ function delRec(id) {
 }
 
 // ===================== CARTÃO =====================
-function calcParcela() {
-  const val  = parseFloat(document.getElementById('ctVal').value) || 0;
-  const parc = parseInt(document.getElementById('ctParc').value) || 1;
-  document.getElementById('parcelaPreview').textContent = fmt(val / parc);
-  const dateStr = document.getElementById('ctDate').value;
-  if (dateStr) {
-    const pd = new Date(dateStr + 'T12:00:00');
-    const cd = state.cardClosingDay || 15;
-    let sm = pd.getMonth() + 1, sy = pd.getFullYear();
-    if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
-    const mnames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    document.getElementById('primeiraFatura').textContent = mnames[sm - 1] + '/' + sy;
-  }
-}
-
 function renderCartao() {
-  populateCatSelect('ctCat');
-  const today = new Date().toISOString().slice(0, 10);
-  if (!document.getElementById('ctDate').value) document.getElementById('ctDate').value = today;
   document.getElementById('cartaoMonthLabel').textContent = currentMonth;
+  const cards = state.cards || [];
 
   const ccEl = document.getElementById('cc-summary');
   if (ccEl) {
-    const faturas = getMonthFaturas(currentMonth);
-    const total = faturas.reduce((a, f) => a + f.parcValue, 0);
+    const total = getMonthCardTotal(currentMonth);
+    const invoiceCount = getMonthCardInvoices(currentMonth).filter(inv => inv.value > 0).length;
     const [y, m] = currentMonth.split('-').map(Number);
     const mnames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     ccEl.innerHTML = `<div class="cc-summary">
@@ -2474,85 +2451,69 @@ function renderCartao() {
       </div>
       <div class="cc-summary-stats">
         <div class="cc-summary-stat">
-          <div class="cc-summary-stat-label">Parcelas no mês</div>
-          <div class="cc-summary-stat-val">${faturas.length} de ${state.cardExpenses.length}</div>
-        </div>
-        <div class="cc-summary-stat">
-          <div class="cc-summary-stat-label">Fechamento</div>
-          <div class="cc-summary-stat-val">Dia ${state.cardClosingDay || 15}</div>
+          <div class="cc-summary-stat-label">Faturas lançadas</div>
+          <div class="cc-summary-stat-val">${invoiceCount} de ${cards.length}</div>
         </div>
       </div>
     </div>`;
   }
 
-  // show only purchases that still have parcels in currentMonth or future
-  const activeExpenses = state.cardExpenses.filter(ce => {
-    const cd = state.cardClosingDay || 15;
-    const pd = new Date(ce.purchaseDate + 'T12:00:00');
-    let sm = pd.getMonth() + 1, sy = pd.getFullYear();
-    if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
-    let lm = sm + (ce.totalParcels - 1), ly = sy;
-    while (lm > 12) { lm -= 12; ly++; }
-    const lastYm = `${ly}-${String(lm).padStart(2, '0')}`;
-    return lastYm >= currentMonth;
-  });
+  document.getElementById('tbodyCards').innerHTML = cards.map(c => `<tr>
+      <td data-label="Nome"><input value="${c.name}" style="min-width:90px" onchange="updateCardField('${c.id}','name',this.value)"></td>
+      <td data-label="Cor"><input type="color" value="${c.color}" style="width:40px;height:30px;padding:2px;border-radius:6px;cursor:pointer" onchange="updateCardField('${c.id}','color',this.value)"></td>
+      <td data-label="Fechamento" class="text-right"><input type="number" value="${c.closingDay}" style="width:60px;text-align:right" min="1" max="31" onchange="updateCardField('${c.id}','closingDay',this.value)"></td>
+      <td data-label="Resp.">
+        <select onchange="updateCardField('${c.id}','owner',this.value)">
+          <option value="casal"${c.owner==='casal'?' selected':''}>Casal</option>
+          <option value="gus"${c.owner==='gus'?' selected':''}>Gus</option>
+          <option value="maria"${c.owner==='maria'?' selected':''}>Maria</option>
+        </select>
+      </td>
+      <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCard('${c.id}')">×</button></td>
+    </tr>`).join('') || '<tr><td colspan="5" class="text-center text3" style="padding:16px">Nenhum cartão cadastrado</td></tr>';
 
-  document.getElementById('tbodyCartao').innerHTML = activeExpenses
-    .map(ce => {
-      const cd = state.cardClosingDay || 15;
-      const pd = new Date(ce.purchaseDate + 'T12:00:00');
-      let sm = pd.getMonth() + 1, sy = pd.getFullYear();
-      if (pd.getDate() > cd) { sm++; if (sm > 12) { sm = 1; sy++; } }
-      // find current parcel number
-      const [cy, cm] = currentMonth.split('-').map(Number);
-      const monthDiff = (cy - sy) * 12 + (cm - sm) + 1;
-      const parcAtual = Math.min(Math.max(monthDiff, 1), ce.totalParcels);
-      return `<tr>
-        <td data-label="Nome">${ce.name} <span style="font-size:10px;color:var(--text3)">${parcAtual}/${ce.totalParcels}×</span></td>
-        <td data-label="Cat.">
-          <select class="plan-select" style="max-width:120px" onchange="setCardCat('${ce.id}',this.value)">
-            ${state.rules.map(r=>`<option value="${r.name}"${r.name===(ce.category||'')?' selected':''}>${r.name}</option>`).join('')}
-          </select>
-        </td>
-        <td data-label="Resp."><span class="badge badge-${ce.owner}">${ce.owner}</span></td>
-        <td data-label="Total" class="text-right mono">${fmt(ce.value)}</td>
-        <td data-label="Parcela" class="text-right mono">${fmt(ce.value/ce.totalParcels)}</td>
-        <td data-label="Compra" class="mono text3">${ce.purchaseDate}</td>
-        <td class="table-actions"><button class="btn btn-icon btn-ghost" onclick="delCartao('${ce.id}')">×</button></td>
-      </tr>`;
-    })
-    .join('') || '<tr><td colspan="7" class="text-center text3" style="padding:16px">Nenhuma compra ativa neste mês</td></tr>';
-
-  const faturas = getMonthFaturas(currentMonth);
-  const total = faturas.reduce((a, f) => a + f.parcValue, 0);
-  document.getElementById('tbodyFaturas').innerHTML = faturas
-    .map(f => `<tr>
-      <td data-label="Nome">${f.name}</td>
-      <td data-label="Parcela" class="mono text3">${f.parc}/${f.totalParcels}</td>
-      <td data-label="Valor" class="text-right mono">${fmt(f.parcValue)}</td>
-    </tr>`)
-    .join('') || '<tr><td colspan="3" class="text-center text3" style="padding:16px">Sem faturas neste mês</td></tr>';
-  document.getElementById('faturaTotal').textContent = fmt(total);
+  const listEl = document.getElementById('cartao-invoice-list');
+  if (listEl) {
+    listEl.innerHTML = cards.length ? cards.map(c => {
+      const inv = getCardInvoice(c.id, currentMonth);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <div class="db-plan-dot" style="background:${c.color}"></div>
+        <div style="min-width:90px">
+          <div style="font-weight:500">${c.name}</div>
+          <span class="badge badge-${c.owner}" style="font-size:10px">${c.owner}</span>
+        </div>
+        <input type="number" placeholder="0,00" value="${inv && inv.value ? inv.value : ''}" style="width:120px;text-align:right"
+          onchange="setCardInvoiceValue('${c.id}','${currentMonth}',this.value)">
+        <input type="text" placeholder="Nota (opcional)" value="${inv ? (inv.note || '') : ''}" style="flex:1;min-width:140px"
+          onchange="setCardInvoiceNote('${c.id}','${currentMonth}',this.value)">
+      </div>`;
+    }).join('') : '<div class="empty-state">Nenhum cartão cadastrado. Adicione um acima para lançar a fatura.</div>';
+  }
 }
 
-function addCartao() {
-  const nome = document.getElementById('ctNome').value.trim();
-  if (!nome) { toast('Informe o nome', 'error'); return; }
-  state.cardExpenses.push({
-    id: uid(), name: nome,
-    value:        parseFloat(document.getElementById('ctVal').value) || 0,
-    totalParcels: parseInt(document.getElementById('ctParc').value) || 1,
-    purchaseDate: document.getElementById('ctDate').value,
-    category:     document.getElementById('ctCat').value,
-    owner:        document.getElementById('ctOwner').value,
-  });
-  ['ctNome','ctVal','ctParc'].forEach(id => document.getElementById(id).value = '');
-  saveState(); renderFinTab(); toast('Compra adicionada!', 'success');
+function addCard() {
+  const name  = document.getElementById('newCardName').value.trim();
+  const day   = parseInt(document.getElementById('newCardDay').value) || 15;
+  const color = document.getElementById('newCardColor').value;
+  const owner = document.getElementById('newCardOwner').value;
+  if (!name) { toast('Informe o nome do cartão', 'error'); return; }
+  state.cards.push({ id: uid(), name, color, closingDay: day, owner });
+  document.getElementById('newCardName').value = '';
+  document.getElementById('newCardDay').value = '';
+  saveState(); renderCartao(); toast('Cartão adicionado!', 'success');
 }
 
-function delCartao(id) {
-  state.cardExpenses = state.cardExpenses.filter(c => c.id !== id);
-  saveState(); renderFinTab();
+function updateCardField(id, field, val) {
+  const c = (state.cards || []).find(c => c.id === id);
+  if (!c) return;
+  c[field] = field === 'closingDay' ? (parseInt(val) || 15) : val;
+  saveState(); renderCartao();
+}
+
+function delCard(id) {
+  state.cards = (state.cards || []).filter(c => c.id !== id);
+  state.cardInvoices = (state.cardInvoices || []).filter(inv => inv.cardId !== id);
+  saveState(); renderCartao();
 }
 
 // ===================== ORÇAMENTO =====================
@@ -2770,15 +2731,6 @@ function setRecurringPlan(id, bucketId) {
   const r = state.recurring.find(r => r.id === id);
   if (r) { r.plan = bucketId || null; saveState(); updateBudgetAlertBadge(); }
 }
-function setCardCat(id, cat) {
-  const ce = state.cardExpenses.find(c => c.id === id);
-  if (ce) { ce.category = cat; saveState(); }
-}
-function setCardPlan(id, bucketId) {
-  const ce = state.cardExpenses.find(c => c.id === id);
-  if (ce) { ce.plan = bucketId || null; saveState(); updateBudgetAlertBadge(); }
-}
-
 // ===================== METAS =====================
 function toggleGoalDetails(id) {
   const el = document.getElementById(id);
