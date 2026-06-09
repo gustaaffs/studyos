@@ -274,7 +274,21 @@
       "id": "6tuaa35",
       "cardId": "9q0i9wu",
       "month": "2026-07",
-      "value": 682.73,
+      "value": 770.87,
+      "note": ""
+    },
+    {
+      "id": "em0adb9",
+      "cardId": "9q0i9wu",
+      "month": "2026-08",
+      "value": 175.84,
+      "note": ""
+    },
+    {
+      "id": "ua5vduj",
+      "cardId": "9q0i9wu",
+      "month": "2026-09",
+      "value": 175.84,
       "note": ""
     }
   ],
