@@ -218,6 +218,13 @@
       "color": "#eeff00",
       "closingDay": 1,
       "owner": "casal"
+    },
+    {
+      "id": "6oq7j79",
+      "name": "PicPay",
+      "color": "#00b054",
+      "closingDay": 2,
+      "owner": "maria"
     }
   ],
   "cardInvoices": [
@@ -289,6 +296,13 @@
       "cardId": "9q0i9wu",
       "month": "2026-09",
       "value": 175.84,
+      "note": ""
+    },
+    {
+      "id": "0u0ic2f",
+      "cardId": "6oq7j79",
+      "month": "2026-07",
+      "value": 373.4,
       "note": ""
     }
   ],
